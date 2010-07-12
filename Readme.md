@@ -13,6 +13,19 @@ via npm:
 
 	$ npm install connect-redis
 
+## Options
+
+  * `maxAge` Sets key via the **EXPIRE** command (also the session's cookie)
+  * `host` Redis server hostname
+  * `port` Redis server portno
+  * ...    Remaining options passed to the redis `createClient()` method.
+
 ## Example
 
-  TODO ...
+    var connect = require('connect'),
+	 	RedisStore = require('connect-redis');
+
+    connect.createServer(
+        connect.cookieDecoder(),
+        connect.session({ store: new RedisStore({ maxAge: 150 }) })
+    );
