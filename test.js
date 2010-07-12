@@ -35,7 +35,7 @@ store.set('123', { name: 'tj' }, function(err, ok){
                     
                     // #set null
                     store.set('123', { name: 'tj' }, function(){
-                        store.set('123', null, function(){
+                        store.destroy('123', function(){
                             store.length(function(err, len){
                                assert.equal(0, len, '#set() null');
                                store.client.close(); 

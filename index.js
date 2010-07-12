@@ -60,17 +60,24 @@ RedisStore.prototype.get = function(hash, fn){
 RedisStore.prototype.set = function(hash, sess, fn){
     var self = this;
     try {
-        if (sess == null) {
-            this.client.del(hash, fn);
-        } else {
-            this.client.set(hash, JSON.stringify(sess), function(){
-                self.client.expire(hash, self.maxAge);
-                fn && fn.apply(this, arguments);
-            });
-        }
+        this.client.set(hash, JSON.stringify(sess), function(){
+            self.client.expire(hash, self.maxAge);
+            fn && fn.apply(this, arguments);
+        });
     } catch (err) {
-        fn(err);
+        fn && fn(err);
     } 
+};
+
+/**
+ * Destroy the session associated with the given `hash`.
+ *
+ * @param {String} hash
+ * @api public
+ */
+
+RedisStore.prototype.destroy = function(hash, fn){
+    this.client.del(hash, fn);
 };
 
 /**
