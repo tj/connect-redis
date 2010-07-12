@@ -39,7 +39,9 @@ sys.inherits(RedisStore, Store);
 RedisStore.prototype.get = function(hash, fn){
     this.client.get(hash, function(err, data){
         try {
-            fn(null, JSON.parse(data.toString()));
+            fn(null, data
+                ? JSON.parse(data.toString())
+                : data);
         } catch (err) {
             fn(err);
         } 
