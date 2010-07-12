@@ -6,7 +6,7 @@
 var assert = require('assert'),
     RedisStore = require('./index');
 
-var store = new RedisStore;
+var store = new RedisStore({ maxAge: 150 });
 
 // #set()
 store.set('123', { name: 'tj' }, function(err, ok){
@@ -32,8 +32,8 @@ store.set('123', { name: 'tj' }, function(err, ok){
                 store.length(function(err, len){
                     assert.ok(!err, '#length()');
                     assert.equal(0, len, '#length() without keys');
-                    store.client.close();
                 });
+                store.client.close();
             });
         });
     })

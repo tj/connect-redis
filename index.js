@@ -56,12 +56,12 @@ RedisStore.prototype.get = function(hash, fn){
  */
 
 RedisStore.prototype.set = function(hash, sess, fn){
+    var self = this;
     try {
-        if (fn) {
-            this.client.set(hash, JSON.stringify(sess), fn);
-        } else {
-            this.client.set(hash, JSON.stringify(sess));
-        }
+        this.client.set(hash, JSON.stringify(sess), function(){
+            self.client.expire(hash, self.maxAge);
+            fn && fn.apply(this, arguments);
+        });
     } catch (err) {
         fn(err);
     } 
