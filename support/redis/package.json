@@ -1,0 +1,34 @@
+{
+  "name": "redis-client",
+  "description": "Redis client for Node.js",
+  "version": "0.3.5",
+  "keywords": [ "redis", "node", "client" ],
+  "author": "Brian Hammond <brian@fictorial.com>",
+  "contributors": [
+    { "name": "Brian Hammond", "web": "http://fictorial.com" },
+    { "name": "Brit Gardner", "web": "http://britg.com" },
+    { "name": "Corey Donohoe", "web": "http://www.atmos.org" },
+    { "name": "Elliott Cable", "web": "http://elliottcable.name/" },
+    { "name": "Jake McGraw", "web": "http://jakemcgraw.com" },
+    { "name": "James Herdman", "web": "http://jherdman.github.com" },
+    { "name": "Justin Tulloss", "web": "http://justin.harmonize.fm/" },
+    { "name": "Nikhil", "web": "http://kodeclutz.blogspot.com" },
+    { "name": "technoweenie (rick)", "web": "http://techno-weenie.net" },
+    { "name": "Donovan Hide", "web": "http://availableimagination.com" },
+    { "name": "Philip Hofstetter", "web": "http://www.gnegg.ch/" },
+    { "name": "Chris Winberry", "web": "http://tautologistics.com/" },
+    { "name": "Brian McKinney", "web": "http://twitter.com/tritonrc" },
+    { "name": "Alberto Piai", "web": "http://github.com/brainlock" }
+  ],
+  "licenses": [ "MIT" ],
+  "repositories": {
+    "type": "git",
+    "url": "http://github.com/fictorial/redis-node-client.git"
+  },
+  "bugs": { "web": "http://github.com/fictorial/redis-node-client/issues" },
+  "directories": { "lib": "./lib", "test": "./test" },
+  "os": [ "linux", "darwin" ],
+  "dependencies": {},
+  "engines": { "node":  ">0.1.90" },
+  "main": "./redis-client"
+}
