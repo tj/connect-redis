@@ -11,7 +11,7 @@ Via git:
 
 via npm:
 
-	$ npm install connect-redis
+	$ npm install connect-redis@latest
 
 ## Options
 
