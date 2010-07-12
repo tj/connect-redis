@@ -32,8 +32,17 @@ store.set('123', { name: 'tj' }, function(err, ok){
                 store.length(function(err, len){
                     assert.ok(!err, '#length()');
                     assert.equal(0, len, '#length() without keys');
+                    
+                    // #set null
+                    store.set('123', { name: 'tj' }, function(){
+                        store.set('123', null, function(){
+                            store.length(function(err, len){
+                               assert.equal(0, len, '#set() null');
+                               store.client.close(); 
+                            });
+                        });
+                    });
                 });
-                store.client.close();
             });
         });
     })
