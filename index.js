@@ -9,4 +9,76 @@
  * Module dependencies.
  */
 
-var redis = require('./../support/redis');
+var sys = require('sys'),
+    Store = require('connect/middleware/session/store'),
+    redis = require('./support/redis/lib/redis-client');
+
+var RedisStore = module.exports = function RedisStore(options) {
+    options = options || {};
+    Store.call(this, options);
+    this.encoding = options.encoding || 'ascii';
+    this.client = new redis.createClient(options.port, options.host, options);
+};
+
+sys.inherits(RedisStore, Store);
+
+/**
+ * Attempt to fetch session by the given `hash`.
+ *
+ * @param {String} hash
+ * @param {Function} fn
+ * @api public
+ */
+
+RedisStore.prototype.get = function(hash, fn){
+    this.client.get(hash, function(err, data){
+        try {
+            fn(null, JSON.parse(data.toString(this.encoding)));
+        } catch (err) {
+            fn(err);
+        } 
+    });
+};
+
+/**
+ * Commit the given `sess` object associated with the given `hash`.
+ *
+ * @param {String} hash
+ * @param {Session} sess
+ * @param {Function} fn
+ * @api public
+ */
+
+RedisStore.prototype.set = function(hash, sess, fn){
+    try {
+        if (fn) {
+            this.client.set(hash, JSON.stringify(sess), fn);
+        } else {
+            this.client.set(hash, JSON.stringify(sess));
+        }
+    } catch (err) {
+        fn(err);
+    } 
+};
+
+/**
+ * Fetch number of sessions.
+ *
+ * @param {Function} fn
+ * @api public
+ */
+
+RedisStore.prototype.length = function(fn){
+    this.client.dbsize(fn);
+};
+
+/**
+ * Clear all sessions.
+ *
+ * @param {Function} fn
+ * @api public
+ */
+
+RedisStore.prototype.clear = function(fn){
+    this.client.flushall(fn);
+};
