@@ -13,10 +13,16 @@ var sys = require('sys'),
     Store = require('connect/middleware/session/store'),
     redis = require('./support/redis/lib/redis-client');
 
+/**
+ * Initialize RedisStore with the given `options`.
+ *
+ * @param {Object} options
+ * @api public
+ */
+
 var RedisStore = module.exports = function RedisStore(options) {
     options = options || {};
     Store.call(this, options);
-    this.encoding = options.encoding || 'ascii';
     this.client = new redis.createClient(options.port, options.host, options);
 };
 
@@ -33,7 +39,7 @@ sys.inherits(RedisStore, Store);
 RedisStore.prototype.get = function(hash, fn){
     this.client.get(hash, function(err, data){
         try {
-            fn(null, JSON.parse(data.toString(this.encoding)));
+            fn(null, JSON.parse(data.toString()));
         } catch (err) {
             fn(err);
         } 
@@ -80,5 +86,5 @@ RedisStore.prototype.length = function(fn){
  */
 
 RedisStore.prototype.clear = function(fn){
-    this.client.flushall(fn);
+    this.client.flushdb(fn);
 };
