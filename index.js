@@ -1,1 +1,2 @@
-lib/connect-redis.js
+
+module.exports = require('./lib/connect-redis');
