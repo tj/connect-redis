@@ -1,103 +1,139 @@
-# Redis client for Node.js
+redis - a node redis client
+===========================
 
-## In a nutshell
+This is a Redis client for node.  It is designed for node 0.2.1+ and redis 2.0.1+.
 
-- Talk to Redis from Node.js 
-- Fully asynchronous; your code is called back when an operation completes
-- [Binary-safe](http://github.com/fictorial/redis-node-client/blob/master/test/test.js#L353-363); uses Node.js Buffer objects for request serialization and reply parsing
-    - e.g. store a PNG in Redis if you'd like
-- Client API directly follows Redis' [command specification](http://code.google.com/p/redis/wiki/CommandReference) 
-- *You have to understand how Redis works and the semantics of its command set to most effectively use this client*
-- Supports Redis' new exciting [PUBSUB](http://code.google.com/p/redis/wiki/PublishSubscribe) commands
-- Automatically reconnects to Redis (doesn't drop commands sent while waiting to reconnect either) using [exponential backoff](http://en.wikipedia.org/wiki/Exponential_backoff)
-    - Be sure to see [this script](http://github.com/fictorial/redis-node-client/blob/master/test/test_shutdown_reconnect.js) for a deeper discussion
+Most Redis commands are implemented, including MULTI.  The notable exceptions are PUBLISH/SUBSCRIBE, and WATCH/UNWATCH.
+These should be coming soon.
 
-## Synopsis
+## Usage
 
-When working from a git clone:
+Simple example:
 
-    var sys = require("sys");
-    var client = require("../lib/redis-client").createClient();
-    client.info(function (err, info) {
-        if (err) throw new Error(err);
-        sys.puts("Redis Version is: " + info.redis_version);
-        client.close();
+    var redis = require("redis"),
+        client = redis.createClient();
+
+    client.on("connect", function () {
+        client.set("string key", "string val", function (err, results) {
+            console.log("SET: " + results);
+        });
+        client.hset("hash key", "hashtest 1", "should be a hash", function (err, results) {
+            console.log("HSET: " + results);
+        });
+        client.hset(["hash key", "hashtest 2", "should be a hash"], function (err, results) {
+            console.log("HSET: " + results);
+        });
+        client.hkeys("hash key", function (err, results) {
+            console.log("HKEYS: " + results);
+            process.exit();
+        });
     });
 
-When working with a Kiwi-based installation:
+This will display:
 
-    // $ kiwi install redis-client
+    SET: OK
+    HSET: 1
+    HSET: 1
+    HKEYS: hashtest 1,hashtest 2
 
-    var sys = require("sys"), 
-        kiwi = require("kiwi"),
-        client = kiwi.require("redis-client").createClient();
 
-    client.info(function (err, info) {
-        if (err) throw new Error(err);
-        sys.puts("Redis Version is: " + info.redis_version);
-        client.close();
-    });
+### Creating a new Client Connection
 
-- Refer to the many tests in `test/test.js` for many usage examples.
-- Refer to the `examples/` directory for focused examples.
+Use `redis.createClient(port, host)` to create a new client connection.  `port` defaults to `6379` and `host` defaults
+to `127.0.0.1`.  If you have Redis running on the same computer as node, then the defaults are probably fine.
 
-## Installation
+`createClient` returns a `RedisClient` object that is named `client` in all of the examples here.
 
-This version requires at least `Node.js v0.1.90` and Redis `1.3.8`.
 
-Tested with Node.js `v0.1.95` and `v0.1.96` and Redis `2.1.1` (the current unstable).
+### Sending Commands
 
-You have a number of choices:
+Each Redis command is exposed as a function on the `client` object.
+All functions take either take either an `args` Array plus optional `callback` Function or
+a variable number of individual arguments followed by an optional callback.
+Here is an example of passing an array of arguments and a callback:
 
-- git clone this repo or download a tarball and simply copy `lib/redis-client.js` into your project
-- use git submodule
-- use the [Kiwi](http://github.com/visionmedia/kiwi) package manager for Node.js
+    client.mset(["test keys 1", "test val 1", "test keys 2", "test val 2"], function (err, res) {});
 
-Please let me know if the package manager "seeds" and/or metadata have issues.
-Installation via Kiwi or NPM at this point isn't really possible since this repo
-depends on a unreleased version of Node.js.
+Here is that same call in the second style:
 
-## Running the tests
+    client.mset("test keys 1", "test val 1", "test keys 2", "test val 2", function (err, res) {});
+    
+Note that in either form the `callback` is optional:
 
-A good way to learn about this client is to read the test code.
+    client.set("some key", "some val");
+    client.set(["some other key", "some val"]);
 
-To run the tests, install and run redis on the localhost on port 6379 (defaults).
-Then run `node test/test.js [-v|-q]` where `-v` is for "verbose" and `-q` is for "quiet".
+For a list of Redis commands, see [Redis Command Reference](http://code.google.com/p/redis/wiki/CommandReference)
 
-    $ node test/test.js
-    ..................................................................
-    ...........................++++++++++++++++++++++++++++++++++++
+The commands can be specified in uppercase or lowercase for convenience.  `client.get()` is the same as `clieint.GET()`.
 
-    [INFO] All tests have passed.
+Minimal parsing is done on the replies.  Commands that return a single line reply return JavaScript Strings, 
+integer replies return JavaScript Numbers, "bulk" replies return node Buffers, and "multi bulk" replies return a 
+JavaScript Array of node Buffers.
 
-If you see something like "PSUBSCRIBE: unknown command" then it is time to upgrade
-your Redis installation.
+`MULTI` is supported.  The syntax is a little awkward:
 
-## Documentation
+    client.multi([
+        ["incr", ["multibar"], function (err, res) {
+            console.log(err || res);
+        }],
+        ["incr", ["multifoo"], function (err, res) {
+            console.log(err || res);
+        }]
+    ]);
 
-There is a method per Redis command.  E.g. `SETNX` becomes `client.setnx`.
+`MULTI` takes an Array of 3-element Arrays.  The elements are: `command`, `args`, `callback`.
+When the commands are all submitted, `EXEC` is called and the callbacks are invoked in order.
+If a command is submitted that doesn't pass the syntax check, it will be removed from the
+transaction.
 
-For example, the Redis command [INCRBY](http://code.google.com/p/redis/wiki/IncrCommand)
-is specified as `INCRBY key integer`.  Also, the INCRBY spec says that the reply will
-be "... the new value of key after the increment or decrement."
+I guess we also need a callback when `MULTI` finishes, in case the last command gets removed from an error.
 
-This translates to the following client code which increments key 'foo' by 42.  If
-the value at key 'foo' was 0 or non-existent, 'newValue' will take value 42 when
-the callback function is called.
 
-    client.incrby('foo', 42, function (err, newValue) {
-        // ...
-    });
+## TODO
 
-This can get [a little wacky](http://github.com/fictorial/redis-node-client/blob/master/test/test.js#L1093-1097). 
-I'm open to suggestions for improvement here.
+Need to implement PUBLISH/SUBSCRIBE
 
-Note: for PUBSUB, you should use `subscribeTo` and `unsubscribeFrom` instead of the generated
-methods for Redis' `SUBSCRIBE` and `UNSUBSCRIBE` commands.  See [this](http://github.com/fictorial/redis-node-client/blob/master/lib/redis-client.js#L682-694)
-and [this](http://github.com/fictorial/redis-node-client/blob/master/examples/subscriber.js#L14).
+Need to implement WATCH/UNWATCH
 
-## Notes
+Add callback for MULTI completion.
 
-All commands/requests use the Redis *multi-bulk request* format which will be
-the only accepted request protocol come Redis 2.0.
+Support variable argument style for MULTI commands.
 
+Queue new commands that are sent before a connection has been established.
+
+Stream binary data into and out of Redis.
+
+
+## Also
+
+This library still needs a lot of work, but it is useful for many things.
+There are other Redis libraries available for node, and they might work better for you.
+
+Comments and patches welcome.
+
+
+## LICENSE - "MIT License"
+
+Copyright (c) 2010 Matthew Ranney, http://ranney.com/
+
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
