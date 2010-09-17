@@ -38,6 +38,7 @@ store.set('123', { name: 'tj' }, function(err, ok){
                         store.destroy('123', function(){
                             store.length(function(err, len){
                                assert.equal(0, len, '#set() null');
+                               console.log('done');
                                store.client.close(); 
                             });
                         });
