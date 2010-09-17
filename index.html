@@ -1,6 +1,7 @@
 <a href="http://github.com/visionmedia/connect-redis"><img alt="Fork me on GitHub" id="ribbon" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a><html>
 	<head>
 		<title>Connect Redis</title>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 		<style>body {
     margin: 0;
     padding: 0;
@@ -20,45 +21,6 @@ p {
 h1, h2, h3 {
     margin: 0;
     padding: 0;
-}
-ul#menu {
-    opacity: 0;
-    position: fixed;
-    top: 0;
-    right: 0;
-    list-style: none;
-    margin: 0;
-    padding: 10px 2px;
-    text-align: right;
-    background: rgba(255,255,255,0.7);
-    -webkit-box-shadow: -1px 2px 2px rgba(0,0,0,0.3);
-    -moz-box-shadow: -1px 2px 2px rgba(0,0,0,0.3);
-    -webkit-border-bottom-left-radius: 5px;
-    -moz-border-bottom-left-radius: 5px;
-    -webkit-transition-properties: opacity;
-    -webkit-transition-duration: 0.6s;
-}
-ul#menu:hover {
-    opacity: 1;
-}
-ul#menu li {
-    padding: 2px 10px;
-    border-bottom: 1px solid #eee;
-}
-ul#menu li:hover {
-    background: rgba(0,0,0,0.03);
-}
-ul#menu li:last-child {
-    border-bottom: none;
-}
-ul#menu li a {
-    text-decoration: none;
-    font-size: 12px;
-    color: rgba(0,0,0,0.5);
-}
-ul#menu li a strong {
-    font-weight: normal;
-    color: #252519;
 }
 table#source {
     width: 100%;
@@ -93,6 +55,7 @@ table#source tr.filename td:last-child {
 table#source tr.filename h2 {
     margin: 0;
     padding: 0;
+    cursor: pointer;
 }
 table#source tr.code h1,
 table#source tr.code h2,
@@ -123,7 +86,7 @@ table#source tr.code td:first-child pre {
     padding: 20px;
 }
 #ribbon {
-    position: absolute;
+    position: fixed;
     top: 0;
     right: 0;
 }
@@ -133,16 +96,26 @@ code .keyword { color: #954121; }
 code .number { color: #19469D; }
 code .comment { color: #bbb; }
 code .this { color: #19469D; }</style>
+		<script>
+			$(function(){
+				$('tr.code').hide();
+				$('tr.filename').toggle(function(){
+					$(this).nextUntil('.filename').fadeIn();
+				}, function(){
+					$(this).nextUntil('.filename').fadeOut();
+				});
+			});
+		</script>
 	</head>
 	<body>
-<ul id="menu"><li><a href="#index.js"><strong>index</strong></a></li></ul><table id="source"><tbody><tr><td><h1>Connect Redis</h1></td><td></td></tr><tr class="filename"><td><h2 id="index.js">index</h2></td><td>index.js</td></tr><tr class="code">
+<table id="source"><tbody><tr><td><h1>Connect Redis</h1><p>Redis session store for connect backed by <a href="http://github.com/mranney/node_redis">node_redis</a>.</p></td><td></td></tr><tr class="filename"><td><h2 id="lib/connect-redis.js"><a href="#">connect-redis</a></h2></td><td>lib/connect-redis.js</td></tr><tr class="code">
 <td class="docs">
-<p>Module dependencies.</p>
+<p>Module dependencies.
+ </p>
 </td>
 <td class="code">
-<pre><code><span class="keyword">var</span> <span class="variable">sys</span> = <span class="variable">require</span>(<span class="string">'sys'</span>),
-    <span class="class">Store</span> = <span class="variable">require</span>(<span class="string">'connect/middleware/session/store'</span>),
-    <span class="variable">redis</span> = <span class="variable">require</span>(<span class="string">'./support/redis/lib/redis-client'</span>);</code></pre>
+<pre><code><span class="keyword">var</span> <span class="class">Store</span> = <span class="variable">require</span>(<span class="string">'connect'</span>).<span class="variable">session</span>.<span class="class">Store</span>,
+    <span class="variable">redis</span> = <span class="variable">require</span>(<span class="string">'./redis'</span>);</code></pre>
 </td>
 </tr>
 <tr class="code">
@@ -151,20 +124,23 @@ code .this { color: #19469D; }</style>
 
 <h2></h2>
 
-<ul>
-<li><p><strong>param</strong>: <em>Object</em>  options</p></li>
-<li><p><strong>api</strong>: <em>public</em></p></li>
-</ul>
-
+<ul><li><p><strong>param</strong>: <em>Object</em>  options</p></li><li><p><strong>api</strong>: <em>public</em></p></li></ul>
 </td>
 <td class="code">
 <pre><code><span class="keyword">var</span> <span class="class">RedisStore</span> = <span class="variable">module</span>.<span class="variable">exports</span> = <span class="keyword">function</span> <span class="class">RedisStore</span>(<span class="variable">options</span>) {
     <span class="variable">options</span> = <span class="variable">options</span> || {};
     <span class="class">Store</span>.<span class="variable">call</span>(<span class="this">this</span>, <span class="variable">options</span>);
     <span class="this">this</span>.<span class="variable">client</span> = <span class="keyword">new</span> <span class="variable">redis</span>.<span class="variable">createClient</span>(<span class="variable">options</span>.<span class="variable">port</span>, <span class="variable">options</span>.<span class="variable">host</span>, <span class="variable">options</span>);
-};
-
-<span class="variable">sys</span>.<span class="variable">inherits</span>(<span class="class">RedisStore</span>, <span class="class">Store</span>);</code></pre>
+};</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Inherit from <code>Store</code>.
+ </p>
+</td>
+<td class="code">
+<pre><code><span class="class">RedisStore</span>.<span class="variable">prototype</span>.<span class="variable">__proto__</span> = <span class="class">Store</span>.<span class="variable">prototype</span>;</code></pre>
 </td>
 </tr>
 <tr class="code">
@@ -173,18 +149,15 @@ code .this { color: #19469D; }</style>
 
 <h2></h2>
 
-<ul>
-<li><p><strong>param</strong>: <em>String</em>  hash</p></li>
-<li><p><strong>param</strong>: <em>Function</em>  fn</p></li>
-<li><p><strong>api</strong>: <em>public</em></p></li>
-</ul>
-
+<ul><li><p><strong>param</strong>: <em>String</em>  hash</p></li><li><p><strong>param</strong>: <em>Function</em>  fn</p></li><li><p><strong>api</strong>: <em>public</em></p></li></ul>
 </td>
 <td class="code">
 <pre><code><span class="class">RedisStore</span>.<span class="variable">prototype</span>.<span class="variable">get</span> = <span class="keyword">function</span>(<span class="variable">hash</span>, <span class="variable">fn</span>){
     <span class="this">this</span>.<span class="variable">client</span>.<span class="variable">get</span>(<span class="variable">hash</span>, <span class="keyword">function</span>(<span class="variable">err</span>, <span class="variable">data</span>){
         <span class="keyword">try</span> {
-            <span class="variable">fn</span>(<span class="keyword">null</span>, <span class="class">JSON</span>.<span class="variable">parse</span>(<span class="variable">data</span>.<span class="variable">toString</span>()));
+            <span class="variable">fn</span>(<span class="keyword">null</span>, <span class="variable">data</span>
+                ? <span class="class">JSON</span>.<span class="variable">parse</span>(<span class="variable">data</span>.<span class="variable">toString</span>())
+                : <span class="variable">data</span>);
         } <span class="keyword">catch</span> (<span class="variable">err</span>) {
             <span class="variable">fn</span>(<span class="variable">err</span>);
         } 
@@ -198,13 +171,7 @@ code .this { color: #19469D; }</style>
 
 <h2></h2>
 
-<ul>
-<li><p><strong>param</strong>: <em>String</em>  hash</p></li>
-<li><p><strong>param</strong>: <em>Session</em>  sess</p></li>
-<li><p><strong>param</strong>: <em>Function</em>  fn</p></li>
-<li><p><strong>api</strong>: <em>public</em></p></li>
-</ul>
-
+<ul><li><p><strong>param</strong>: <em>String</em>  hash</p></li><li><p><strong>param</strong>: <em>Session</em>  sess</p></li><li><p><strong>param</strong>: <em>Function</em>  fn</p></li><li><p><strong>api</strong>: <em>public</em></p></li></ul>
 </td>
 <td class="code">
 <pre><code><span class="class">RedisStore</span>.<span class="variable">prototype</span>.<span class="variable">set</span> = <span class="keyword">function</span>(<span class="variable">hash</span>, <span class="variable">sess</span>, <span class="variable">fn</span>){
@@ -215,8 +182,22 @@ code .this { color: #19469D; }</style>
             <span class="variable">fn</span> &<span class="variable">amp</span>;&<span class="variable">amp</span>; <span class="variable">fn</span>.<span class="variable">apply</span>(<span class="this">this</span>, <span class="variable">arguments</span>);
         });
     } <span class="keyword">catch</span> (<span class="variable">err</span>) {
-        <span class="variable">fn</span>(<span class="variable">err</span>);
+        <span class="variable">fn</span> &<span class="variable">amp</span>;&<span class="variable">amp</span>; <span class="variable">fn</span>(<span class="variable">err</span>);
     } 
+};</code></pre>
+</td>
+</tr>
+<tr class="code">
+<td class="docs">
+<p>Destroy the session associated with the given <code>hash</code>.</p>
+
+<h2></h2>
+
+<ul><li><p><strong>param</strong>: <em>String</em>  hash</p></li><li><p><strong>api</strong>: <em>public</em></p></li></ul>
+</td>
+<td class="code">
+<pre><code><span class="class">RedisStore</span>.<span class="variable">prototype</span>.<span class="variable">destroy</span> = <span class="keyword">function</span>(<span class="variable">hash</span>, <span class="variable">fn</span>){
+    <span class="this">this</span>.<span class="variable">client</span>.<span class="variable">del</span>(<span class="variable">hash</span>, <span class="variable">fn</span>);
 };</code></pre>
 </td>
 </tr>
@@ -226,11 +207,7 @@ code .this { color: #19469D; }</style>
 
 <h2></h2>
 
-<ul>
-<li><p><strong>param</strong>: <em>Function</em>  fn</p></li>
-<li><p><strong>api</strong>: <em>public</em></p></li>
-</ul>
-
+<ul><li><p><strong>param</strong>: <em>Function</em>  fn</p></li><li><p><strong>api</strong>: <em>public</em></p></li></ul>
 </td>
 <td class="code">
 <pre><code><span class="class">RedisStore</span>.<span class="variable">prototype</span>.<span class="variable">length</span> = <span class="keyword">function</span>(<span class="variable">fn</span>){
@@ -244,11 +221,7 @@ code .this { color: #19469D; }</style>
 
 <h2></h2>
 
-<ul>
-<li><p><strong>param</strong>: <em>Function</em>  fn</p></li>
-<li><p><strong>api</strong>: <em>public</em></p></li>
-</ul>
-
+<ul><li><p><strong>param</strong>: <em>Function</em>  fn</p></li><li><p><strong>api</strong>: <em>public</em></p></li></ul>
 </td>
 <td class="code">
 <pre><code><span class="class">RedisStore</span>.<span class="variable">prototype</span>.<span class="variable">clear</span> = <span class="keyword">function</span>(<span class="variable">fn</span>){
