@@ -27,5 +27,6 @@ via npm:
 
     connect.createServer(
       connect.cookieDecoder(),
-      connect.session({ store: new RedisStore({ maxAge: 150 }) })
+      // 5 minutes
+      connect.session({ store: new RedisStore({ maxAge: 300000 }) })
     );
