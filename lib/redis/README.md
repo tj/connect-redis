@@ -66,7 +66,7 @@ Note that in either form the `callback` is optional:
 
 For a list of Redis commands, see [Redis Command Reference](http://code.google.com/p/redis/wiki/CommandReference)
 
-The commands can be specified in uppercase or lowercase for convenience.  `client.get()` is the same as `clieint.GET()`.
+The commands can be specified in uppercase or lowercase for convenience.  `client.get()` is the same as `client.GET()`.
 
 Minimal parsing is done on the replies.  Commands that return a single line reply return JavaScript Strings, 
 integer replies return JavaScript Numbers, "bulk" replies return node Buffers, and "multi bulk" replies return a 
@@ -88,7 +88,8 @@ When the commands are all submitted, `EXEC` is called and the callbacks are invo
 If a command is submitted that doesn't pass the syntax check, it will be removed from the
 transaction.
 
-I guess we also need a callback when `MULTI` finishes, in case the last command gets removed from an error.
+`MULTI` needs some love.  This way works, but it's too ugly and not progressive.  Patches and
+suggestions are welcome.
 
 # API
 
@@ -99,6 +100,8 @@ I guess we also need a callback when `MULTI` finishes, in case the last command 
 ### "connect"
 
 `client` will emit `connect` when a connection is established to the Redis server.
+
+Commands issued before the `connect` event are queued, then replayed when a connection is established.
 
 ### "error"
 
@@ -121,19 +124,17 @@ to `127.0.0.1`.  If you have Redis running on the same computer as node, then th
 
 ## client.end()
 
-Close the connection to the Redis server.  Note that this does not wait until all replies have been parsed.
-If you want to exit cleanly, call `client.end()` in the reply callback of your last command:
+Forcibly close the connection to the Redis server.  Note that this does not wait until all replies have been parsed.
+If you want to exit cleanly, call `client.quit()` to send the `QUIT` command.
 
     var redis = require("redis"),
         client = redis.createClient();
 
-    client.on("connect", function () {
-        client.set("foo_rand000000000000", "some fantastic value");
-        client.get("foo_rand000000000000", function (err, reply) {
-            console.log(reply.toString());
-            client.end();
-        });
+    client.set("foo_rand000000000000", "some fantastic value");
+    client.get("foo_rand000000000000", function (err, reply) {
+      console.log(reply.toString());
     });
+    client.quit();
 
 ## Publish / Subscribe
 
@@ -266,6 +267,32 @@ this library is updated, you can use `send_command()` to send arbitrary commands
 
 All commands are sent as multi-bulk commands.  `args` can either be an Array of arguments, or individual arguments,
 or omitted completely.
+
+## client.connected
+
+Boolean tracking the state of the connection to the Redis server.
+
+## client.command_queue.length
+
+The number of commands that have been sent to the Redis server but not yet replied to.  You can use this to 
+enforce some kind of maximum queue depth for commands while connected.
+
+Don't mess with `client.command_queue` though unless you really know what you are doing.
+
+## client.offline_queue.length
+
+The number of commands that have been queued up for a future connection.  You can use this to enforce
+some kind of maximum queue depth for pre-connection commands.
+
+## client.retry_delay
+
+Current delay in milliseconds before a connection retry will be attempted.  This starts at `250`.
+
+## client.retry_backoff
+
+Multiplier for future retry timeouts.  This should be larger than 1 to add more time between retries.
+Defaults to 1.7.  The default initial connection retry is 250, so the second retry will be 425, followed by 723.5, etc.
+
 
 ## TODO
 
