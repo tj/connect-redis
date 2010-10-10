@@ -11,7 +11,7 @@ Via git:
 
 via npm:
 
-	$ npm install connect-redis
+    $ npm install connect-redis
 
 ## Options
 
@@ -23,7 +23,7 @@ via npm:
 ## Example
 
     var connect = require('connect')
-	 	  , RedisStore = require('connect-redis');
+          , RedisStore = require('connect-redis');
 
     connect.createServer(
       connect.cookieDecoder(),

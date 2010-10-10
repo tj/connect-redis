@@ -6,9 +6,9 @@
 var assert = require('assert'),
     RedisStore = require('./index');
 
-var store = new RedisStore({ maxAge: 150 });
+var store = RedisStore({ maxAge: 15000 });
 
-store.client.on('connect', function(){
+store.getClient().on('connect', function(){
   // #set()
   store.set('123', { name: 'tj' }, function(err, ok){
       assert.ok(!err, '#set() got an error');
@@ -40,7 +40,7 @@ store.client.on('connect', function(){
                               store.length(function(err, len){
                                  assert.equal(0, len, '#set() null');
                                  console.log('done');
-                                 store.client.end(); 
+                                 store.getClient().end();
                               });
                           });
                       });
