@@ -26,7 +26,12 @@ via npm:
           , RedisStore = require('connect-redis');
 
     connect.createServer(
+      connect.bodyDecoder(), // Always before the session
       connect.cookieDecoder(),
       // 5 minutes
       connect.session({ store: new RedisStore({ maxAge: 300000 }) })
     );
+
+## Warning
+
+If you use the bodyDecoder middleware, place it *before* the session one!
