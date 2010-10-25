@@ -1,20 +1,26 @@
 redis - a node redis client
 ===========================
 
-This is a Redis client for node.  It is designed for node 0.2.2+ and redis 2.0.1+.  It probably won't work on earlier versions of either.
+This is a Redis client for node.  It is designed for node 0.2.2+ and redis 2.0.1+.  It might not work on earlier versions of either,
+although it probably will.
 
-Most Redis commands are implemented, including MULTI and PUBLISH/SUBSCRIBE.
+This client supports MULTI and PUBLISH/SUBSCRIBE.
+
+Install with:
+
+    npm install redis
 
 ## Why?
 
-`node_redis` works in the latest versions of node, is published in `npm`, and is very fast.
+`node_redis` works in the latest versions of node, is published in `npm`, and is very fast, particularly for small responses.
 
 The most popular Redis client, `redis-node-client` by fictorial, is very mature and well tested.  If you are running an older version
 of node or value the maturity and stability of `redis-node-client`, I encourage you to use that one instead.
 
 `node_redis` is designed with performance in mind.  The included `bench.js` runs similar tests to `redis-benchmark`, included with the Redis 
-distribution, and `bench.js` is faster than `redis-benchmarks` for some patterns and slower for others.  `node_redis` is roughly 6X faster at
-these benchmarks than `redis-node-client`.
+distribution, and `bench.js` is as fast as `redis-benchmark` for some patterns and slower for others.  `node_redis` has many lovingly
+hand-crafted optimizations for speed.
+
 
 ## Usage
 
@@ -22,6 +28,10 @@ Simple example, included as `example.js`:
 
     var redis = require("redis"),
         client = redis.createClient();
+
+    client.on("error", function (err) {
+        console.log("Redis connection error to " + client.host + ":" + client.port + " - " + err);
+    });
 
     client.set("string key", "string val", redis.print);
     client.hset("hash key", "hashtest 1", "some value", redis.print);
@@ -31,7 +41,7 @@ Simple example, included as `example.js`:
         replies.forEach(function (reply, i) {
             console.log("    " + i + ": " + reply);
         });
-        client.end();
+        client.quit();
     });
 
 This will display:
@@ -72,25 +82,6 @@ Minimal parsing is done on the replies.  Commands that return a single line repl
 integer replies return JavaScript Numbers, "bulk" replies return node Buffers, and "multi bulk" replies return a 
 JavaScript Array of node Buffers.  `HGETALL` returns an Object with Buffers keyed by the hash keys.
 
-`MULTI` is supported.  The syntax is a little awkward:
-
-    client.multi([
-        ["incr", ["multibar"], function (err, res) {
-            console.log(err || res);
-        }],
-        ["incr", ["multifoo"], function (err, res) {
-            console.log(err || res);
-        }]
-    ]);
-
-`MULTI` takes an Array of 3-element Arrays.  The elements are: `command`, `args`, `callback`.
-When the commands are all submitted, `EXEC` is called and the callbacks are invoked in order.
-If a command is submitted that doesn't pass the syntax check, it will be removed from the
-transaction.
-
-`MULTI` needs some love.  This way works, but it's too ugly and not progressive.  Patches and
-suggestions are welcome.
-
 # API
 
 ## Connection Events
@@ -107,8 +98,21 @@ Commands issued before the `connect` event are queued, then replayed when a conn
 
 `client` will emit `error` when encountering an error connecting to the Redis server.
 
-_This may change at some point, because it would be nice to send back error events for
-things in the reply parser._
+Note that "error" is a special event type in node.  If there are no listeners for an 
+"error" event, node will exit.  This is usually what you want, but it can lead to some 
+cryptic error messages like this:
+
+    mjr:~/work/node_redis (master)$ node example.js 
+
+    node.js:50
+        throw e;
+        ^
+    Error: ECONNREFUSED, Connection refused
+        at IOWatcher.callback (net:870:22)
+        at node.js:607:9
+
+Not very useful in diagnosing the problem, but if your program isn't ready to handle this,
+it is probably the right thing to just exit.
 
 ### "end"
 
@@ -125,16 +129,22 @@ to `127.0.0.1`.  If you have Redis running on the same computer as node, then th
 ## client.end()
 
 Forcibly close the connection to the Redis server.  Note that this does not wait until all replies have been parsed.
-If you want to exit cleanly, call `client.quit()` to send the `QUIT` command.
+If you want to exit cleanly, call `client.quit()` to send the `QUIT` command after you have handled all replies.
+
+This example closes the connection to the Redis server before the replies have been read.  You probably don't 
+want to do this:
 
     var redis = require("redis"),
         client = redis.createClient();
 
     client.set("foo_rand000000000000", "some fantastic value");
     client.get("foo_rand000000000000", function (err, reply) {
-      console.log(reply.toString());
+        console.log(reply.toString());
     });
-    client.quit();
+    client.end();
+
+`client.end()` is useful for timeout cases where something is stuck or taking too long and you want 
+to start over.
 
 ## Publish / Subscribe
 
@@ -207,6 +217,81 @@ channel name as `channel` and the new count of subscriptions for this client as 
 Client will emit `punsubscribe` in response to a `PUNSUBSCRIBE` command.  Listeners are passed the 
 channel name as `channel` and the new count of subscriptions for this client as `count`.  When
 `count` is 0, this client has left pub/sub mode and no more pub/sub events will be emitted.
+
+## client.multi([commands])
+
+`MULTI` commands are queued up until an `EXEC` is issued, and then all commands are run atomically by
+Redis.  The interface in `node_redis` is to return an individual `Multi` object by calling `client.multi()`.
+
+    var redis  = require("./index"),
+        client = redis.createClient(), set_size = 20;
+
+    client.sadd("bigset", "a member");
+    client.sadd("bigset", "another member");
+
+    while (set_size > 0) {
+        client.sadd("bigset", "member " + set_size);
+        set_size -= 1;
+    }
+
+    // multi chain with an individual callback
+    client.multi()
+        .scard("bigset")
+        .smembers("bigset")
+        .keys("*", function (err, replies) {
+            client.mget(replies, redis.print);
+        })
+        .dbsize()
+        .exec(function (err, replies) {
+            console.log("MULTI got " + replies.length + " replies");
+            replies.forEach(function (reply, index) {
+                console.log("Reply " + index + ": " + reply.toString());
+            });
+        });
+
+`client.multi()` is a constructor that returns a `Multi` object.  `Multi` objects share all of the 
+same command methods as `client` objects do.  Commands are queued up inside the `Multi` object
+until `Multi.exec()` is invoked.
+
+You can either chain together `MULTI` commands as in the above example, or you can queue individual 
+commands while still sending regular client command as in this example:
+
+    var redis  = require("redis"),
+        client = redis.createClient(), multi;
+
+    // start a separate multi command queue 
+    multi = client.multi();
+    multi.incr("incr thing", redis.print);
+    multi.incr("incr other thing", redis.print);
+
+    // runs immediately
+    client.mset("incr thing", 100, "incr other thing", 1, redis.print);
+
+    // drains multi queue and runs atomically
+    multi.exec(function (err, replies) {
+        console.log(replies); // 101, 2
+    });
+
+    // you can re-run the same transaction if you like
+    multi.exec(function (err, replies) {
+        console.log(replies); // 102, 3
+        client.quit();
+    });
+
+In addition to adding commands to the `MULTI` queue individually, you can also pass an array 
+of commands and arguments to the constructor:
+
+    var redis  = require("redis"),
+        client = redis.createClient(), multi;
+
+    client.multi([
+        ["mget", "multifoo", "multibar", redis.print],
+        ["incr", "multifoo"],
+        ["incr", "multibar"]
+    ]).exec(function (err, replies) {
+        console.log(replies);
+    });
+
 
 # Extras
 
@@ -296,22 +381,36 @@ Defaults to 1.7.  The default initial connection retry is 250, so the second ret
 
 ## TODO
 
-Need to implement WATCH/UNWATCH and progressive MULTI commands.
+Need to add WATCH/UNWATCH.
 
-Add callback for MULTI completion.
+Stream large set/get into and out of Redis.
 
-Support variable argument style for MULTI commands.
+Performance can be better for large values.
 
-Stream binary data into and out of Redis.
+I think there are more performance improvements left in there for smaller values, especially for large lists of small values.
 
 
 ## Also
 
-This library still needs a lot of work, but it is useful for many things.
+This library might still have some bugs in it, but it seems to be quite useful for a lot of people at this point.
 There are other Redis libraries available for node, and they might work better for you.
 
 Comments and patches welcome.
 
+## Contributors
+
+Some people have have added features and fixed bugs in `node_redis` other than me.
+
+In order of first contribution, they are:
+
+*  [Tim Smart](http://github.com/Tim-Smart)
+*  [TJ Holowaychuk](http://github.com/visionmedia)
+*  [Rick Olson](http://github.com/technoweenie)
+*  [Orion Henry](http://github.com/orionz)
+*  [Hank Sims](http://github.com/hanksims)
+*  [Aivo Paas](http://github.com/aivopaas)
+
+Thanks.
 
 ## LICENSE - "MIT License"
 
