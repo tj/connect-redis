@@ -178,7 +178,7 @@ code .this { color: #19469D; }</style>
     <span class="keyword">var</span> <span class="variable">self</span> = <span class="this">this</span>;
     <span class="keyword">try</span> {
         <span class="this">this</span>.<span class="variable">client</span>.<span class="variable">set</span>(<span class="variable">hash</span>, <span class="class">JSON</span>.<span class="variable">stringify</span>(<span class="variable">sess</span>), <span class="keyword">function</span>(){
-            <span class="variable">self</span>.<span class="variable">client</span>.<span class="variable">expire</span>(<span class="variable">hash</span>, <span class="variable">self</span>.<span class="variable">maxAge</span>);
+            <span class="variable">self</span>.<span class="variable">client</span>.<span class="variable">expire</span>(<span class="variable">hash</span>, <span class="variable">self</span>.<span class="variable">maxAge</span> / <span class="number integer">1000</span> | <span class="number integer">0</span>);
             <span class="variable">fn</span> &<span class="variable">amp</span>;&<span class="variable">amp</span>; <span class="variable">fn</span>.<span class="variable">apply</span>(<span class="this">this</span>, <span class="variable">arguments</span>);
         });
     } <span class="keyword">catch</span> (<span class="variable">err</span>) {
