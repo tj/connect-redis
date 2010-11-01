@@ -1,4 +1,10 @@
 
+0.2.0 / 2010-11-01 
+==================
+
+  * Use __SETEX__ instead of __SET__ / __EXPIRE__ combo
+    this should be reasonably faster.
+
 0.1.3 / 2010-10-25 
 ==================
 
