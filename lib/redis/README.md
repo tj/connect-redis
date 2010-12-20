@@ -1,23 +1,55 @@
 redis - a node.js redis client
 ===========================
 
-This is a complete Redis client for node.js.  It is designed for node 0.2.2+ and redis 2.0.1+.
-It might not work on earlier versions of either, although it probably will.
-
-This client supports all Redis commands, including MULTI and PUBLISH/SUBSCRIBE.
+This is a complete Redis client for node.js.  It supports all Redis commands, including MULTI, WATCH, and PUBLISH/SUBSCRIBE.
 
 Install with:
 
     npm install redis
+    
+For portability, a pure JavaScript reply parser is used by default.  Pieter Noordhuis has provided a binding to the
+official `hiredis` C library, which is non-blocking and fast.  To use `hiredis`, do:
 
-## Why?
+    npm install hiredis redis
+    
+If `hiredis` is installed, `node_redis` will use it by default.
 
-`node_redis` works in the latest versions of node, is published in `npm`, and is very fast, particularly for small responses.
 
-`node_redis` is designed with performance in mind.  The included `bench.js` runs similar tests to `redis-benchmark`, included with the Redis 
-distribution, and `bench.js` is as fast as `redis-benchmark` for some patterns and slower for others.  `node_redis` has many lovingly
-hand-crafted optimizations for speed.
+## Why so many Redis clients for node?
 
+`node_redis` works in the latest versions of node, is published in `npm`, is used by many people, and is in production on a
+number of sites.
+
+`node_redis` was originally written to replace `node-redis-client` which hasn't been updated in a while, and no longer works
+with recent versions of node.
+
+
+## Performance
+
+Here are typical results of `multi_bench.js` which is similar to `redis-benchmark` from the Redis distribution.
+It uses 50 concurrent connections with no pipelining.
+
+JavaScript parser:
+
+    PING: 20000 ops 42283.30 ops/sec 0/5/1.182
+    SET: 20000 ops 32948.93 ops/sec 1/7/1.515
+    GET: 20000 ops 28694.40 ops/sec 0/9/1.740
+    INCR: 20000 ops 39370.08 ops/sec 0/8/1.269
+    LPUSH: 20000 ops 36429.87 ops/sec 0/8/1.370
+    LRANGE (10 elements): 20000 ops 9891.20 ops/sec 1/9/5.048
+    LRANGE (100 elements): 20000 ops 1384.56 ops/sec 10/91/36.072
+
+hiredis parser:
+
+    PING: 20000 ops 46189.38 ops/sec 1/4/1.082
+    SET: 20000 ops 41237.11 ops/sec 0/6/1.210
+    GET: 20000 ops 39682.54 ops/sec 1/7/1.257
+    INCR: 20000 ops 40080.16 ops/sec 0/8/1.242
+    LPUSH: 20000 ops 41152.26 ops/sec 0/3/1.212
+    LRANGE (10 elements): 20000 ops 36563.07 ops/sec 1/8/1.363
+    LRANGE (100 elements): 20000 ops 21834.06 ops/sec 0/9/2.287
+
+The performance of `node_redis` improves dramatically with pipelining.
 
 ## Usage
 
@@ -27,7 +59,7 @@ Simple example, included as `example.js`:
         client = redis.createClient();
 
     client.on("error", function (err) {
-        console.log("Redis connection error to " + client.host + ":" + client.port + " - " + err);
+        console.log("Error " + err);
     });
 
     client.set("string key", "string val", redis.print);
@@ -111,16 +143,36 @@ cryptic error messages like this:
 Not very useful in diagnosing the problem, but if your program isn't ready to handle this,
 it is probably the right thing to just exit.
 
+`client` will also emit `error` if an exception is thrown inside of `node_redis` for whatever reason.
+It would be nice to distinguish these two cases.
+
 ### "end"
 
 `client` will emit `end` when an established Redis server connection has closed.
 
-## redis.createClient(port, host)
+### "drain"
+
+`client` will emit `drain` when the TCP connection to the Redis server has been buffering, but is now
+writable.  This event can be used to stream commands in to Redis and adapt to backpressure.  Right now,
+you need to check `client.command_queue.length` to decide when to reduce your send rate.  Then you can 
+resume sending when you get `drain`.
+
+### "idle"
+
+`client` will emit `idle` when there are no outstanding commands that are awaiting a response.
+
+## redis.createClient(port, host, options)
 
 Create a new client connection.  `port` defaults to `6379` and `host` defaults
-to `127.0.0.1`.  If you have Redis running on the same computer as node, then the defaults are probably fine.
+to `127.0.0.1`.  If you have `redis-server` running on the same computer as node, then the defaults for
+port and host are probably fine.  `options` in an object with the following possible properties:
 
-`createClient` returns a `RedisClient` object that is named `client` in all of the examples here.
+* `parser`: which Redis protocol reply parser to use.  Defaults to `hiredis` if that module is installed.
+            This may also be set to `javascript`.
+* `return_buffers`: defaults to false.  If set to `true`, then bulk data replies will be returned as node Buffer
+                    objects instead of JavaScript Strings.
+
+`createClient()` returns a `RedisClient` object that is named `client` in all of the examples here.
 
 
 ## client.end()
@@ -378,21 +430,11 @@ Defaults to 1.7.  The default initial connection retry is 250, so the second ret
 
 ## TODO
 
-Many common uses of Redis are fine with JavaScript Strings, and Strings are faster than Buffers.  We should get a way to 
-use Strings if binary-safety isn't a concern.  Also, dealing with Buffer results is kind of annoying.
-
-Stream large set/get into and out of Redis.
+Stream large set/get values into and out of Redis.  Otherwise the entire value must be in node's memory.
 
 Performance can be better for very large values.
 
 I think there are more performance improvements left in there for smaller values, especially for large lists of small values.
-
-## Also
-
-This library might still have some bugs in it, but it seems to be quite useful for a lot of people at this point.
-There are other Redis libraries available for node, and they might work better for you.
-
-Comments and patches welcome.
 
 ## Contributors
 
@@ -406,6 +448,8 @@ In order of first contribution, they are:
 *  [Orion Henry](http://github.com/orionz)
 *  [Hank Sims](http://github.com/hanksims)
 *  [Aivo Paas](http://github.com/aivopaas)
+*  [Paul Carey](https://github.com/paulcarey)
+*  [Pieter Noordhuis](https://github.com/pietern)
 
 Thanks.
 
