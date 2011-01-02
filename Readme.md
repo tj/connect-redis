@@ -18,6 +18,7 @@ via npm:
   * `maxAge` Sets key via the **EXPIRE** command (also the session's cookie)
   * `host` Redis server hostname
   * `port` Redis server portno
+  * `db` Database index to use
   * ...    Remaining options passed to the redis `createClient()` method.
 
 ## Example
