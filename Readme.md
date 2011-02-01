@@ -1,13 +1,9 @@
 
 # Connect Redis
 
-connect-redis is a Redis session store backed by [node_redis](http://github.com/mranney/node_redis), and is insanely fast :).
+connect-redis is a Redis session store backed by [node_redis](http://github.com/mranney/node_redis), and is insanely fast :). Requires redis >= `1.3.10` for the _SETEX_ command.
  
 ## Installation
-
-Via git:
-
-    $ git clone git://github.com/visionmedia/connect-redis.git ~/.node_libraries/connect-redis
 
 via npm:
 
@@ -15,11 +11,11 @@ via npm:
 
 ## Options
 
-  * `maxAge` Sets key via the **EXPIRE** command (also the session's cookie)
-  * `host` Redis server hostname
-  * `port` Redis server portno
-  * `db` Database index to use
-  * ...    Remaining options passed to the redis `createClient()` method.
+  - `maxAge` Sets key via the **EXPIRE** command (also the session's cookie)
+  - `host` Redis server hostname
+  - `port` Redis server portno
+  - `db` Database index to use
+  - ...    Remaining options passed to the redis `createClient()` method.
 
 ## Example
 
