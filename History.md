@@ -1,4 +1,10 @@
 
+1.0.0 / 2011-02-25 
+==================
+
+  * Added connect 1.0 support.
+    This release will _not_ work with older versions of connect.
+
 0.2.3 / 2011-02-01 
 ==================
 
