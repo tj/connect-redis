@@ -6,19 +6,19 @@
 var assert = require('assert')
   , RedisStore = require('./');
 
-var store = new RedisStor;
+var store = new RedisStore;
 var store_alt = new RedisStore({ db: 15 });
 
 store.client.on('connect', function(){
   // #set()
-  store.set('123', { name: 'tj' }, function(err, ok){
+  store.set('123', { cookie: { maxAge: 2000 }, name: 'tj' }, function(err, ok){
     assert.ok(!err, '#set() got an error');
     assert.ok(ok, '#set() is not ok');
     
     // #get()
     store.get('123', function(err, data){
       assert.ok(!err, '#get() got an error');
-      assert.deepEqual({ name: 'tj' }, data);
+      assert.deepEqual({ cookie: { maxAge: 2000 }, name: 'tj' }, data);
   
       // #length()
       store.length(function(err, len){
@@ -41,7 +41,7 @@ store.client.on('connect', function(){
               assert.equal(0, len, '#length() without keys');
 
               // #set null
-              store.set('123', { name: 'tj' }, function(){
+              store.set('123', { cookie: { maxAge: 2000 }, name: 'tj' }, function(){
                 store.destroy('123', function(){
                   store.length(function(err, len){
                    assert.equal(0, len, '#set() null');
