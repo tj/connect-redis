@@ -16,6 +16,7 @@ via npm:
   - `host` Redis server hostname
   - `port` Redis server portno
   - `db` Database index to use
+  - `pass` Password for Redis authentication
   - ...    Remaining options passed to the redis `createClient()` method.
 
 ## Example
