@@ -25,7 +25,7 @@ via npm:
 	 	  , RedisStore = require('connect-redis');
 
     connect.createServer(
-      connect.cookieDecoder(),
+      connect.cookieParser(),
       // 5 minutes
-      connect.session({ store: new RedisStore })
+      connect.session({ store: new RedisStore, secret: 'keyboard cat' })
     );
