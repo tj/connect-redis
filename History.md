@@ -1,4 +1,9 @@
 
+1.0.4 / 2011-05-01 
+==================
+
+  * Changed; issue SELECT immediately since it is queued
+
 1.0.3 / 2011-04-17 
 ==================
 
