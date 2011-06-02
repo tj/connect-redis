@@ -4,7 +4,8 @@
  */
 
 var assert = require('assert')
-  , RedisStore = require('./');
+  , connect = require('connect')
+  , RedisStore = require('./')(connect);
 
 var store = new RedisStore;
 var store_alt = new RedisStore({ db: 15 });

@@ -7,8 +7,6 @@ connect-redis is a Redis session store backed by [node_redis](http://github.com/
 
 ## Installation
 
-via npm:
-
 	  $ npm install connect-redis
 
 ## Options
@@ -19,10 +17,12 @@ via npm:
   - `pass` Password for Redis authentication
   - ...    Remaining options passed to the redis `createClient()` method.
 
-## Example
+## Usage
+
+ Due to npm 1.x changes, we now need to pass connect to the function `connect-redis` exports in order to extend `connect.session.Store`:
 
     var connect = require('connect')
-	 	  , RedisStore = require('connect-redis');
+	 	  , RedisStore = require('connect-redis')(connect);
 
     connect.createServer(
       connect.cookieParser(),
