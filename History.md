@@ -1,4 +1,9 @@
 
+1.0.5 / 2011-06-02 
+==================
+
+  * Implemented `require("connect-redis")(connect)` for npm 1.x. Closes #23
+
 1.0.4 / 2011-05-01 
 ==================
 
