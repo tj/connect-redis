@@ -1,4 +1,9 @@
 
+1.0.6 / 2011-06-21 
+==================
+
+  * Added `socket` option so that we can connect to a sockets as well [mekwall]
+
 1.0.5 / 2011-06-02 
 ==================
 
