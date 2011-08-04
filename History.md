@@ -1,4 +1,9 @@
 
+1.0.7 / 2011-08-04 
+==================
+
+  * Fixed: re-select db on connection (reconnection logic issue with node_redis)
+
 1.0.6 / 2011-06-21 
 ==================
 
