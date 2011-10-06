@@ -1,4 +1,10 @@
 
+1.1.0 / 2011-10-05 
+==================
+
+  * Added `prefix` option
+  * Removed `clear()` and `length()` methods
+
 1.0.7 / 2011-08-04 
 ==================
 
