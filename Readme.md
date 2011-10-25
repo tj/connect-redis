@@ -10,7 +10,8 @@ connect-redis is a Redis session store backed by [node_redis](http://github.com/
 	  $ npm install connect-redis
 
 ## Options
-
+  
+  - `client` An existing redis client object you normally get from `redis.createClient()`
   - `host` Redis server hostname
   - `port` Redis server portno
   - `db` Database index to use
