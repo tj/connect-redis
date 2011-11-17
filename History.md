@@ -1,4 +1,9 @@
 
+1.2.0 / 2011-11-17 
+==================
+
+  * Added an option 'client' to reuse an existing redis Client [Thomas Fritz]
+
 1.1.0 / 2011-10-05 
 ==================
 
