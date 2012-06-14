@@ -14,6 +14,7 @@ connect-redis is a Redis session store backed by [node_redis](http://github.com/
   - `client` An existing redis client object you normally get from `redis.createClient()`
   - `host` Redis server hostname
   - `port` Redis server portno
+  - `ttl` Redis session TTL in seconds
   - `db` Database index to use
   - `pass` Password for Redis authentication
   - `prefix` Key prefix defaulting to "sess:"
