@@ -28,7 +28,6 @@ connect-redis is a Redis session store backed by [node_redis](http://github.com/
 
     connect.createServer(
       connect.cookieParser(),
-      // 5 minutes
       connect.session({ store: new RedisStore(options), secret: 'keyboard cat' })
     );
 
