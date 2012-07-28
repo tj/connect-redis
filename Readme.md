@@ -26,10 +26,9 @@ connect-redis is a Redis session store backed by [node_redis](http://github.com/
     var connect = require('connect')
 	 	  , RedisStore = require('connect-redis')(connect);
 
-    connect.createServer(
-      connect.cookieParser(),
-      connect.session({ store: new RedisStore(options), secret: 'keyboard cat' })
-    );
+    connect()
+      .use(connect.session({ store: new RedisStore(options), secret: 'keyboard cat' }))
+ 
 
  This means express users may do the following, since `express.session.Store` points to the `connect.session.Store` function:
  
