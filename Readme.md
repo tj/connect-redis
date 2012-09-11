@@ -33,3 +33,7 @@ connect-redis is a Redis session store backed by [node_redis](http://github.com/
  This means express users may do the following, since `express.session.Store` points to the `connect.session.Store` function:
  
     var RedisStore = require('connect-redis')(express);
+
+# License
+
+  MIT
