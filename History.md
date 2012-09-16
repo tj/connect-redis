@@ -1,4 +1,35 @@
 
+1.4.4 / 2012-09-12 
+==================
+
+  * update redis to 0.8.1 for "import bug fix?"
+
+1.4.3 / 2012-09-11 
+==================
+
+  * add license. Closes #58
+  * peg redis to 0.8.0
+
+1.4.2 / 2012-09-05 
+==================
+
+  * add disconnect / connect events
+
+1.4.1 / 2012-07-26 
+==================
+
+  * fix ignoring of .get() error
+
+1.4.0 / 2012-06-14 
+==================
+
+  * Added `ttl` option [Vyacheslav Bazhinov]
+
+1.3.0 / 2012-03-23 
+==================
+
+  * Added debug() instrumentation
+
 1.2.0 / 2011-11-17 
 ==================
 
