@@ -27,6 +27,7 @@ store.client.on('connect', function(){
          console.log('done');
          store.client.end(); 
          store_alt.client.end();
+         process.exit(0);
         });
       });
       throw new Error('Error in fn');
