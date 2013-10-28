@@ -5,7 +5,7 @@
   "author": "TJ Holowaychuk <tj@vision-media.ca>",
   "main": "./index.js",
   "repository": { "type": "git", "url": "git@github.com:visionmedia/connect-redis.git" },
-  "dependencies": { "redis": "0.7.x", "debug": "*" },
+  "dependencies": { "redis": "0.9.x", "debug": "*" },
   "devDependencies": { "connect": "*" },
   "engines": { "node": "*" },
   "bugs": {
