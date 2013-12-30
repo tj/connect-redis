@@ -7,8 +7,7 @@ var assert = require('assert')
   , connect = require('connect')
   , RedisStore = require('./')(connect);
 
-var store = new RedisStore;
-var store_alt = new RedisStore({ db: 15 });
+var store = new RedisStore({ secret: 'foo bar' });
 
 store.client.on('connect', function(){
   // #set()
@@ -26,7 +25,6 @@ store.client.on('connect', function(){
         store.destroy('123', function(){
          console.log('done');
          store.client.end(); 
-         store_alt.client.end();
          process.exit(0);
         });
       });

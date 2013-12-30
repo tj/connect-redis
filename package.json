@@ -12,6 +12,6 @@
     "url": "https://github.com/visionmedia/connect-redis/issues"
   },
   "scripts":{
-    "test":"node test.js"
+    "test":"node test.js; node test_crypto.js"
   }
 }
