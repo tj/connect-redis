@@ -17,6 +17,7 @@ connect-redis is a Redis session store backed by [node_redis](http://github.com/
   - `db` Database index to use
   - `pass` Password for Redis authentication
   - `prefix` Key prefix defaulting to "sess:"
+  - `url` String that contains connection information in a single url (redis://user:pass@host:port/db)
   - ...    Remaining options passed to the redis `createClient()` method.
 
 ## Usage
