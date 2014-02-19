@@ -9,6 +9,7 @@ var assert = require('assert')
 
 var store = new RedisStore;
 var store_alt = new RedisStore({ db: 15 });
+var store_url = new RedisStore({ url: "redis://localhost:6379/db2" });
 
 store.client.on('connect', function(){
   // #set()
@@ -27,6 +28,7 @@ store.client.on('connect', function(){
          console.log('done');
          store.client.end(); 
          store_alt.client.end();
+         store_url.client.end();
          process.exit(0);
         });
       });
