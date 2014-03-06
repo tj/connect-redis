@@ -2,7 +2,7 @@
 
 connect-redis is a Redis session store backed by [node_redis](http://github.com/mranney/node_redis), and is insanely fast :). Requires redis >= `2.0.0` for the _SETEX_ command.
 
- connect-redis `>= 1.0.0` support only connect `>= 1.0.0`.
+ connect-redis `>= 1.0.0` support only express `>= 4.0.0`.
 
 ## Installation
 
@@ -22,18 +22,13 @@ connect-redis is a Redis session store backed by [node_redis](http://github.com/
 
 ## Usage
 
- Due to npm 1.x changes, we now need to pass connect to the function `connect-redis` exports in order to extend `connect.session.Store`:
+ Due to express 4.x.x changes, we now need to pass express-session to the function `connect-redis` exports in order to extend `express-session.Store`:
 
-    var connect = require('connect')
-	 	  , RedisStore = require('connect-redis')(connect);
+    var session = require('express-session')
+	 	  , RedisStore = require('connect-redis')(session);
 
-    connect()
-      .use(connect.session({ store: new RedisStore(options), secret: 'keyboard cat' }))
- 
-
- This means express users may do the following, since `express.session.Store` points to the `connect.session.Store` function:
- 
-    var RedisStore = require('connect-redis')(express);
+    
+      app.use(session({ store: new RedisStore(options), secret: 'keyboard cat' }))
 
 # License
 
