@@ -2,28 +2,32 @@
 
 connect-redis is a Redis session store backed by [node_redis](http://github.com/mranney/node_redis), and is insanely fast :). Requires redis >= `2.0.0` for the _SETEX_ command.
 
-## connect-redis `>= 2.0.0` support only express `>= 4.0.0`. Use connect-redis 1.4.7 for express 3x.
+> Note: connect-redis `>= 2.0.0` only supports express `>= 4.0.0`. Use connect-redis `1.4.7` for express 3.x.
 
 ## Installation
 
 	  $ npm install connect-redis
 
 ## Options
-  
-  - `client` An existing redis client object you normally get from `redis.createClient()`
+
+  A Redis client is required.  An existing client can be passed directly using the `client` param or created for you using the `host`, `port`, or `socket` params.
+  - `client` An existing client created using `redis.createClient()`
   - `host` Redis server hostname
   - `port` Redis server portno
-  - `socket` Redis server socket
-  - `ttl` Redis session TTL in seconds
+  - `socket` Redis server unix_socket
+
+The following additional params may be included:
+
+  - `ttl` Redis session TTL (expiration) in seconds
   - `db` Database index to use
   - `pass` Password for Redis authentication
   - `prefix` Key prefix defaulting to "sess:"
-  - `url` String that contains connection information in a single url (redis://user:pass@host:port/db)
-  - ...    Remaining options passed to the redis `createClient()` method.
+
+Any options not included in this list will be passed to the redis `createClient()` method directly.
 
 ## Usage
 
- Due to express 4.x.x changes, we now need to pass express-session to the function `connect-redis` exports in order to extend `express-session.Store`:
+Due to express 4.x.x changes, we now need to pass express-session to the function `connect-redis` exports in order to extend `express-session.Store`:
 
     var session = require('express-session')
 	 	  , RedisStore = require('connect-redis')(session);
