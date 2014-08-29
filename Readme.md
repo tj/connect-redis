@@ -27,13 +27,15 @@ Any options not included in this list will be passed to the redis `createClient(
 
 ## Usage
 
-Due to express 4.x.x changes, we now need to pass express-session to the function `connect-redis` exports in order to extend `express-session.Store`:
+Due to express `>= 4` changes, we now need to pass `express-session` to the function `connect-redis` exports in order to extend `session.Store`:
 
-    var session = require('express-session')
-	 	  , RedisStore = require('connect-redis')(session);
+    var session = require('express-session');
+    var RedisStore = require('connect-redis')(session);
 
-    
-      app.use(session({ store: new RedisStore(options), secret: 'keyboard cat' }))
+    app.use(session({
+        store: new RedisStore(options),
+        secret: 'keyboard cat'
+    }));
 
 # License
 
