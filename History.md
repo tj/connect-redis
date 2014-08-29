@@ -1,3 +1,11 @@
+
+2.1.0 / 2014-08-29
+==================
+
+ * add; unref option
+ * dep; redis@0.12.x
+ * mod; deprecate warning for url param
+
 2.0.0 / 2014-03-06 
 ==================
 
