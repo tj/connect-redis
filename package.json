@@ -14,6 +14,7 @@
     "redis": "^0.12.1"
   },
   "devDependencies": {
+    "bluebird": "^2.3.2",
     "express-session": "*"
   },
   "engines": {
@@ -23,6 +24,7 @@
     "url": "https://github.com/visionmedia/connect-redis/issues"
   },
   "scripts": {
-    "test": "node test.js"
+    "test": "node test.js",
+    "bench": "node bench/redisbench.js"
   }
 }
