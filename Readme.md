@@ -37,6 +37,26 @@ Due to express `>= 4` changes, we now need to pass `express-session` to the func
         store: new RedisStore(options),
         secret: 'keyboard cat'
     }));
+    
+## FAQ
+
+#### Can I use a URL scheme to make a connection?
+
+Since `node_redis` which this library wraps does not include the ability to create a client from a URL.  Neither does this library.  However, there's a [separate module](https://github.com/ddollar/redis-url) that can be used in conjunction to get this behavior.
+
+#### How do I handle lost connections to Redis?
+
+By default, the `node_redis` client will [auto-reconnect](https://github.com/mranney/node_redis#overloading) when a connection is lost.  But requests may come in during that time. In express, one way this scenario can be handled is including a "session check" after setting up a session (checking for the existence of `req.session`):
+
+```js
+app.use(session( /* setup session here */ ))
+app.use(function (req, res, next) {
+  if (!req.session) {
+    return next(new Error('oh no')) // handle error
+  }
+  next() // otherwise continue
+})
+```
 
 # License
 
