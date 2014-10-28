@@ -19,6 +19,7 @@ connect-redis is a Redis session store backed by [node_redis](http://github.com/
 The following additional params may be included:
 
   - `ttl` Redis session TTL (expiration) in seconds
+  - `disableTTL` disables setting TTL, keys will stay in redis until evicted by other means (overides `ttl`)
   - `db` Database index to use
   - `pass` Password for Redis authentication
   - `prefix` Key prefix defaulting to "sess:"
@@ -37,7 +38,7 @@ Due to express `>= 4` changes, we now need to pass `express-session` to the func
         store: new RedisStore(options),
         secret: 'keyboard cat'
     }));
-    
+
 ## FAQ
 
 #### Can I use a URL scheme to make a connection?
