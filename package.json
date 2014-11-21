@@ -10,11 +10,11 @@
   },
   "dependencies": {
     "debug": "^1.0.4",
-    "express-session": "^1.7.6",
     "redis": "^0.12.1"
   },
   "devDependencies": {
     "bluebird": "^2.3.2",
+    "eslint": "^0.9.2",
     "express-session": "*"
   },
   "engines": {
@@ -24,7 +24,8 @@
     "url": "https://github.com/visionmedia/connect-redis/issues"
   },
   "scripts": {
-    "test": "node test.js",
-    "bench": "node bench/redisbench.js"
+    "test": "node test",
+    "bench": "node bench/redisbench.js",
+    "lint": "eslint --reset index.js test lib bench"
   }
 }

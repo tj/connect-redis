@@ -1,13 +1,9 @@
+var P = require('bluebird');
+var assert = require('assert');
+var session = require('express-session');
+var RedisStore = require('../')(session);
 
-/**
- * Module dependencies.
- */
-
-var assert = require('assert')
-  , session = require('express-session')
-  , RedisStore = require('./')(session);
-
-var store = new RedisStore;
+var store = new RedisStore();
 var store_alt = new RedisStore({ db: 15 });
 
 store.client.on('connect', function(){
@@ -25,7 +21,7 @@ store.client.on('connect', function(){
       store.set('123', { cookie: { maxAge: 2000 }, name: 'tj' }, function(){
         store.destroy('123', function(){
          console.log('done');
-         store.client.end(); 
+         store.client.end();
          store_alt.client.end();
          process.exit(0);
         });

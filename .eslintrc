@@ -1,0 +1,15 @@
+{
+  "env": {
+    "node": true
+  },
+  "rules": {
+    "curly": 0,
+    "strict": 0,
+    "camelcase": 0,
+    "quotes": [1, "single"],
+    "no-multi-spaces": 0,
+    "semi": 1,
+    "no-proto": 0,
+    "no-process-exit": 0
+  }
+}
