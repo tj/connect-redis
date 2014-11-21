@@ -10,6 +10,9 @@
     "no-multi-spaces": 0,
     "semi": 1,
     "no-proto": 0,
-    "no-process-exit": 0
+    "no-process-exit": 0,
+    "no-unused-vars": 1,
+    "no-undef": 2,
+    "eol-last": 0
   }
 }
