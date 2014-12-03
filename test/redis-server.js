@@ -6,10 +6,8 @@ var port = exports.port = 8543;
 exports.connect = function () {
   if (redisSrv) return P.resolve();
 
-  return new P(function (res) {
-    redisSrv = spawn('redis-server', ['--port', port, '--loglevel', 'verbose']);
-    redisSrv.stdout.once('readable', res);
-  });
+  redisSrv = spawn('redis-server', ['--port', port, '--loglevel', 'verbose'], { stdio: 'ignore' });
+  return P.delay(1000);
 };
 
 exports.disconnect = function () {
@@ -17,6 +15,7 @@ exports.disconnect = function () {
 
   return new P(function (res) {
     redisSrv.kill();
-    redisSrv.on('close', res);
+    redisSrv.once('close', res);
+    redisSrv = null;
   });
 };
