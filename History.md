@@ -1,4 +1,10 @@
 
+2.3.0 / 2015-04-28
+==================
+
+  * add; `touch` / support `resave: false` [stuartpb]
+  * mod; package.json license [mikaturunen]
+
 2.2.0 / 2015-01-26
 ==================
 
