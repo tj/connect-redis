@@ -17,7 +17,7 @@ Then follow the usage instructions below.
 ## Options
 
   A Redis client is required.  An existing client can be passed directly using the `client` param or created for you using the `host`, `port`, or `socket` params.
-  - `client` An existing client created using `redis.createClient()`
+  - `client` An existing client
   - `host` Redis server hostname
   - `port` Redis server portno
   - `socket` Redis server unix_socket
@@ -44,6 +44,12 @@ Pass the `express-session` store into `connect-redis` to create a `RedisStore` c
         store: new RedisStore(options),
         secret: 'keyboard cat'
     }));
+
+## Custom Redis clients
+
+Clients other than `node_redis` will work if they support the same interface.  Just pass the client instance as the `client` configuration option.  Known supported clients include:
+
+  * [ioredis](https://github.com/luin/ioredis) - adds support for Redis Sentinel and Cluster
 
 ## FAQ
 
