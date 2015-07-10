@@ -1,4 +1,12 @@
 
+2.4.0 / 2015-07-10
+==================
+
+  * Add custom client support
+  * Add debug statement for redis client errors [scriptoLLC]
+  * Fix use Math.floor instead of |0 trick
+  * Removed send_anyway magic (unused)
+
 2.3.0 / 2015-04-28
 ==================
 
