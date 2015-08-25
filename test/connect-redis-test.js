@@ -4,6 +4,7 @@ var redisSrv = require('./redis-server');
 var session = require('express-session');
 var RedisStore = require('../')(session);
 var redis = require('redis');
+var ioRedis = require('ioredis');
 
 // Takes a store through all the operations
 function lifecycleTest (store, t) {
@@ -52,6 +53,12 @@ test('basic', function (t) {
 
 test('existing client', function (t) {
   var client = redis.createClient(8543, 'localhost');
+  var store = new RedisStore({ client: client })
+  return lifecycleTest(store, t);
+});
+
+test('io redis client', function (t) {
+  var client = ioRedis.createClient(8543, 'localhost');
   var store = new RedisStore({ client: client })
   return lifecycleTest(store, t);
 });
