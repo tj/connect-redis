@@ -1,4 +1,10 @@
 
+2.5.0 / 2015-08-28
+==================
+
+  * Add support to override serializer
+  * Add io-redis test
+
 2.4.1 / 2015-07-24
 ==================
 
