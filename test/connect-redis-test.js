@@ -101,3 +101,18 @@ test('interups', function (t) {
       store.client.end();
     });
 });
+
+test('serializer', function (t) {
+  var serializer = {
+    stringify: function() { return 'XXX'+JSON.stringify.apply(JSON, arguments); },
+    parse: function(x) {
+      t.ok(x.match(/^XXX/));
+      return JSON.parse(x.substring(3));
+    }
+  };
+  t.equal(serializer.stringify('UnitTest'), 'XXX"UnitTest"');
+  t.equal(serializer.parse(serializer.stringify("UnitTest")), 'UnitTest');
+
+  var store = new RedisStore({ port: 8543, serializer: serializer });
+  return lifecycleTest(store, t); 
+});
