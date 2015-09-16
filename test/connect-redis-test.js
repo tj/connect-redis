@@ -47,6 +47,7 @@ test('defaults', function (t) {
 });
 
 test('basic', function (t) {
+  t.throws(RedisStore, TypeError, 'constructor not callable as function');
   var store = new RedisStore({ port: 8543 });
   return lifecycleTest(store, t);
 });
