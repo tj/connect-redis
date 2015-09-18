@@ -1,4 +1,9 @@
 
+2.5.1 / 2015-09-18
+==================
+
+  * Prevent RedisStore constructor from being called as a normal function [venning]
+
 2.5.0 / 2015-08-28
 ==================
 
