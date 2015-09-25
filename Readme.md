@@ -21,6 +21,7 @@ Then follow the usage instructions below.
   - `host` Redis server hostname
   - `port` Redis server portno
   - `socket` Redis server unix_socket
+  - `url` Redis server url
 
 The following additional params may be included:
 
@@ -53,10 +54,6 @@ Clients other than `node_redis` will work if they support the same interface.  J
   * [ioredis](https://github.com/luin/ioredis) - adds support for Redis Sentinel and Cluster
 
 ## FAQ
-
-#### Can I use a URL scheme to make a connection?
-
-Since `node_redis` which this library wraps does not include the ability to create a client from a URL.  Neither does this library.  However, there's a [separate module](https://github.com/ddollar/redis-url) that can be used in conjunction to get this behavior.
 
 #### How do I handle lost connections to Redis?
 
