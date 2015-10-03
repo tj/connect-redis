@@ -1,18 +1,25 @@
-# Connect Redis
+[![npm](https://img.shields.io/npm/v/connect-redis.svg)](https://npmjs.com/package/connect-redis) [![Dependencies](https://img.shields.io/david/tj/connect-redis.svg)](https://david-dm.org/tj/connect-redis) ![Downloads](https://img.shields.io/npm/dm/connect-redis.svg)
 
-connect-redis is a Redis session store backed by [node_redis](http://github.com/mranney/node_redis), and is insanely fast :). Requires redis >= `2.0.0` for the _SETEX_ command.
+**connect-redis** is a Redis session store backed by [node_redis](http://github.com/mranney/node_redis), and is insanely fast :). Requires redis >= `2.0.0` for the _SETEX_ command.
 
-## Installation
+## Setup
 
-    $ npm install connect-redis
+```sh
+npm install connect-redis express-session
+```
 
-### A note for Express 3.x users
+Pass the `express-session` store into `connect-redis` to create a `RedisStore` constructor.
 
-In order to use the latest `connect-redis` you also have to use [`express-session`](https://github.com/expressjs/session) instead of the default connect `session` middleware.
+```js
+var session = require('express-session');
+var RedisStore = require('connect-redis')(session);
 
-    $ npm install express-session
+app.use(session({
+    store: new RedisStore(options),
+    secret: 'keyboard cat'
+}));
+```
 
-Then follow the usage instructions below.
 
 ## Options
 
@@ -34,18 +41,6 @@ The following additional params may be included:
   - `serializer` An object containing `stringify` and `parse` methods compatible with Javascript's `JSON` to override the serializer used
 
 Any options not included in this list will be passed to the redis `createClient()` method directly.
-
-## Usage
-
-Pass the `express-session` store into `connect-redis` to create a `RedisStore` constructor.
-
-    var session = require('express-session');
-    var RedisStore = require('connect-redis')(session);
-
-    app.use(session({
-        store: new RedisStore(options),
-        secret: 'keyboard cat'
-    }));
 
 ## Custom Redis clients
 
