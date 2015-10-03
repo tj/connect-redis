@@ -31,7 +31,7 @@ function lifecycleTest (store, t) {
     .then(function (ok) {
       t.equal(ok, 1, '#destroy() ok');
       store.client.end();
-      return redisSrv.disconnect()
+      return redisSrv.disconnect();
     });
 }
 
@@ -54,13 +54,13 @@ test('basic', function (t) {
 
 test('existing client', function (t) {
   var client = redis.createClient(8543, 'localhost');
-  var store = new RedisStore({ client: client })
+  var store = new RedisStore({ client: client });
   return lifecycleTest(store, t);
 });
 
 test('io redis client', function (t) {
   var client = ioRedis.createClient(8543, 'localhost');
-  var store = new RedisStore({ client: client })
+  var store = new RedisStore({ client: client });
   return lifecycleTest(store, t);
 });
 
@@ -84,21 +84,20 @@ test('options', function (t) {
 
   var socketStore = new RedisStore({ socket: 'word' });
   t.equal(socketStore.client.address, 'word', 'sets socket address');
-  socketStore.client.end()
+  socketStore.client.end();
 
   var hostNoPort = new RedisStore({ host: 'host' });
   t.equal(hostNoPort.client.address, 'host:6379', 'sets default port');
-  hostNoPort.client.end()
+  hostNoPort.client.end();
 
   return lifecycleTest(store, t);
 });
 
 test('interups', function (t) {
   var store = P.promisifyAll(new RedisStore({ port: 8543 }));
-
   return store.setAsync('123', { cookie: { maxAge: 2000 }, name: 'tj' })
     .catch(function (er) {
-      t.ok(/failed/.test(er.message), 'failed connection');
+      t.ok(/broken/.test(er.message), 'failed connection');
       store.client.end();
     });
 });
@@ -115,5 +114,5 @@ test('serializer', function (t) {
   t.equal(serializer.parse(serializer.stringify("UnitTest")), 'UnitTest');
 
   var store = new RedisStore({ port: 8543, serializer: serializer });
-  return lifecycleTest(store, t); 
+  return lifecycleTest(store, t);
 });
