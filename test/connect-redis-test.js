@@ -111,7 +111,7 @@ test('serializer', function (t) {
     }
   };
   t.equal(serializer.stringify('UnitTest'), 'XXX"UnitTest"');
-  t.equal(serializer.parse(serializer.stringify("UnitTest")), 'UnitTest');
+  t.equal(serializer.parse(serializer.stringify('UnitTest')), 'UnitTest');
 
   var store = new RedisStore({ port: 8543, serializer: serializer });
   return lifecycleTest(store, t);

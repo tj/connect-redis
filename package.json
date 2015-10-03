@@ -34,6 +34,6 @@
   "scripts": {
     "test": "DEBUG=* istanbul cover tape \"test/*-test.js\"",
     "bench": "node bench/redisbench.js",
-    "lint": "eslint --reset index.js test lib bench"
+    "lint": "eslint index.js test lib bench"
   }
 }
