@@ -1,4 +1,9 @@
 
+3.0.0 / 2015-10-03
+==================
+
+  * Update node_redis to 2.0, reinstate `url` option [fintura]
+
 2.5.1 / 2015-09-18
 ==================
 
