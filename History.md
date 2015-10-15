@@ -1,5 +1,5 @@
 
-3.0.1 / 2015-xx-xx
+3.0.1 / 2015-10-15
 ==================
 
   * Remove attempts option added in 3.0 to enable reconnect again [fintura]
