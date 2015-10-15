@@ -86,6 +86,10 @@ test('options', function (t) {
   t.equal(socketStore.client.address, 'word', 'sets socket address');
   socketStore.client.end();
 
+  var urlStore = new RedisStore({ url: 'redis://127.0.0.1:8888' });
+  t.equal(urlStore.client.address, '127.0.0.1:8888', 'sets url address');
+  urlStore.client.end();
+
   var hostNoPort = new RedisStore({ host: 'host' });
   t.equal(hostNoPort.client.address, 'host:6379', 'sets default port');
   hostNoPort.client.end();
@@ -94,7 +98,7 @@ test('options', function (t) {
 });
 
 test('interups', function (t) {
-  var store = P.promisifyAll(new RedisStore({ port: 8543 }));
+  var store = P.promisifyAll(new RedisStore({ port: 8543, connect_timeout: 500 }));
   return store.setAsync('123', { cookie: { maxAge: 2000 }, name: 'tj' })
     .catch(function (er) {
       t.ok(/broken/.test(er.message), 'failed connection');

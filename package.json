@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "debug": "^2.2.0",
-    "redis": "^2.0.1"
+    "redis": "^2.1.0"
   },
   "devDependencies": {
     "blue-tape": "^0.1.8",
