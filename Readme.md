@@ -28,9 +28,9 @@ A Redis client is required. An existing client can be passed directly using the 
 
 The following additional params may be included:
 
--	`ttl` Redis session TTL (expiration) in seconds
+-	`ttl` Redis session TTL (expiration) in seconds. Defaults to session.maxAge (if set), or one day.
 -	`disableTTL` Disables setting TTL, keys will stay in redis until evicted by other means (overides `ttl`\)
--	`db` Database index to use
+-	`db` Database index to use. Defaults to Redis's default (0).
 -	`pass` Password for Redis authentication
 -	`prefix` Key prefix defaulting to "sess:"
 -	`unref` Set `true` to unref the Redis client. **Warning**: this is [an experimental feature](https://github.com/mranney/node_redis#clientunref).
