@@ -24,7 +24,13 @@ app.use(session({
 Options
 -------
 
-A Redis client is required. An existing client can be passed directly using the `client` param or created for you using the `host`, `port`, or `socket` params. - `client` An existing client - `host` Redis server hostname - `port` Redis server portno - `socket` Redis server unix_socket - `url` Redis server url
+A Redis client is required. An existing client can be passed directly using the `client` param or created for you using the `host`, `port`, or `socket` params. 
+
+- `client` An existing client
+- `host` Redis server hostname 
+- `port` Redis server portno
+- `socket` Redis server unix_socket
+- `url` Redis server url
 
 The following additional params may be included:
 
