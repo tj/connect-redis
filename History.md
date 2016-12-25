@@ -1,3 +1,11 @@
+3.2.0 / 2016-12-24
+==================
+
+-	Implement .all(), introduce .ids() [anotherpit]
+-	Allow .destroy to take an array of sids [barisusakli]
+-	Update docs [kidlj]
+-	Document defaults for ttl and db [pasieronen]
+
 3.1.0 / 2016-06-16
 ==================
 
