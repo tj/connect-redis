@@ -24,10 +24,10 @@ app.use(session({
 Options
 -------
 
-A Redis client is required. An existing client can be passed directly using the `client` param or created for you using the `host`, `port`, or `socket` params. 
+A Redis client is required. An existing client can be passed directly using the `client` param or created for you using the `host`, `port`, or `socket` params.
 
 - `client` An existing client
-- `host` Redis server hostname 
+- `host` Redis server hostname
 - `port` Redis server portno
 - `socket` Redis server unix_socket
 - `url` Redis server url
@@ -45,6 +45,7 @@ The following additional params may be included:
 	-	If `true`, a default logging function (`console.error`) is provided.
 	-	If a function, it is called anytime an error occurs (useful for custom logging)
 	-	If `false`, no logging occurs.
+-	`scanCount` Value used for *count* parameter in [Redis `SCAN` command](https://redis.io/commands/scan#the-count-option) (used in `ids()` and `all()` methods, defaults to 100).
 
 Any options not included in this list will be passed to the redis `createClient()` method directly.
 
