@@ -1,35 +1,35 @@
-var P = require('bluebird');
+/* eslint-env es6 */
 var test = require('blue-tape');
 var redisSrv = require('./redis-server');
 var session = require('express-session');
 var RedisStore = require('../')(session);
 var redis = require('redis');
 var ioRedis = require('ioredis');
+var P = require('bluebird');
 
-// Takes a store through all the operations
-function lifecycleTest (store, t) {
+var lifecycleTest = P.coroutine(function *(store, t) {
   P.promisifyAll(store);
 
-  return store.setAsync('123', { cookie: { maxAge: 2000 }, name: 'tj' })
-    .then(function (ok) {
-      t.equal(ok, 'OK', '#set() ok');
-      return store.getAsync('123');
-    })
-    .then(function (data) {
-      t.deepEqual({ cookie: { maxAge: 2000 }, name: 'tj' }, data, '#get() ok');
-    })
-    .then(function () {
-      return store.setAsync('123', { cookie: { maxAge: undefined }, name: 'tj' });
-    })
-    .then(function (ok) {
-      t.equal(ok, 'OK', '#set() no maxAge ok');
-      return store.destroyAsync('123');
-    })
-    .then(function (ok) {
-      t.equal(ok, 1, '#destroy() ok');
-      store.client.end(false);
-    });
-}
+  var ok = yield store.setAsync('123', { cookie: { maxAge: 2000 }, name: 'tj' });
+  t.equal(ok, 'OK', '#set() ok');
+
+  var data = yield store.getAsync('123');
+  t.deepEqual({ cookie: { maxAge: 2000 }, name: 'tj' }, data, '#get() ok');
+
+  ok = yield store.setAsync('123', { cookie: { maxAge: undefined }, name: 'tj' });
+  t.equal(ok, 'OK', '#set() no maxAge ok');
+
+  data = yield store.allAsync();
+  t.deepEqual([{ id: '123', cookie: {}, name: 'tj' }], data, '#all() ok');
+
+  data = yield store.idsAsync();
+  t.deepEqual(['123'], data, '#ids() ok');
+
+  ok = yield store.destroyAsync('123');
+  t.equal(ok, 1, '#destroy() ok');
+
+  store.client.end(false);
+});
 
 test('setup', redisSrv.connect);
 
@@ -70,6 +70,7 @@ test('options', function (t) {
     ttl: 1000,
     disableTTL: true,
     db: 1,
+    scanCount: 32,
     unref: true,
     pass: 'secret'
   });
@@ -79,6 +80,7 @@ test('options', function (t) {
   t.ok(store.disableTTL, 'disableTTL set');
   t.ok(store.client, 'creates client');
   t.equal(store.client.address, 'localhost:'+redisSrv.port, 'sets host and port');
+  t.equal(store.scanCount, 32, 'sets scan count');
 
   var socketStore = new RedisStore({ socket: 'word' });
   t.equal(socketStore.client.address, 'word', 'sets socket address');
