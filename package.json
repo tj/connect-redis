@@ -17,12 +17,12 @@
     "redis": "^2.1.0"
   },
   "devDependencies": {
-    "blue-tape": "^0.1.8",
-    "bluebird": "^2.3.2",
-    "eslint": "^1.6.0",
+    "blue-tape": "^1.0.0",
+    "bluebird": "^3.5.0",
+    "eslint": "^3.19.0",
     "express-session": "^1.9.1",
-    "ioredis": "^1.7.5",
-    "istanbul": "^0.3.2",
+    "ioredis": "^2.5.0",
+    "istanbul": "^0.4.5",
     "tape": "^4.2.1"
   },
   "engines": {
