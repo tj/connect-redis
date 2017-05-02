@@ -32,7 +32,8 @@
     "url": "https://github.com/visionmedia/connect-redis/issues"
   },
   "scripts": {
-    "test": "DEBUG=* istanbul cover tape \"test/*-test.js\"",
+    "test": "istanbul cover tape \"test/*-test.js\"",
+    "test-debug": "DEBUG=* istanbul cover tape \"test/*-test.js\"",
     "bench": "node bench/redisbench.js",
     "lint": "eslint index.js test lib bench"
   }
