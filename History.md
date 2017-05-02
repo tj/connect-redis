@@ -1,223 +1,187 @@
-3.2.0 / 2016-12-24
-==================
+# 3.3.0 / 2017-05-02
 
--	Implement .all(), introduce .ids() [anotherpit]
--	Allow .destroy to take an array of sids [barisusakli]
--	Update docs [kidlj]
--	Document defaults for ttl and db [pasieronen]
+- Update tests.
+- Use Redis SCAN and MGET commands in ids() and all() [naholyr]
 
-3.1.0 / 2016-06-16
-==================
+# 3.2.0 / 2016-12-24
 
--	Add logErrors option [r3wt]
+- Implement .all(), introduce .ids() [anotherpit]
+- Allow .destroy to take an array of sids [barisusakli]
+- Update docs [kidlj]
+- Document defaults for ttl and db [pasieronen]
 
-3.0.2 / 2016-01-08
-==================
+# 3.1.0 / 2016-06-16
 
--	Do not pass prefix option to redis client [Josh-a-e]
+- Add logErrors option [r3wt]
 
-3.0.1 / 2015-10-15
-==================
+# 3.0.2 / 2016-01-08
 
--	Remove attempts option added in 3.0 to enable reconnect again [fintura]
+- Do not pass prefix option to redis client [Josh-a-e]
 
-3.0.0 / 2015-10-03
-==================
+# 3.0.1 / 2015-10-15
 
--	Update node_redis to 2.0, reinstate `url` option [fintura]
+- Remove attempts option added in 3.0 to enable reconnect again [fintura]
 
-2.5.1 / 2015-09-18
-==================
+# 3.0.0 / 2015-10-03
 
--	Prevent RedisStore constructor from being called as a normal function [venning]
+- Update node_redis to 2.0, reinstate `url` option [fintura]
 
-2.5.0 / 2015-08-28
-==================
+# 2.5.1 / 2015-09-18
 
--	Add support to override serializer
--	Add io-redis test
+- Prevent RedisStore constructor from being called as a normal function [venning]
 
-2.4.1 / 2015-07-24
-==================
+# 2.5.0 / 2015-08-28
 
--	Make touch a noop when disableTTY is set
+- Add support to override serializer
+- Add io-redis test
 
-2.4.0 / 2015-07-10
-==================
+# 2.4.1 / 2015-07-24
 
--	Add custom client support
--	Add debug statement for redis client errors [scriptoLLC]
--	Fix use Math.floor instead of |0 trick
--	Removed send_anyway magic (unused)
+- Make touch a noop when disableTTY is set
 
-2.3.0 / 2015-04-28
-==================
+# 2.4.0 / 2015-07-10
 
--	add; `touch` / support `resave: false` [stuartpb]
--	mod; package.json license [mikaturunen]
+- Add custom client support
+- Add debug statement for redis client errors [scriptoLLC]
+- Fix use Math.floor instead of |0 trick
+- Removed send_anyway magic (unused)
 
-2.2.0 / 2015-01-26
-==================
+# 2.3.0 / 2015-04-28
 
--	add; option to disable setting a TTL [despairblue]
--	mod; forward redis errors to session callbacks
--	mod; pass error object on disconnect
+- add; `touch` / support `resave: false` [stuartpb]
+- mod; package.json license [mikaturunen]
 
-2.1.0 / 2014-08-29
-==================
+# 2.2.0 / 2015-01-26
 
--	add; unref option
--	dep; redis@0.12.x
--	mod; deprecate warning for url param
+- add; option to disable setting a TTL [despairblue]
+- mod; forward redis errors to session callbacks
+- mod; pass error object on disconnect
 
-2.0.0 / 2014-03-06
-==================
+# 2.1.0 / 2014-08-29
 
--	update to express 4x
+- add; unref option
+- dep; redis@0.12.x
+- mod; deprecate warning for url param
 
-1.4.7 / 2014-03-06
-==================
+# 2.0.0 / 2014-03-06
 
--	allow redis url
+- update to express 4x
 
-1.4.6 / 2013-11-13
-==================
+# 1.4.7 / 2014-03-06
 
--	lazy load redis. fixes #56
--	update redis to 0.9.0
--	added Unit tests ready for travis
--	added repository field to package.json
+- allow redis url
 
-1.4.5 / 2012-11-02
-==================
+# 1.4.6 / 2013-11-13
 
--	revert to redis 0.7.x which actually works...
+- lazy load redis. fixes #56
+- update redis to 0.9.0
+- added Unit tests ready for travis
+- added repository field to package.json
 
-1.4.4 / 2012-09-12
-==================
+# 1.4.5 / 2012-11-02
 
--	update redis to 0.8.1 for "import bug fix?"
+- revert to redis 0.7.x which actually works...
 
-1.4.3 / 2012-09-11
-==================
+# 1.4.4 / 2012-09-12
 
--	add license. Closes #58
--	peg redis to 0.8.0
+- update redis to 0.8.1 for "import bug fix?"
 
-1.4.2 / 2012-09-05
-==================
+# 1.4.3 / 2012-09-11
 
--	add disconnect / connect events
+- add license. Closes #58
+- peg redis to 0.8.0
 
-1.4.1 / 2012-07-26
-==================
+# 1.4.2 / 2012-09-05
 
--	fix ignoring of .get() error
+- add disconnect / connect events
 
-1.4.0 / 2012-06-14
-==================
+# 1.4.1 / 2012-07-26
 
--	Added `ttl` option [Vyacheslav Bazhinov]
+- fix ignoring of .get() error
 
-1.3.0 / 2012-03-23
-==================
+# 1.4.0 / 2012-06-14
 
--	Added debug() instrumentation
+- Added `ttl` option [Vyacheslav Bazhinov]
 
-1.2.0 / 2011-11-17
-==================
+# 1.3.0 / 2012-03-23
 
--	Added an option 'client' to reuse an existing redis Client [Thomas Fritz]
+- Added debug() instrumentation
 
-1.1.0 / 2011-10-05
-==================
+# 1.2.0 / 2011-11-17
 
--	Added `prefix` option
--	Removed `clear()` and `length()` methods
+- Added an option 'client' to reuse an existing redis Client [Thomas Fritz]
 
-1.0.7 / 2011-08-04
-==================
+# 1.1.0 / 2011-10-05
 
--	Fixed: re-select db on connection (reconnection logic issue with node_redis)
+- Added `prefix` option
+- Removed `clear()` and `length()` methods
 
-1.0.6 / 2011-06-21
-==================
+# 1.0.7 / 2011-08-04
 
--	Added `socket` option so that we can connect to a sockets as well [mekwall]
+- Fixed: re-select db on connection (reconnection logic issue with node_redis)
 
-1.0.5 / 2011-06-02
-==================
+# 1.0.6 / 2011-06-21
 
--	Implemented `require("connect-redis")(connect)` for npm 1.x. Closes #23
+- Added `socket` option so that we can connect to a sockets as well [mekwall]
 
-1.0.4 / 2011-05-01
-==================
+# 1.0.5 / 2011-06-02
 
--	Changed; issue SELECT immediately since it is queued
+- Implemented `require("connect-redis")(connect)` for npm 1.x. Closes #23
 
-1.0.3 / 2011-04-17
-==================
+# 1.0.4 / 2011-05-01
 
--	Fixed auth support again [garrensmith]
+- Changed; issue SELECT immediately since it is queued
 
-1.0.2 / 2011-04-15
-==================
+# 1.0.3 / 2011-04-17
 
--	Fixed auth support [garrensmith]
+- Fixed auth support again [garrensmith]
 
-1.0.1 / 2011-04-14
-==================
+# 1.0.2 / 2011-04-15
 
--	Added authentication support [garrensmith]
+- Fixed auth support [garrensmith]
 
-1.0.0 / 2011-02-25
-==================
+# 1.0.1 / 2011-04-14
 
--	Added connect 1.0 support. This release will *not* work with older versions of connect.
+- Added authentication support [garrensmith]
 
-0.2.3 / 2011-02-01
-==================
+# 1.0.0 / 2011-02-25
 
--	Refactoring
+- Added connect 1.0 support. This release will _not_ work with older versions of connect.
 
-0.2.2 / 2011-01-02
-==================
+# 0.2.3 / 2011-02-01
 
--	Added `db` option [Clément]
+- Refactoring
 
-0.2.1 / 2010-12-20
-==================
+# 0.2.2 / 2011-01-02
 
--	Redis is now an npm dep
+- Added `db` option [Clément]
 
-0.2.0 / 2010-11-01
-==================
+# 0.2.1 / 2010-12-20
 
--	Use **SETEX** instead of **SET** / **EXPIRE** combo this should be reasonably faster.
+- Redis is now an npm dep
 
-0.1.3 / 2010-10-25
-==================
+# 0.2.0 / 2010-11-01
 
--	Updated redis
+- Use **SETEX** instead of **SET** / **EXPIRE** combo this should be reasonably faster.
 
-0.1.2 / 2010-09-22
-==================
+# 0.1.3 / 2010-10-25
 
--	Updated redis
+- Updated redis
 
-0.1.1 / 2010-09-20
-==================
+# 0.1.2 / 2010-09-22
 
--	Fixed expires, `maxAge` in seconds
--	Updated redis
+- Updated redis
 
-0.1.0 / 2010-09-17
-==================
+# 0.1.1 / 2010-09-20
 
--	Now using node_redis as the client, much faster
+- Fixed expires, `maxAge` in seconds
+- Updated redis
 
-0.0.2 / 2010-07-27
-==================
+# 0.1.0 / 2010-09-17
 
--	Moved redis to lib/redis
--	Added lib/connect-redis.js
+- Now using node_redis as the client, much faster
+
+# 0.0.2 / 2010-07-27
+
+- Moved redis to lib/redis
+- Added lib/connect-redis.js
