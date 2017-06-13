@@ -23,6 +23,7 @@
     "express-session": "^1.9.1",
     "ioredis": "^2.5.0",
     "istanbul": "^0.4.5",
+    "sinon": "^2.3.4",
     "tape": "^4.2.1"
   },
   "engines": {
