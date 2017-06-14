@@ -5,6 +5,7 @@ var session = require('express-session');
 var RedisStore = require('../')(session);
 var redis = require('redis');
 var ioRedis = require('ioredis');
+var sinon = require('sinon');
 var P = require('bluebird');
 
 var lifecycleTest = P.coroutine(function *(store, t) {
@@ -96,6 +97,78 @@ test('options', function (t) {
 
   return lifecycleTest(store, t);
 });
+
+test('ttl options', P.coroutine(function *(t) {
+  var store = new RedisStore({ port: redisSrv.port });
+
+  var sid = '123';
+  var data, ok;
+  sinon.stub(store.client, 'set').callsArgWith(1, null, 'OK');
+  P.promisifyAll(store);
+
+  // Basic (one day)
+  data = { cookie: {}, name: 'tj' };
+  ok = yield store.setAsync(sid, data);
+  t.equal(ok, 'OK', '#set() ok');
+  assertSetCalledWith(t, store, sid, data, ['EX', 86400]);
+
+  // maxAge in cookie
+  data = { cookie: { maxAge: 2000 }, name: 'tj' };
+  ok = yield store.setAsync(sid, data);
+  t.equal(ok, 'OK', '#set() ok');
+  assertSetCalledWith(t, store, sid, data, ['EX', 2]);
+
+  // Floors maxage
+  data = { cookie: { maxAge: 2500 }, name: 'tj' };
+  ok = yield store.setAsync(sid, data);
+  t.equal(ok, 'OK', '#set() ok');
+  assertSetCalledWith(t, store, sid, data, ['EX', 2]);
+
+  // store.disableTTL
+  store.disableTTL = true;
+  data = { cookie: {}, name: 'tj' };
+  ok = yield store.setAsync(sid, data);
+  t.equal(ok, 'OK', '#set() ok');
+  assertSetCalledWith(t, store, sid, data);
+  store.disableTTL = false;
+
+  // store.ttl: number
+  store.ttl = 50;
+  data = { cookie: {}, name: 'tj' };
+  ok = yield store.setAsync(sid, data);
+  t.equal(ok, 'OK', '#set() ok');
+  assertSetCalledWith(t, store, sid, data, ['EX', 50]);
+  store.ttl = null;
+
+  // store.ttl: function
+  store.ttl = sinon.stub().returns(200);
+  data = { cookie: {}, name: 'tj' };
+  ok = yield store.setAsync(sid, data);
+  t.equal(ok, 'OK', '#set() ok');
+  assertSetCalledWith(t, store, sid, data, ['EX', 200]);
+  t.ok(store.ttl.called, 'TTL fn was called');
+  t.deepEqual(store.ttl.firstCall.args, [store, data, sid]);
+  store.ttl = null;
+
+  // store.ttl: string (invalid)
+  store.ttl = '123';
+  data = { cookie: {}, name: 'tj' };
+  try {
+    ok = yield store.setAsync(sid, data);
+    t.ok(false, '#set() should throw with bad TTL');
+  } catch (e) {
+    t.ok(/must be a number or function/i.test(e.message), 'bad TTL type throws error');
+  }
+  store.ttl = null;
+
+  store.client.end(false);
+}));
+
+function assertSetCalledWith(t, store, sid, data, addl) {
+  var args = [store.prefix + sid, store.serializer.stringify(data)];
+  if (Array.isArray(addl)) args = args.concat(addl);
+  t.deepEqual(store.client.set.lastCall.args[0], args, '#.set() called with expected params');
+}
 
 test('interups', function (t) {
   var store = P.promisifyAll(new RedisStore({ port: redisSrv.port, connect_timeout: 500 }));

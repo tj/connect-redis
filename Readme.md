@@ -35,6 +35,7 @@ A Redis client is required. An existing client can be passed directly using the 
 The following additional params may be included:
 
 -	`ttl` Redis session TTL (expiration) in seconds. Defaults to session.maxAge (if set), or one day.
+	-	This may also be set to a function of the form `(store, sess, sessionID) => number`.
 -	`disableTTL` Disables setting TTL, keys will stay in redis until evicted by other means (overides `ttl`\)
 -	`db` Database index to use. Defaults to Redis's default (0).
 -	`pass` Password for Redis authentication
