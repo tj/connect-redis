@@ -151,7 +151,7 @@ test('ttl options', P.coroutine(function *(t) {
   store.ttl = null;
 
   // store.ttl: string (invalid)
-  store.ttl = '123';
+  store.ttl = {};
   data = { cookie: {}, name: 'tj' };
   try {
     ok = yield store.setAsync(sid, data);
