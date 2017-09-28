@@ -1,3 +1,8 @@
+# 3.3.1 / 2017-09-28
+
+- Updated Dependency Version [MeesterHok]
+- Add support for store.ttl fn. [STRML]
+
 # 3.3.0 / 2017-05-02
 
 - Update tests.
