@@ -17,7 +17,8 @@ var RedisStore = require('connect-redis')(session);
 
 app.use(session({
     store: new RedisStore(options),
-    secret: 'keyboard cat'
+    secret: 'keyboard cat',
+    resave: false
 }));
 ```
 
