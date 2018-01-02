@@ -1,3 +1,8 @@
+# 3.3.3 / 2018-01-02
+
+- Fix error when no keys [ranjan14196]
+- Ensure resave value is defined [kevinsimper]
+
 # 3.3.2 / 2017-09-28
 
 - Allow strings for store.ttl [tswaters]
