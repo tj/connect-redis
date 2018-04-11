@@ -20,7 +20,7 @@
     "blue-tape": "^1.0.0",
     "bluebird": "^3.5.0",
     "eslint": "^3.19.0",
-    "express-session": "^1.9.1",
+    "express-session": "^1.15.6",
     "ioredis": "^3.2.2",
     "istanbul": "^0.4.5",
     "sinon": "^2.3.4",
