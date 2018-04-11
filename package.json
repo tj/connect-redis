@@ -18,13 +18,13 @@
   },
   "devDependencies": {
     "blue-tape": "^1.0.0",
-    "bluebird": "^3.5.0",
-    "eslint": "^3.19.0",
+    "bluebird": "^3.5.1",
+    "eslint": "^4.19.1",
     "express-session": "^1.9.1",
     "ioredis": "^2.5.0",
     "istanbul": "^0.4.5",
-    "sinon": "^2.3.4",
-    "tape": "^4.2.1"
+    "sinon": "^4.5.0",
+    "tape": "^4.9.0"
   },
   "engines": {
     "node": "*"
