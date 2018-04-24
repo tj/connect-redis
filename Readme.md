@@ -40,6 +40,7 @@ The following additional params may be included:
 -	`disableTTL` Disables setting TTL, keys will stay in redis until evicted by other means (overides `ttl`\)
 -	`db` Database index to use. Defaults to Redis's default (0).
 -	`pass` Password for Redis authentication
+-	`tls` An object containing options to set up a [TLS connection](https://nodejs.org/api/tls.html#tls_tls_connect_port_host_options_callback).
 -	`prefix` Key prefix defaulting to "sess:"
 -	`unref` Set `true` to unref the Redis client. **Warning**: this is [an experimental feature](https://github.com/mranney/node_redis#clientunref).
 -	`serializer` An object containing `stringify` and `parse` methods compatible with Javascript's `JSON` to override the serializer used
