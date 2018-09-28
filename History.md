@@ -1,3 +1,8 @@
+# 3.4.0 / 2018-09-28
+
+- Update dependencies [knoxcard]
+- Corrected session maxAge const path [rudfoss]
+
 # 3.3.3 / 2018-01-02
 
 - Fix error when no keys [ranjan14196]
