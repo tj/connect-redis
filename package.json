@@ -13,15 +13,15 @@
     "url": "git@github.com:visionmedia/connect-redis.git"
   },
   "dependencies": {
-    "debug": "^3.1.0",
-    "redis": "^2.1.0"
+    "debug": "^4.0.1",
+    "redis": "^2.8.0"
   },
   "devDependencies": {
     "blue-tape": "^1.0.0",
-    "bluebird": "^3.5.0",
+    "bluebird": "^3.5.2",
     "eslint": "^3.19.0",
-    "express-session": "^1.9.1",
-    "ioredis": "^2.5.0",
+    "express-session": "^1.15.6",
+    "ioredis": "^4.0.0",
     "istanbul": "^0.4.5",
     "sinon": "^2.3.4",
     "tape": "^4.2.1"
