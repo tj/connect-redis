@@ -58,12 +58,34 @@ Clients other than `node_redis` will work if they support the same interface. Ju
 
 -	[ioredis](https://github.com/luin/ioredis) - adds support for Redis Sentinel and Cluster
 
+#### ioredis cluster with connect-redis
+
+```js
+var express = require('express');
+var app = express();
+var session = require('express-session');
+var RedisStore = require('connect-redis')(session);
+var Redis = require('ioredis');
+var redisClient = new Redis.Cluster([
+    {port: 6379, host: 'your-cluster-ip-1'},
+    {port: 6379, host: 'your-cluster-ip-2'},
+    {port: 6379, host: 'your-cluster-ip-3'},
+    {port: 6379, host: 'your-cluster-ip-4'}
+]);
+app.use(session({
+    secret: 'redis-session-test',
+    store: new RedisStore({client: redisClient}),
+    resave: false,
+    saveUninitialized: true
+}));
+```
+
 FAQ
 ---
 
 #### How do I handle lost connections to Redis?
 
-By default, the `node_redis` client will [auto-reconnect](https://github.com/mranney/node_redis#overloading) when a connection is lost. But requests may come in during that time. In express, one way this scenario can be handled is including a "session check" after setting up a session (checking for the existence of `req.session`\):
+By default, the `node_redis` client will [auto-reconnect](https://github.com/mranney/node_redis#overloading) when a connection is lost. In Express, simply check for the existence of `req.session` in your middleware as shown below.
 
 ```js
 app.use(session( /* setup session here */ ))
