@@ -60,7 +60,8 @@ Clients other than `node_redis` will work if they support the same interface. Ju
 
 #### ioredis cluster with connect-redis
 
-```var express = require('express');
+```js
+var express = require('express');
 var app = express();
 var session = require('express-session');
 var RedisStore = require('connect-redis')(session);
