@@ -26,6 +26,9 @@ var lifecycleTest = P.coroutine(function *(store, t) {
   data = yield store.idsAsync();
   t.deepEqual(['123'], data, '#ids() ok');
 
+  data = yield store.lengthAsync();
+  t.deepEqual(1, data, '#length() ok');
+
   ok = yield store.destroyAsync('123');
   t.equal(ok, 1, '#destroy() ok');
 
