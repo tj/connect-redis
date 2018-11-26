@@ -58,6 +58,10 @@ Clients other than `node_redis` will work if they support the same interface. Ju
 
 -	[ioredis](https://github.com/luin/ioredis) - adds support for Redis Sentinel and Cluster
 
+#### Testing / Development
+
+You can use [redis-mock](https://github.com/yeahoffline/redis-mock) as the client instead of connecting to an actual redis server for automated testing and development purposes.
+
 FAQ
 ---
 
