@@ -1,3 +1,8 @@
+# 3.4.1 / 2018-09-28
+
+- Update debug dependency
+- Do not require node_redis dependency
+
 # 3.4.0 / 2018-09-28
 
 - Update dependencies [knoxcard]
