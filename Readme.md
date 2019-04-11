@@ -13,10 +13,11 @@ Pass the `express-session` store into `connect-redis` to create a `RedisStore` c
 
 ```js
 var session = require('express-session');
-var RedisStore = require('connect-redis')(session);
+var RedisStore = require('connect-redis')(session),
+   redis_store = new RedisStore(options)
 
 app.use(session({
-    store: new RedisStore(options),
+    store: redis_store,
     secret: 'keyboard cat',
     resave: false
 }));
