@@ -89,7 +89,7 @@ If you want to retry, here is [another option](https://github.com/expressjs/sess
 4) Optional: Socket.io disconnect user
 
 <b>Using Socket.io?</b><br/>
-Disconnect the user on the server side.<br/> The client side (by default) will automatically reconnect the socket, issuing the client a new Express session.
+Disconnect the user on the server side.<br/> The client side (by default) will automatically reconnect the socket, issuing the client a new Express/Redis session.
 
 https://medium.com/@nohkachi/the-importance-of-documentation-or-how-i-discovered-how-to-share-express-sessions-with-socket-io-d8d2b6bd42e5
 
