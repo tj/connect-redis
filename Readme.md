@@ -81,6 +81,23 @@ app.use(function (req, res, next) {
 
 If you want to retry, here is [another option](https://github.com/expressjs/session/issues/99#issuecomment-63853989).
 
+#### How do I handle logging out users?
+
+Destroy the session inside of Redis first, then destroy your Express/App session and finally you can even clear the session cookie.
+Additionally, if you are using socket.io, you would disconnect the user and on the client side socket.io will automatically reconnect the client to a new session.
+
+RedisStore.destroy(req.session.id, () => {
+	req.session.destroy(err => {
+		// process.env.session_name = your session cookie name
+		res.clearCookie(process.env.session_name, {
+			path: '/'
+		})
+		res.json({
+			success: true
+		})
+		// Using socket.io? socket.disconnect() the user
+	})
+})
 License
 =======
 
