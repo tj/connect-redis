@@ -96,8 +96,7 @@ https://medium.com/@nohkachi/the-importance-of-documentation-or-how-i-discovered
 ```
 RedisStore.destroy(req.session.id, () => {
 	req.session.destroy(err => {
-		// process.env.session_name = Express session cookie name
-		res.clearCookie(process.env.session_name, {
+		res.clearCookie('Your Express Session Cookie Name', {
 			path: '/'
 		})
 		res.json({
