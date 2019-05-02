@@ -88,12 +88,15 @@ If you want to retry, here is [another option](https://github.com/expressjs/sess
 3) Clear session cookie
 4) Optional: Socket.io disconnect user
 
-If you are using socket.io, disconnect the user on the server side.  The client side socket.io (by default) will automatically reconnect the client to a new session.
+<b>Using Socket.io?</b>
+Disconnect the user on the server side.<br/> The client side (by default) will automatically reconnect the socket, issuing the client a new Express session.
+
+https://medium.com/@nohkachi/the-importance-of-documentation-or-how-i-discovered-how-to-share-express-sessions-with-socket-io-d8d2b6bd42e5
 
 ```
 RedisStore.destroy(req.session.id, () => {
 	req.session.destroy(err => {
-		// process.env.session_name = your session cookie name
+		// process.env.session_name = Express session cookie name
 		res.clearCookie(process.env.session_name, {
 			path: '/'
 		})
