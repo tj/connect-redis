@@ -67,7 +67,7 @@ FAQ
 
 #### How do I handle lost connections to Redis?
 
-By default, the `node_redis` client will [auto-reconnect](https://github.com/mranney/node_redis#overloading) when a connection is lost. But requests may come in during that time. In express, one way this scenario can be handled is including a "session check" after setting up a session (checking for the existence of `req.session`\):
+By default, the `node_redis` client will [auto-reconnect](https://github.com/mranney/node_redis#overloading) when a connection is lost. But requests may come in during that time. In Express, this scenario can be handled by including a "session check".
 
 ```js
 app.use(session( /* setup session here */ ))
