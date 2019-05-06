@@ -169,7 +169,7 @@ test('ttl options', P.coroutine(function *(t) {
 
 function assertSetCalledWith(t, store, sid, data, addl) {
   var args = [store.prefix + sid, store.serializer.stringify(data)];
-  if (Array.isArray(addl)) args = args.push(addl);
+  if (Array.isArray(addl)) args.push(addl);
   t.deepEqual(store.client.set.lastCall.args[0], args, '#.set() called with expected params');
 }
 
