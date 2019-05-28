@@ -10,7 +10,7 @@ exports.connect = function () {
   ], { stdio: 'inherit' });
 
   redisSrv.on('error', function (error) {
-    console.log('Error caught spawning the server: ', error);
+    console.error('Error caught spawning the server: ', error);
   });
 
   return P.delay(1500);
