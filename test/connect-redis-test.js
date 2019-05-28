@@ -197,4 +197,25 @@ test('serializer', function (t) {
   return lifecycleTest(store, t);
 });
 
+test('logErrors', function (t) {
+  // Default to true, thus using console.error
+  var store = new RedisStore();
+  t.equal(typeof store.logErrors, 'function');
+
+  // Disabled logging
+  store = new RedisStore({
+    logErrors: false,
+  });
+  t.equal(store.logErrors, false);
+
+  // Using custom function
+  var logErrors = function(error) {
+    console.warn('Error caught: ', error);
+  };
+  store = new RedisStore({
+    logErrors,
+  });
+  t.equal(store.logErrors, logErrors);
+});
+
 test('teardown', redisSrv.disconnect);
