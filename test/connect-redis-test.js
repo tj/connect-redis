@@ -63,7 +63,19 @@ test('existing client', function (t) {
 test('io redis client', function (t) {
   var client = ioRedis.createClient(redisSrv.port, 'localhost');
   var store = new RedisStore({ client: client });
-  return lifecycleTest(store, t);
+  return lifecycleTest(store, t).then(function () {
+    t.test('#destroy()', function (p) {
+      var spy = sinon.spy(ioRedis.prototype, 'sendCommand');
+      var sidName = 'randomname';
+      store.destroy(sidName);
+      p.deepEqual(
+        spy.firstCall.args[0].args,
+        [store.prefix + sidName]
+      );
+      spy.restore();
+      p.end();
+    });
+  });
 });
 
 test('options', function (t) {
