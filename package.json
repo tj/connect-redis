@@ -21,7 +21,7 @@
     "bluebird": "^3.5.5",
     "eslint": "^3.19.0",
     "express-session": "^1.16.2",
-    "ioredis": "^4.10.0",
+    "ioredis": "^4.14.0",
     "istanbul": "^0.4.5",
     "sinon": "^2.3.4",
     "tape": "^4.2.1"
