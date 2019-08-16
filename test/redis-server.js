@@ -1,22 +1,21 @@
-var P = require('bluebird');
 var spawn = require('child_process').spawn;
 var redisSrv;
-var port = exports.port = 18543;
+var port = (exports.port = 18543);
 
-exports.connect = function () {
-  redisSrv = spawn('redis-server', [
-    '--port', port,
-    '--loglevel', 'notice',
-  ], { stdio: 'inherit' });
+exports.connect = () =>
+  new Promise((resolve, reject) => {
+    redisSrv = spawn('redis-server', ['--port', port, '--loglevel', 'notice'], {
+      stdio: 'inherit',
+    });
 
-  redisSrv.on('error', function (error) {
-    console.error('Error caught spawning the server: ', error);
+    redisSrv.on('error', function(err) {
+      reject(new Error('Error caught spawning the server:' + err.message));
+    });
+
+    setTimeout(resolve, 1500);
   });
 
-  return P.delay(1500);
-};
-
-exports.disconnect = function () {
+exports.disconnect = function() {
   redisSrv.kill('SIGKILL');
-  return P.resolve();
+  return Promise.resolve();
 };

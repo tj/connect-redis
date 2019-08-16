@@ -1,43 +1,15 @@
-/* eslint-env es6 */
 var test = require('blue-tape');
 var redisSrv = require('./redis-server');
 var session = require('express-session');
 var RedisStore = require('../')(session);
 var redis = require('redis');
 var ioRedis = require('ioredis');
+var redisMock = require('redis-mock');
 var sinon = require('sinon');
-var P = require('bluebird');
-
-var lifecycleTest = P.coroutine(function *(store, t) {
-  P.promisifyAll(store);
-
-  var ok = yield store.setAsync('123', { cookie: { maxAge: 2000 }, name: 'tj' });
-  t.equal(ok, 'OK', '#set() ok');
-
-  var data = yield store.getAsync('123');
-  t.deepEqual({ cookie: { maxAge: 2000 }, name: 'tj' }, data, '#get() ok');
-
-  ok = yield store.setAsync('123', { cookie: { maxAge: undefined }, name: 'tj' });
-  t.equal(ok, 'OK', '#set() no maxAge ok');
-
-  data = yield store.allAsync();
-  t.deepEqual([{ id: '123', cookie: {}, name: 'tj' }], data, '#all() ok');
-
-  data = yield store.idsAsync();
-  t.deepEqual(['123'], data, '#ids() ok');
-
-  data = yield store.lengthAsync();
-  t.deepEqual(1, data, '#length() ok');
-
-  ok = yield store.destroyAsync('123');
-  t.equal(ok, 1, '#destroy() ok');
-
-  store.client.end(false);
-});
 
 test('setup', redisSrv.connect);
 
-test('defaults', function (t) {
+test('defaults', function(t) {
   var store = new RedisStore();
   t.equal(store.prefix, 'sess:', 'defaults to sess:');
   t.notOk(store.ttl, 'ttl not set');
@@ -48,37 +20,13 @@ test('defaults', function (t) {
   t.end();
 });
 
-test('basic', function (t) {
+test('minimal', t => {
   t.throws(RedisStore, TypeError, 'constructor not callable as function');
   var store = new RedisStore({ port: redisSrv.port });
   return lifecycleTest(store, t);
 });
 
-test('existing client', function (t) {
-  var client = redis.createClient(redisSrv.port, 'localhost');
-  var store = new RedisStore({ client: client });
-  return lifecycleTest(store, t);
-});
-
-test('io redis client', function (t) {
-  var client = ioRedis.createClient(redisSrv.port, 'localhost');
-  var store = new RedisStore({ client: client });
-  return lifecycleTest(store, t).then(function () {
-    t.test('#destroy()', function (p) {
-      var spy = sinon.spy(ioRedis.prototype, 'sendCommand');
-      var sidName = 'randomname';
-      store.destroy(sidName);
-      p.deepEqual(
-        spy.firstCall.args[0].args,
-        [store.prefix + sidName]
-      );
-      spy.restore();
-      p.end();
-    });
-  });
-});
-
-test('options', function (t) {
+test('options', function(t) {
   var store = new RedisStore({
     host: 'localhost',
     port: redisSrv.port,
@@ -88,14 +36,18 @@ test('options', function (t) {
     db: 1,
     scanCount: 32,
     unref: true,
-    pass: 'secret'
+    pass: 'secret',
   });
 
   t.equal(store.prefix, 'tobi', 'uses provided prefix');
   t.equal(store.ttl, 1000, 'ttl set');
   t.ok(store.disableTTL, 'disableTTL set');
   t.ok(store.client, 'creates client');
-  t.equal(store.client.address, 'localhost:'+redisSrv.port, 'sets host and port');
+  t.equal(
+    store.client.address,
+    'localhost:' + redisSrv.port,
+    'sets host and port'
+  );
   t.equal(store.scanCount, 32, 'sets scan count');
 
   var socketStore = new RedisStore({ socket: 'word' });
@@ -113,36 +65,36 @@ test('options', function (t) {
   return lifecycleTest(store, t);
 });
 
-test('ttl options', P.coroutine(function *(t) {
+test('ttl options', async t => {
   var store = new RedisStore({ port: redisSrv.port });
+  var setFn = p(store, 'set');
 
   var sid = '123';
   var data, ok;
   sinon.stub(store.client, 'set').callsArgWith(1, null, 'OK');
-  P.promisifyAll(store);
 
   // Basic (one day)
   data = { cookie: {}, name: 'tj' };
-  ok = yield store.setAsync(sid, data);
+  ok = await setFn(sid, data);
   t.equal(ok, 'OK', '#set() ok');
   assertSetCalledWith(t, store, sid, data, ['EX', 86400]);
 
   // maxAge in cookie
   data = { cookie: { maxAge: 2000 }, name: 'tj' };
-  ok = yield store.setAsync(sid, data);
+  ok = await setFn(sid, data);
   t.equal(ok, 'OK', '#set() ok');
   assertSetCalledWith(t, store, sid, data, ['EX', 2]);
 
   // Floors maxage
   data = { cookie: { maxAge: 2500 }, name: 'tj' };
-  ok = yield store.setAsync(sid, data);
+  ok = await setFn(sid, data);
   t.equal(ok, 'OK', '#set() ok');
   assertSetCalledWith(t, store, sid, data, ['EX', 2]);
 
   // store.disableTTL
   store.disableTTL = true;
   data = { cookie: {}, name: 'tj' };
-  ok = yield store.setAsync(sid, data);
+  ok = await setFn(sid, data);
   t.equal(ok, 'OK', '#set() ok');
   assertSetCalledWith(t, store, sid, data);
   store.disableTTL = false;
@@ -150,7 +102,7 @@ test('ttl options', P.coroutine(function *(t) {
   // store.ttl: number
   store.ttl = 50;
   data = { cookie: {}, name: 'tj' };
-  ok = yield store.setAsync(sid, data);
+  ok = await setFn(sid, data);
   t.equal(ok, 'OK', '#set() ok');
   assertSetCalledWith(t, store, sid, data, ['EX', 50]);
   store.ttl = null;
@@ -158,7 +110,7 @@ test('ttl options', P.coroutine(function *(t) {
   // store.ttl: function
   store.ttl = sinon.stub().returns(200);
   data = { cookie: {}, name: 'tj' };
-  ok = yield store.setAsync(sid, data);
+  ok = await setFn(sid, data);
   t.equal(ok, 'OK', '#set() ok');
   assertSetCalledWith(t, store, sid, data, ['EX', 200]);
   t.ok(store.ttl.called, 'TTL fn was called');
@@ -169,38 +121,60 @@ test('ttl options', P.coroutine(function *(t) {
   store.ttl = {};
   data = { cookie: {}, name: 'tj' };
   try {
-    ok = yield store.setAsync(sid, data);
+    ok = await setFn(sid, data);
     t.ok(false, '#set() should throw with bad TTL');
   } catch (e) {
-    t.ok(/must be a number or function/i.test(e.message), 'bad TTL type throws error');
+    t.ok(
+      /must be a number or function/i.test(e.message),
+      'bad TTL type throws error'
+    );
   }
   store.ttl = null;
-
   store.client.end(false);
-}));
-
-function assertSetCalledWith(t, store, sid, data, addl) {
-  var args = [store.prefix + sid, store.serializer.stringify(data)];
-  if (Array.isArray(addl)) args = args.concat(addl);
-  t.deepEqual(store.client.set.lastCall.args[0], args, '#.set() called with expected params');
-}
-
-test('interups', function (t) {
-  var store = P.promisifyAll(new RedisStore({ port: redisSrv.port, connect_timeout: 500 }));
-  return store.setAsync('123', { cookie: { maxAge: 2000 }, name: 'tj' })
-    .catch(function (er) {
-      t.ok(/broken/.test(er.message), 'failed connection');
-      store.client.end(false);
-    });
 });
 
-test('serializer', function (t) {
+test('node_redis client', t => {
+  var client = redis.createClient(redisSrv.port, 'localhost');
+  var store = new RedisStore({ client: client });
+  return lifecycleTest(store, t);
+});
+
+test('ioredis client', async t => {
+  var client = ioRedis.createClient(redisSrv.port, 'localhost');
+  var store = new RedisStore({ client: client });
+  await lifecycleTest(store, t);
+  client.disconnect();
+});
+
+test('redis-mock client', async t => {
+  var client = redisMock.createClient();
+  var store = new RedisStore({ client: client });
+  await lifecycleTest(store, t);
+});
+
+test('interups', async t => {
+  var store = new RedisStore({ port: redisSrv.port, connect_timeout: 500 });
+  store.client.end(false);
+  try {
+    await p(store, 'set')('123', {
+      cookie: { maxAge: 2000 },
+      name: 'tj',
+    });
+    t.fail();
+  } catch (err) {
+    t.pass();
+  }
+});
+
+test('serializer', function(t) {
   var serializer = {
-    stringify: function() { return 'XXX'+JSON.stringify.apply(JSON, arguments); },
+    stringify: function() {
+      return 'XXX' + JSON.stringify.apply(JSON, arguments);
+    },
     parse: function(x) {
       t.ok(x.match(/^XXX/));
       return JSON.parse(x.substring(3));
-    }
+    },
   };
   t.equal(serializer.stringify('UnitTest'), 'XXX"UnitTest"');
   t.equal(serializer.parse(serializer.stringify('UnitTest')), 'UnitTest');
@@ -209,25 +183,90 @@ test('serializer', function (t) {
   return lifecycleTest(store, t);
 });
 
-test('logErrors', function (t) {
+test('logErrors', function(t) {
   // Default to true, thus using console.error
   var store = new RedisStore();
   t.equal(typeof store.logErrors, 'function');
+  store.client.end(false);
 
   // Disabled logging
-  store = new RedisStore({
-    logErrors: false,
-  });
+  store = new RedisStore({ logErrors: false });
   t.equal(store.logErrors, false);
+  store.client.end(false);
 
   // Using custom function
   var logErrors = function(error) {
     console.warn('Error caught: ', error);
   };
-  store = new RedisStore({
-    logErrors,
-  });
+  store = new RedisStore({ logErrors });
   t.equal(store.logErrors, logErrors);
+  store.client.end(false);
+  t.end();
 });
 
 test('teardown', redisSrv.disconnect);
+
+async function lifecycleTest(store, t) {
+  let table = [
+    {
+      method: 'set',
+      in: ['123', { cookie: { maxAge: 2000 }, name: 'tj' }],
+      out: 'OK',
+    },
+    {
+      method: 'get',
+      in: ['123'],
+      out: { cookie: { maxAge: 2000 }, name: 'tj' },
+    },
+    {
+      method: 'set',
+      in: ['123', { cookie: { maxAge: undefined } }],
+      out: 'OK',
+    },
+    {
+      method: 'all',
+      in: [],
+      out: [{ id: '123', cookie: {} }],
+    },
+    {
+      method: 'ids',
+      in: [],
+      out: ['123'],
+    },
+    {
+      method: 'length',
+      in: [],
+      out: 1,
+    },
+    {
+      method: 'destroy',
+      in: ['123'],
+      out: 1,
+    },
+  ];
+
+  for (let tt of table) {
+    let out = await p(store, tt.method)(...tt.in);
+    t.deepEqual(out, tt.out);
+  }
+
+  store.client.end(false);
+}
+
+function assertSetCalledWith(t, store, sid, data, addl) {
+  var args = [store.prefix + sid, store.serializer.stringify(data)];
+  if (Array.isArray(addl)) args = args.concat(addl);
+  t.deepEqual(
+    store.client.set.lastCall.args[0],
+    args,
+    '#.set() called with expected params'
+  );
+}
+
+var p = (ctx, method) => (...args) =>
+  new Promise((resolve, reject) => {
+    ctx[method](...args, (err, d) => {
+      if (err) reject(err);
+      resolve(d);
+    });
+  });

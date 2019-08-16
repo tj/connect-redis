@@ -20,22 +20,25 @@
     "blue-tape": "^1.0.0",
     "bluebird": "^3.5.5",
     "eslint": "^3.19.0",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-plugin-prettier": "^3.1.0",
     "express-session": "^1.16.2",
     "ioredis": "^4.10.0",
-    "istanbul": "^0.4.5",
+    "nyc": "^14.1.1",
+    "prettier": "^1.18.2",
+    "redis-mock": "^0.46.0",
     "sinon": "^2.3.4",
     "tape": "^4.2.1"
   },
   "engines": {
-    "node": "*"
+    "node": ">8"
   },
   "bugs": {
     "url": "https://github.com/visionmedia/connect-redis/issues"
   },
   "scripts": {
-    "test": "istanbul cover tape \"test/*-test.js\"",
-    "test-debug": "DEBUG=* istanbul cover tape \"test/*-test.js\"",
-    "bench": "node bench/redisbench.js",
-    "lint": "eslint index.js test lib bench"
+    "test": "nyc tape \"test/*-test.js\"",
+    "lint": "eslint index.js test lib",
+    "fmt": "prettier --write \"**/*.{js,md,json,*rc}\""
   }
 }
