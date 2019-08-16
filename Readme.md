@@ -43,7 +43,7 @@ The following additional params may be included:
 -	`prefix` Key prefix defaulting to "sess:"
 -	`unref` Set `true` to unref the Redis client. **Warning**: this is [an experimental feature](https://github.com/mranney/node_redis#clientunref).
 -	`serializer` An object containing `stringify` and `parse` methods compatible with Javascript's `JSON` to override the serializer used
--	`logErrors` Whether or not to log client errors. (default: `false`\)
+-	`logErrors` Whether or not to log client errors. (default: `true`\)
 	-	If `true`, a default logging function (`console.error`) is provided.
 	-	If a function, it is called anytime an error occurs (useful for custom logging)
 	-	If `false`, no logging occurs.

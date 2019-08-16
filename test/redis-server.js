@@ -8,6 +8,11 @@ exports.connect = function () {
     '--port', port,
     '--loglevel', 'notice',
   ], { stdio: 'inherit' });
+
+  redisSrv.on('error', function (error) {
+    console.error('Error caught spawning the server: ', error);
+  });
+
   return P.delay(1500);
 };
 
