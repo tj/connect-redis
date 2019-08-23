@@ -7,78 +7,46 @@
 Yarn:
 
 ```sh
-yarn add connect-redis express-session
+yarn add redis connect-redis express-session
 ```
 
 npm:
 
 ```sh
-npm install connect-redis express-session
+npm install redis connect-redis express-session
 ```
 
 ## API
 
 ```js
-var session = require('express-session');
-var RedisStore = require('connect-redis')(session);
+const redis = require('redis')
+const session = require('express-session')
+
+let RedisStore = require('connect-redis')(session)
+let client = redis.createClient()
 
 app.use(
   session({
-    store: new RedisStore(options),
+    store: new RedisStore({ client }),
     secret: 'keyboard cat',
     resave: false,
   })
-);
+)
 ```
 
 ### RedisStore(options)
 
-`RedisStore` will generate a new Redis client (using `node-redis`) given `host`, `port` or `socket` options. You may also provide an existing client using the `client` option. Existing clients must be compatible with the `node-redis` API (e.g. `ioredis` is a popular alternative).
+The `RedisStore` requires an existing Redis client. Any clients compatible with the `node_redis` API will work. See `client` option for more details.
 
 #### Options
 
-##### host
-
-Redis host (default: `localhost`). Ignored when `client` option used.
-
-##### port
-
-Redis port (default: `6379`). Ignored when `client` option used.
-
-##### db
-
-Redis database (default: `0`). Ignored when `client` option used.
-
-##### pass
-
-Password for Redis authentication. Ignored when `client` option used.
-
-##### socket
-
-Redis socket. Ignored when `client` option used.
-
-##### unref
-
-Set `true` to unref the Redis client, allowing Node to shutdown the process if Redis holding open the event loop.. Ignored when `client` option used. **Warning**: this is [an experimental feature](https://github.com/mranney/node_redis#clientunref).
-
-##### logErrors
-
-Log Redis client errors to the console (default: `true`). Ignored when `client` option used.
-
-If you need more explicit control you can provide a custom function instead:
-
-```js
-var logFn = err => {
-  // Log client errors programmatically.
-};
-```
-
 ##### client
 
-An instance of a `node_redis` or `node_redis` compatible client
+An instance of a `node_redis` or a `node_redis` compatible client.
 
-Known compatible alternatives to `node_redis`:
+Known compatible and tested clients:
 
+- [redis](https://github.com/NodeRedis/node_redis)
 - [ioredis](https://github.com/luin/ioredis)
 - [redis-mock](https://github.com/yeahoffline/redis-mock) for testing.
 
@@ -88,21 +56,19 @@ Key prefix in Redis (default: `sess:`)
 
 ##### ttl
 
-Redis session TTL in seconds. (default: `session.cookie.maxAge` if set or one day)
+If the session cookie has a `expires` date, `connect-redis` will use it as the TTL.
 
-If you need more explicit control you can provide a custom function instead:
+Otherwise, it will expire the session using the `ttl` option (default: `86400` seconds or one day).
 
-```js
-var ttlFn = (store, sess, sessionID) => {
-  // Calculate TTL programmatically.
-  return ttl;
-};
-```
+**Note**: The TTL is reset every time a user interacts with the server. You can disable this behavior in _some_ instances by using `disableTouch`.
 
-##### disableTTL
+##### disableTouch
 
-Disables setting a TTL. This means keys will never expire and will stay in Redis until evicted by
-other means (overrides `ttl` option).
+Disables re-saving and resetting the TTL when using `touch` (default: `false`)
+
+The `express-session` package uses `touch` to signal to the store that the user has interacted with the session but hasn't changed anything in its data. Typically, this helps keep the users session alive if session changes are infrequent but you may want to disable it to cut down the extra calls or to prevent users from keeping sessions open too long.
+
+Ref: https://github.com/expressjs/session#storetouchsid-session-callback
 
 ##### serializer
 
@@ -110,8 +76,8 @@ The encoder/decoder to use when storing and retrieving session data from Redis (
 
 ```ts
 interface Serializer {
-  parse(string): object;
-  stringify(object): string;
+  parse(string): object
+  stringify(object): string
 }
 ```
 
@@ -121,18 +87,24 @@ Value used for _count_ parameter in [Redis `SCAN` command](https://redis.io/comm
 
 ## FAQ
 
+#### How to a log Redis errors?
+
+```js
+client.on('error', console.error)
+```
+
 #### How do I handle lost connections to Redis?
 
 By default, the `node_redis` client will [auto-reconnect](https://github.com/mranney/node_redis#overloading) on lost connections. But requests may come in during that time. In Express, one way you can handle this scenario is including a "session check":
 
 ```js
-app.use(session(/* setup session here */));
+app.use(session(/* setup session here */))
 app.use(function(req, res, next) {
   if (!req.session) {
-    return next(new Error('oh no')); // handle error
+    return next(new Error('oh no')) // handle error
   }
-  next(); // otherwise continue
-});
+  next() // otherwise continue
+})
 ```
 
 If you want to retry, here is [another option](https://github.com/expressjs/session/issues/99#issuecomment-63853989).
