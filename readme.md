@@ -1,6 +1,6 @@
 [![npm](https://img.shields.io/npm/v/connect-redis.svg)](https://npmjs.com/package/connect-redis) [![Dependencies](https://img.shields.io/david/tj/connect-redis.svg)](https://david-dm.org/tj/connect-redis) ![Downloads](https://img.shields.io/npm/dm/connect-redis.svg) [![code-style](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://gitter.im/jlongster/prettier) [![travis](https://travis-ci.org/tj/connect-redis.svg?branch=master)](https://travis-ci.org/tj/connect-redis)
 
-**connect-redis** provides Redis session storage for Express. Requires redis >= `2.0.0`.
+**connect-redis** provides Redis session storage for Express. Requires Redis >= `2.0.0`.
 
 **Migrating to V4?** See [this guide](migration-to-v4.md) on what's changed.
 
@@ -38,17 +38,17 @@ app.use(
 
 ### RedisStore(options)
 
-The `RedisStore` requires an existing Redis client. Any clients compatible with the `node_redis` API will work. See `client` option for more details.
+The `RedisStore` requires an existing Redis client. Any clients compatible with the [`redis`][1] API will work. See `client` option for more details.
 
 #### Options
 
 ##### client
 
-An instance of a `node_redis` or a `node_redis` compatible client.
+An instance of [`redis`][1] or a `redis` compatible client.
 
 Known compatible and tested clients:
 
-- [redis](https://github.com/NodeRedis/node_redis)
+- [redis][1]
 - [ioredis](https://github.com/luin/ioredis)
 - [redis-mock](https://github.com/yeahoffline/redis-mock) for testing.
 
@@ -97,7 +97,7 @@ client.on('error', console.error)
 
 #### How do I handle lost connections to Redis?
 
-By default, the `node_redis` client will [auto-reconnect](https://github.com/mranney/node_redis#overloading) on lost connections. But requests may come in during that time. In Express, one way you can handle this scenario is including a "session check":
+By default, the [`redis`][1] client will [auto-reconnect](https://github.com/mranney/node_redis#overloading) on lost connections. But requests may come in during that time. In Express, one way you can handle this scenario is including a "session check":
 
 ```js
 app.use(session(/* setup session here */))
@@ -114,3 +114,5 @@ If you want to retry, here is [another option](https://github.com/expressjs/sess
 # License
 
 MIT
+
+[1]: https://github.com/NodeRedis/node_redis
