@@ -31,7 +31,7 @@
     "tape": "^4.2.1"
   },
   "engines": {
-    "node": ">8"
+    "node": ">=8.0.0"
   },
   "bugs": {
     "url": "https://github.com/visionmedia/connect-redis/issues"
