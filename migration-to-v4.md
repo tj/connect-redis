@@ -60,14 +60,19 @@ If you didn't use the `ttl` and `disableTTL` options in the past, this section w
 
 There was a lot of confusion over how TTL behaves in Redis for sessions and how they expire. For this reason, we have greatly simplified the behavior and have opted to match the behavior found in other stores like `connect-mongo`.
 
-Now, Redis keys will always expire based on the `cookie.expires` date set by `express-session`. In the case where the cookie has _no expiration_, we will fall back to a custom `ttl`, which by default is one day. We also removed the ability to pass in a function as the `ttl`.
+Now, Redis keys will always expire (have their TTL set) based on the `cookie.expires` date set by and managed by `express-session`. In the case where the cookie has _no expiration_, we will fall back to a custom `ttl`, which keeps the same default of one day.
 
-We replaced the `disableTTL` option with `disableTouch` which is _functionally equivalent_ to the previous version but clarifies the intent. `disableTouch` causes `touch` calls from `express-session` to do nothing. You may want to enable this under certain circumstances, see the [readme][1] for more details.
+We added a `disableTouch` option which causes `touch` calls from `express-session` to do nothing. You may want to enable this under certain circumstances, see the [readme][1] for more details.
+
+Other notable changes:
+
+- Version 4 removed the ability to pass in a function as the `ttl`.
+- Version 4 removed the `disableTTL` option.
 
 ### Conformity to the `express-session` store API.
 
 We now support the complete `express-session` store API adding one missing method (`clear`) and modifying another method (`destroy`).
 
-If you used `destroy` to remove session IDs by passing _in an array_, you can longer do that.
+If you used `destroy` to remove session IDs by passing _in an array_, you can no longer do that, instead you must use the Redis client directly or you can use the new `clear` method if you were removing all tracked keys.
 
 [1]: readme.md
