@@ -75,9 +75,11 @@ async function lifecycleTest(store, t) {
   t.equal(res, 2, 'stored two keys length')
 
   res = await p(store, 'ids')()
+  res.sort()
   t.same(res, ['123', '456'], 'stored two keys ids')
 
   res = await p(store, 'all')()
+  res.sort((a, b) => (a.id > b.id ? 1 : -1))
   t.same(
     res,
     [{ id: '123', foo: 'bar' }, { id: '456', cookie: { expires } }],
