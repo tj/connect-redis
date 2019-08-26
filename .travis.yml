@@ -6,6 +6,8 @@ node_js:
   - '8'
   - '10'
   - '12'
+install:
+  - yarn install
 script:
-  - npm test
-  - npm lint
+  - yarn test
+  - yarn lint
