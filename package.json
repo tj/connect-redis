@@ -26,9 +26,7 @@
     "ioredis": "^4.10.0",
     "nyc": "^14.1.1",
     "prettier": "^1.18.2",
-    "redis-mock": "^0.46.0",
-    "sinon": "^2.3.4",
-    "tape": "^4.2.1"
+    "redis-mock": "^0.46.0"
   },
   "engines": {
     "node": ">=8.0.0"
