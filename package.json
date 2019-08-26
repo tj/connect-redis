@@ -13,14 +13,13 @@
     "url": "git@github.com:visionmedia/connect-redis.git"
   },
   "dependencies": {
-    "debug": "^4.1.1",
     "redis": "^2.8.0"
   },
   "devDependencies": {
     "blue-tape": "^1.0.0",
     "bluebird": "^3.5.5",
-    "eslint": "^3.19.0",
-    "eslint-config-prettier": "^6.0.0",
+    "eslint": "^6.2.2",
+    "eslint-config-prettier": "^6.1.0",
     "eslint-plugin-prettier": "^3.1.0",
     "express-session": "^1.16.2",
     "ioredis": "^4.10.0",
