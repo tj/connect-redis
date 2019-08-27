@@ -71,6 +71,14 @@ async function lifecycleTest(store, t) {
   res = await p(store.client, 'ttl')('sess:456')
   t.ok(res <= 60, 'check expires ttl')
 
+  ttl = 90
+  expires = new Date(Date.now() + ttl * 1000).toISOString()
+  res = await p(store, 'touch')('456', { cookie: { expires } })
+  t.equal(res, 'OK', 'set cookie expires touch')
+
+  res = await p(store.client, 'ttl')('sess:456')
+  t.ok(res >= 60, 'check expires ttl touch')
+
   res = await p(store, 'length')()
   t.equal(res, 2, 'stored two keys length')
 
