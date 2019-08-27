@@ -1,12 +1,13 @@
-let test = require('blue-tape')
-let redisSrv = require('../test/redis-server')
-let session = require('express-session')
-let RedisStore = require('../')(session)
-let redis = require('redis')
-var ioRedis = require('ioredis')
-var redisMock = require('redis-mock')
+const test = require('blue-tape')
+const redisSrv = require('../test/redis-server')
+const session = require('express-session')
+const redis = require('redis')
+const ioRedis = require('ioredis')
+const redisMock = require('redis-mock')
 
-var p = (ctx, method) => (...args) =>
+let RedisStore = require('../')(session)
+
+let p = (ctx, method) => (...args) =>
   new Promise((resolve, reject) => {
     ctx[method](...args, (err, d) => {
       if (err) reject(err)
@@ -35,6 +36,7 @@ test('node_redis', async t => {
   var client = redis.createClient(redisSrv.port, 'localhost')
   var store = new RedisStore({ client })
   await lifecycleTest(store, t)
+
   client.end(false)
 })
 
@@ -49,6 +51,18 @@ test('redis-mock client', async t => {
   var client = redisMock.createClient()
   var store = new RedisStore({ client })
   await lifecycleTest(store, t)
+})
+
+test('benchmark', async t => {
+  var client = redis.createClient(redisSrv.port, 'localhost')
+  var store = new RedisStore({ client })
+
+  console.time('bench redis')
+  await bench(store)
+  console.timeEnd('bench redis')
+  t.pass()
+
+  client.end(false)
 })
 
 test('teardown', redisSrv.disconnect)
@@ -105,4 +119,30 @@ async function lifecycleTest(store, t) {
 
   res = await p(store, 'length')()
   t.equal(res, 0, 'no key remains')
+}
+
+function bench(store) {
+  const count = 100000
+
+  return new Promise((resolve, reject) => {
+    let set = sid => {
+      store.set(
+        's' + sid,
+        {
+          cookie: { expires: new Date(Date.now() + 1000) },
+          data: 'some data',
+        },
+        err => {
+          if (err) reject(err)
+
+          if (sid === count) {
+            resolve()
+          }
+
+          set(sid + 1)
+        }
+      )
+    }
+    set(0)
+  })
 }
