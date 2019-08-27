@@ -68,7 +68,7 @@ Otherwise, it will expire the session using the `ttl` option (default: `86400` s
 
 Disables re-saving and resetting the TTL when using `touch` (default: `false`)
 
-The `express-session` package uses `touch` to signal to the store that the user has interacted with the session but hasn't changed anything in its data. Typically, this helps keep the users session alive if session changes are infrequent but you may want to disable it to cut down the extra calls or to prevent users from keeping sessions open too long.
+The `express-session` package uses `touch` to signal to the store that the user has interacted with the session but hasn't changed anything in its data. Typically, this helps keep the users session alive if session changes are infrequent but you may want to disable it to cut down the extra calls or to prevent users from keeping sessions open too long. Also consider enabling if you store a lot of data on the session.
 
 Ref: https://github.com/expressjs/session#storetouchsid-session-callback
 
