@@ -57,9 +57,6 @@ test('benchmark', async t => {
   var client = redis.createClient(redisSrv.port, 'localhost')
   var store = new RedisStore({ client })
 
-  console.time('bench redis')
-  await bench(store)
-  console.timeEnd('bench redis')
   t.pass()
 
   client.end(false)
@@ -119,11 +116,18 @@ async function lifecycleTest(store, t) {
 
   res = await p(store, 'length')()
   t.equal(res, 0, 'no key remains')
+
+  let count = 1000
+  await load(store, count)
+
+  res = await p(store, 'length')()
+  t.equal(res, count, 'bulk count')
+
+  res = await p(store, 'clear')()
+  t.equal(res, count, 'bulk clear')
 }
 
-function bench(store) {
-  const count = 100000
-
+function load(store, count) {
   return new Promise((resolve, reject) => {
     let set = sid => {
       store.set(
@@ -133,16 +137,18 @@ function bench(store) {
           data: 'some data',
         },
         err => {
-          if (err) reject(err)
+          if (err) {
+            return reject(err)
+          }
 
           if (sid === count) {
-            resolve()
+            return resolve()
           }
 
           set(sid + 1)
         }
       )
     }
-    set(0)
+    set(1)
   })
 }
