@@ -36,7 +36,6 @@ test('node_redis', async t => {
   var client = redis.createClient(redisSrv.port, 'localhost')
   var store = new RedisStore({ client })
   await lifecycleTest(store, t)
-
   client.end(false)
 })
 
@@ -51,15 +50,6 @@ test('redis-mock client', async t => {
   var client = redisMock.createClient()
   var store = new RedisStore({ client })
   await lifecycleTest(store, t)
-})
-
-test('benchmark', async t => {
-  var client = redis.createClient(redisSrv.port, 'localhost')
-  var store = new RedisStore({ client })
-
-  t.pass()
-
-  client.end(false)
 })
 
 test('teardown', redisSrv.disconnect)
