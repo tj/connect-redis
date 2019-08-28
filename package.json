@@ -12,26 +12,26 @@
     "type": "git",
     "url": "git@github.com:visionmedia/connect-redis.git"
   },
-  "dependencies": {
-    "debug": "^4.1.1",
-    "redis": "^2.8.0"
+  "peerDependencies": {
+    "ioredis": "^4.10.0",
+    "redis": "^2.8.0",
+    "redis-mock": "^0.46.0"
   },
   "devDependencies": {
     "blue-tape": "^1.0.0",
     "bluebird": "^3.5.5",
-    "eslint": "^3.19.0",
-    "eslint-config-prettier": "^6.0.0",
+    "eslint": "^6.2.2",
+    "eslint-config-prettier": "^6.1.0",
     "eslint-plugin-prettier": "^3.1.0",
     "express-session": "^1.16.2",
     "ioredis": "^4.10.0",
     "nyc": "^14.1.1",
     "prettier": "^1.18.2",
-    "redis-mock": "^0.46.0",
-    "sinon": "^2.3.4",
-    "tape": "^4.2.1"
+    "redis": "^2.8.0",
+    "redis-mock": "^0.46.0"
   },
   "engines": {
-    "node": ">8"
+    "node": ">=8.0.0"
   },
   "bugs": {
     "url": "https://github.com/visionmedia/connect-redis/issues"
