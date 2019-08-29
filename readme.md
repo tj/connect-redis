@@ -54,7 +54,11 @@ Known compatible and tested clients:
 
 ##### prefix
 
-Key prefix in Redis (default: `sess:`)
+Key prefix in Redis (default: `sess:`).
+
+This prefix appends to whatever prefix you may have set on the `client` itself.
+
+**Note**: You may need unique prefixes for different applications sharing the same Redis instance. This limits bulk commands exposed in `express-session` (like `length`, `all`, `keys`, and `clear`) to a single application's data.
 
 ##### ttl
 
