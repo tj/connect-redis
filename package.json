@@ -12,7 +12,7 @@
     "type": "git",
     "url": "git@github.com:visionmedia/connect-redis.git"
   },
-  "peerDependencies": {
+  "optionalDependencies": {
     "ioredis": "^4.10.0",
     "redis": "^2.8.0",
     "redis-mock": "^0.46.0"
