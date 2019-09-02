@@ -1,4 +1,4 @@
-[![npm](https://img.shields.io/npm/v/connect-redis.svg)](https://npmjs.com/package/connect-redis) [![Dependencies](https://img.shields.io/david/tj/connect-redis.svg)](https://david-dm.org/tj/connect-redis) ![Downloads](https://img.shields.io/npm/dm/connect-redis.svg) [![code-style](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://gitter.im/jlongster/prettier) [![travis](https://travis-ci.org/tj/connect-redis.svg?branch=master)](https://travis-ci.org/tj/connect-redis)
+[![npm](https://img.shields.io/npm/v/connect-redis.svg)](https://npmjs.com/package/connect-redis) [![travis](https://travis-ci.org/tj/connect-redis.svg?branch=master)](https://travis-ci.org/tj/connect-redis) [![code-style](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://gitter.im/jlongster/prettier) ![Downloads](https://img.shields.io/npm/dm/connect-redis.svg)
 
 **connect-redis** provides Redis session storage for Express. Requires Redis >= `2.0.0`.
 
