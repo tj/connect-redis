@@ -12,11 +12,6 @@
     "type": "git",
     "url": "git@github.com:visionmedia/connect-redis.git"
   },
-  "optionalDependencies": {
-    "ioredis": "^4.10.0",
-    "redis": "^2.8.0",
-    "redis-mock": "^0.46.0"
-  },
   "devDependencies": {
     "blue-tape": "^1.0.0",
     "bluebird": "^3.5.5",
