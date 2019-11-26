@@ -93,7 +93,7 @@ Value used for _count_ parameter in [Redis `SCAN` command](https://redis.io/comm
 
 ## FAQ
 
-#### How to a log Redis errors?
+#### How to log Redis errors?
 
 ```js
 client.on('error', console.error)
