@@ -31,16 +31,16 @@ const redis = require('redis')
 const session = require('express-session')
 let RedisStore = require('connect-redis')(session)
 
-let client = redis.createClient({
+let redisClient = redis.createClient({
   host: 'localhost',
   port: 6123,
   password: 'my secret',
   db: 1,
 })
-client.unref()
-client.on('error', console.log)
+redisClient.unref()
+redisClient.on('error', console.log)
 
-let store = new RedisStore({ client })
+let store = new RedisStore({ client: redisClient })
 ```
 
 Given the bundled client does not exist, version 4 no longer has the following options:
