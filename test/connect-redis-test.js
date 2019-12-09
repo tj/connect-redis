@@ -92,7 +92,10 @@ async function lifecycleTest(store, t) {
   res.sort((a, b) => (a.id > b.id ? 1 : -1))
   t.same(
     res,
-    [{ id: '123', foo: 'bar' }, { id: '456', cookie: { expires } }],
+    [
+      { id: '123', foo: 'bar' },
+      { id: '456', cookie: { expires } },
+    ],
     'stored two keys data'
   )
 
