@@ -68,6 +68,8 @@ Otherwise, it will expire the session using the `ttl` option (default: `86400` s
 
 **Note**: The TTL is reset every time a user interacts with the server. You can disable this behavior in _some_ instances by using `disableTouch`.
 
+**Note**: `express-session` does not update `expires` until the end of the request life cycle. Calling `session.save()` manually beforehand will have the previous value.
+
 ##### disableTouch
 
 Disables re-saving and resetting the TTL when using `touch` (default: `false`)
