@@ -18,11 +18,11 @@
     "eslint-config-prettier": "^6.1.0",
     "eslint-plugin-prettier": "^3.1.0",
     "express-session": "^1.17.0",
-    "ioredis": "^4.14.1",
-    "nyc": "^15.0.0",
+    "ioredis": "^4.17.1",
+    "nyc": "^15.0.1",
     "prettier": "^1.19.1",
-    "redis": "^2.8.0",
-    "redis-mock": "^0.48.0"
+    "redis": "^3.0.2",
+    "redis-mock": "^0.49.0"
   },
   "engines": {
     "node": ">=8.0.0"
