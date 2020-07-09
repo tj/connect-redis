@@ -1,4 +1,4 @@
-[![npm](https://img.shields.io/npm/v/connect-redis.svg)](https://npmjs.com/package/connect-redis) [![travis](https://travis-ci.org/tj/connect-redis.svg?branch=master)](https://travis-ci.org/tj/connect-redis) [![code-style](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://gitter.im/jlongster/prettier) ![Downloads](https://img.shields.io/npm/dm/connect-redis.svg)
+![Build Status](https://github.com/tj/connect-redis/workflows/build/badge.svg?branch=master) [![npm](https://img.shields.io/npm/v/connect-redis.svg)](https://npmjs.com/package/connect-redis) [![code-style](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://gitter.im/jlongster/prettier) ![Downloads](https://img.shields.io/npm/dm/connect-redis.svg)
 
 **connect-redis** provides Redis session storage for Express. Requires Redis >= `2.0.0`.
 
@@ -107,7 +107,7 @@ By default, the [`redis`][1] client will [auto-reconnect](https://github.com/mra
 
 ```js
 app.use(session(/* setup session here */))
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   if (!req.session) {
     return next(new Error('oh no')) // handle error
   }
@@ -116,9 +116,3 @@ app.use(function(req, res, next) {
 ```
 
 If you want to retry, here is [another option](https://github.com/expressjs/session/issues/99#issuecomment-63853989).
-
-# License
-
-MIT
-
-[1]: https://github.com/NodeRedis/node_redis

@@ -8,14 +8,14 @@ exports.connect = () =>
       stdio: 'inherit',
     })
 
-    redisSrv.on('error', function(err) {
+    redisSrv.on('error', function (err) {
       reject(new Error('Error caught spawning the server:' + err.message))
     })
 
     setTimeout(resolve, 1500)
   })
 
-exports.disconnect = function() {
+exports.disconnect = function () {
   redisSrv.kill('SIGKILL')
   return Promise.resolve()
 }

@@ -17,7 +17,7 @@ let p = (ctx, method) => (...args) =>
 
 test('setup', redisSrv.connect)
 
-test('defaults', async t => {
+test('defaults', async (t) => {
   t.throws(() => new RedisStore(), 'client is required')
 
   var client = redis.createClient(redisSrv.port, 'localhost')
@@ -32,21 +32,21 @@ test('defaults', async t => {
   client.end(false)
 })
 
-test('node_redis', async t => {
+test('node_redis', async (t) => {
   var client = redis.createClient(redisSrv.port, 'localhost')
   var store = new RedisStore({ client })
   await lifecycleTest(store, t)
   client.end(false)
 })
 
-test('ioredis', async t => {
+test('ioredis', async (t) => {
   var client = ioRedis.createClient(redisSrv.port, 'localhost')
   var store = new RedisStore({ client })
   await lifecycleTest(store, t)
   client.disconnect()
 })
 
-test('redis-mock client', async t => {
+test('redis-mock client', async (t) => {
   var client = redisMock.createClient()
   var store = new RedisStore({ client })
   await lifecycleTest(store, t)
@@ -123,14 +123,14 @@ async function lifecycleTest(store, t) {
 
 function load(store, count) {
   return new Promise((resolve, reject) => {
-    let set = sid => {
+    let set = (sid) => {
       store.set(
         's' + sid,
         {
           cookie: { expires: new Date(Date.now() + 1000) },
           data: 'some data',
         },
-        err => {
+        (err) => {
           if (err) {
             return reject(err)
           }
