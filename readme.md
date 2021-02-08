@@ -78,6 +78,12 @@ The `express-session` package uses `touch` to signal to the store that the user 
 
 Ref: https://github.com/expressjs/session#storetouchsid-session-callback
 
+##### disableTTL
+
+Disables key expiration completely (default: `false`)
+
+This option disables key expiration requiring the user to manually manage key cleanup outside of `connect-redis`. Only use if you know what you are doing and have an exceptional case where you need to manage your own expiration in Redis. Note this has no effect on `express-session` setting cookie expiration.
+
 ##### serializer
 
 The encoder/decoder to use when storing and retrieving session data from Redis (default: `JSON`).
