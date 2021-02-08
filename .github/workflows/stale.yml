@@ -3,7 +3,6 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * *'
-
 jobs:
   stale:
     runs-on: ubuntu-latest
