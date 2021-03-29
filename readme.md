@@ -30,6 +30,7 @@ let redisClient = redis.createClient()
 app.use(
   session({
     store: new RedisStore({ client: redisClient }),
+    saveUninitialized: false,
     secret: 'keyboard cat',
     resave: false,
   })
