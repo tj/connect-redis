@@ -120,6 +120,20 @@ async function lifecycleTest(store, t) {
 
   res = await p(store, 'clear')()
   t.equal(res, count, 'bulk clear')
+
+  expires = new Date(Date.now() + ttl * 1000).toISOString() // expires in the future
+  res = await p(store, 'set')('789', { cookie: { expires } })
+  t.equal(res, 'OK', 'set value')
+
+  res = await p(store, 'length')()
+  t.equal(res, 1, 'one key exists (session 789)')
+
+  expires = new Date(Date.now() - ttl * 1000).toISOString() // expires in the past
+  res = await p(store, 'set')('789', { cookie: { expires } })
+  t.equal(res, 1, 'returns 1 because destroy was invoked')
+
+  res = await p(store, 'length')()
+  t.equal(res, 0, 'no key remains and that includes session 789')
 }
 
 function load(store, count) {
