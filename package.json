@@ -20,7 +20,7 @@
     "ioredis": "^4.17.1",
     "nyc": "^15.0.1",
     "prettier": "^2.0.5",
-    "redis": "^3.0.2",
+    "redis": "^3.1.2",
     "redis-mock": "^0.56.3"
   },
   "engines": {
