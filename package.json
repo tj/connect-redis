@@ -24,7 +24,7 @@
     "redis-mock": "^0.56.3"
   },
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=12"
   },
   "bugs": {
     "url": "https://github.com/visionmedia/connect-redis/issues"
