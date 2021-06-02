@@ -15,7 +15,7 @@
   "devDependencies": {
     "blue-tape": "^1.0.0",
     "eslint": "^7.4.0",
-    "eslint-config-prettier": "^7.2.0",
+    "eslint-config-prettier": "^8.3.0",
     "express-session": "^1.17.0",
     "ioredis": "^4.17.1",
     "nyc": "^15.0.1",

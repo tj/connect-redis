@@ -7,13 +7,15 @@ const redisMock = require('redis-mock')
 
 let RedisStore = require('../')(session)
 
-let p = (ctx, method) => (...args) =>
-  new Promise((resolve, reject) => {
-    ctx[method](...args, (err, d) => {
-      if (err) reject(err)
-      resolve(d)
+let p =
+  (ctx, method) =>
+  (...args) =>
+    new Promise((resolve, reject) => {
+      ctx[method](...args, (err, d) => {
+        if (err) reject(err)
+        resolve(d)
+      })
     })
-  })
 
 test('setup', redisSrv.connect)
 
