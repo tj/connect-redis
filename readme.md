@@ -9,13 +9,13 @@
 npm:
 
 ```sh
-npm install redis connect-redis express-session
+npm install redis@v3 connect-redis express-session
 ```
 
 Yarn:
 
 ```sh
-yarn add redis connect-redis express-session
+yarn add redis@v3 connect-redis express-session
 ```
 
 ## API
@@ -49,7 +49,7 @@ An instance of [`redis`][1] or a `redis` compatible client.
 
 Known compatible and tested clients:
 
-- [redis][1]
+- [redis][1] (v3, **v4 currently is not supported**)
 - [ioredis](https://github.com/luin/ioredis)
 - [redis-mock](https://github.com/yeahoffline/redis-mock) for testing.
 
