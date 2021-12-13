@@ -25,6 +25,7 @@ test('defaults', async (t) => {
   t.throws(() => new RedisStore(), 'client is required')
 
   var client = redis.createClient(redisSrv.port, 'localhost')
+  await client.connect();
   var store = new RedisStore({ client })
 
   t.equal(store.client, client, 'stores client')
@@ -34,14 +35,15 @@ test('defaults', async (t) => {
   t.equal(store.serializer, JSON, 'defaults to JSON serialization')
   t.equal(store.disableTouch, false, 'defaults to having `touch` enabled')
   t.equal(store.disableTTL, false, 'defaults to having `ttl` enabled')
-  client.end(false)
+  client.disconnect()
 })
 
 test('node_redis', async (t) => {
   var client = redis.createClient(redisSrv.port, 'localhost')
+  await client.connect();
   var store = new RedisStore({ client })
   await lifecycleTest(store, t)
-  client.end(false)
+  client.disconnect()
 })
 
 test('ioredis', async (t) => {
