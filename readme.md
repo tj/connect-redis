@@ -53,6 +53,12 @@ Known compatible and tested clients:
 - [ioredis](https://github.com/luin/ioredis)
 - [redis-mock](https://github.com/yeahoffline/redis-mock) for testing.
 
+This option will be preferred over `redisUrl` option if both are provided.
+
+##### redisUrl
+
+A Redis connection string to be used for the default client connection. Ignored when the `client` option is provided. Refer [Redis Client connection string format](https://github.com/NodeRedis/node_redis#rediscreateclient).
+
 ##### prefix
 
 Key prefix in Redis (default: `sess:`).
