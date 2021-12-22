@@ -53,6 +53,9 @@ Known compatible and tested clients:
 - [ioredis](https://github.com/luin/ioredis)
 - [redis-mock](https://github.com/yeahoffline/redis-mock) for testing.
 
+> Note: In order to use [redis][1] v4 for other things and connect-redis for sessions, an acceptable solution for the time being would be to add both v3 and v4 as dependencies and pass the v3 client in to connect-redis.
+> [How to install multiple versions of same package?](https://stackoverflow.com/questions/26414587/how-to-install-multiple-versions-of-package-using-npm/56495651#56495651)
+
 ##### prefix
 
 Key prefix in Redis (default: `sess:`).
