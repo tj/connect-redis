@@ -1,30 +1,30 @@
-name-template: 'v$RESOLVED_VERSION'
-tag-template: 'v$RESOLVED_VERSION'
+name-template: "v$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
 template: |
   $CHANGES
-category-template: '#### $TITLE'
-change-template: '* #$NUMBER - $TITLE (@$AUTHOR)'
+category-template: "#### $TITLE"
+change-template: "* #$NUMBER - $TITLE (@$AUTHOR)"
 categories:
-  - title: 'Breaking changes'
-    label: 'breaking'
-  - title: 'Enhancements'
-    label: 'enhancement'
-  - title: 'Bug fixes'
-    label: 'bug'
-  - title: 'Maintenance'
-    label: 'chore'
+  - title: "Breaking changes"
+    label: "breaking"
+  - title: "Enhancements"
+    label: "enhancement"
+  - title: "Bug fixes"
+    label: "bug"
+  - title: "Maintenance"
+    label: "chore"
 
 version-resolver:
   major:
     labels:
-      - 'breaking'
+      - "breaking"
   minor:
     labels:
-      - 'enhancement'
+      - "enhancement"
   patch:
     labels:
-      - 'bug'
-      - 'chore'
+      - "bug"
+      - "chore"
 
 exclude-labels:
-  - 'skip-changelog'
+  - "skip-changelog"

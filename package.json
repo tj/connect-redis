@@ -21,7 +21,8 @@
     "mockdate": "^2.0.5",
     "nyc": "^15.0.1",
     "prettier": "^2.0.5",
-    "redis": "^3.1.2",
+    "redis-v4": "npm:redis@4",
+    "redis-v3": "npm:redis@3",
     "redis-mock": "^0.56.3"
   },
   "engines": {
@@ -33,7 +34,7 @@
   "scripts": {
     "test": "nyc tape \"test/*-test.js\"",
     "lint": "eslint index.js test lib",
-    "fmt": "prettier --write \"**/*.{js,md,json,*rc}\"",
-    "fmt-check": "prettier --check \"**/*.{js,md,json,*rc}\""
+    "fmt": "prettier --write .",
+    "fmt-check": "prettier --check ."
   }
 }

@@ -11,13 +11,13 @@ If you did use the bundled `redis` client, you now have to pass it in instead of
 Older versions:
 
 ```js
-const session = require('express-session')
-let RedisStore = require('connect-redis')(session)
+const session = require("express-session")
+let RedisStore = require("connect-redis")(session)
 
 let store = new RedisStore({
-  host: 'localhost',
+  host: "localhost",
   port: 6123,
-  pass: 'my secret',
+  pass: "my secret",
   db: 1,
   unref: true,
   logErrors: true,
@@ -27,18 +27,18 @@ let store = new RedisStore({
 Version 4 (make sure you also install the `redis` package):
 
 ```js
-const redis = require('redis')
-const session = require('express-session')
-let RedisStore = require('connect-redis')(session)
+const redis = require("redis")
+const session = require("express-session")
+let RedisStore = require("connect-redis")(session)
 
 let redisClient = redis.createClient({
-  host: 'localhost',
+  host: "localhost",
   port: 6123,
-  password: 'my secret',
+  password: "my secret",
   db: 1,
 })
 redisClient.unref()
-redisClient.on('error', console.log)
+redisClient.on("error", console.log)
 
 let store = new RedisStore({ client: redisClient })
 ```

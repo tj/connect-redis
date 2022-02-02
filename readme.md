@@ -9,29 +9,30 @@
 npm:
 
 ```sh
-npm install redis@v3 connect-redis express-session
+npm install redis connect-redis express-session
 ```
 
 Yarn:
 
 ```sh
-yarn add redis@v3 connect-redis express-session
+yarn add redis connect-redis express-session
 ```
 
 ## API
 
 ```js
-const { createClient } = require('redis')
-const session = require('express-session')
+const { createClient } = require("redis")
+const session = require("express-session")
 
-let RedisStore = require('connect-redis')(session)
-let redisClient = createClient()
+let RedisStore = require("connect-redis")(session)
+let redisClient = createClient({ legacyMode: true })
+redisClient.connect()
 
 app.use(
   session({
     store: new RedisStore({ client: redisClient }),
     saveUninitialized: false,
-    secret: 'keyboard cat',
+    secret: "keyboard cat",
     resave: false,
   })
 )
@@ -49,12 +50,9 @@ An instance of [`redis`][1] or a `redis` compatible client.
 
 Known compatible and tested clients:
 
-- [redis][1] (v3, **v4 currently is not supported**)
+- [redis][1] (v3, v4 with `legacyMode: true`)
 - [ioredis](https://github.com/luin/ioredis)
 - [redis-mock](https://github.com/yeahoffline/redis-mock) for testing.
-
-> Note: In order to use [redis][1] v4 for other things and connect-redis for sessions, an acceptable solution for the time being would be to add both v3 and v4 as dependencies and pass the v3 client in to connect-redis.
-> [How to install multiple versions of same package?](https://stackoverflow.com/questions/26414587/how-to-install-multiple-versions-of-package-using-npm/56495651#56495651)
 
 ##### prefix
 
@@ -108,7 +106,7 @@ Value used for _count_ parameter in [Redis `SCAN` command](https://redis.io/comm
 #### How to log Redis errors?
 
 ```js
-client.on('error', console.error)
+client.on("error", console.error)
 ```
 
 #### How do I handle lost connections to Redis?
@@ -119,7 +117,7 @@ By default, the [`redis`][1] client will [auto-reconnect](https://github.com/mra
 app.use(session(/* setup session here */))
 app.use(function (req, res, next) {
   if (!req.session) {
-    return next(new Error('oh no')) // handle error
+    return next(new Error("oh no")) // handle error
   }
   next() // otherwise continue
 })
