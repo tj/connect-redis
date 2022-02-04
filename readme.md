@@ -21,12 +21,21 @@ yarn add redis connect-redis express-session
 ## API
 
 ```js
-const { createClient } = require("redis")
 const session = require("express-session")
-
 let RedisStore = require("connect-redis")(session)
+
+// redis@v4
+const { createClient } = require("redis")
 let redisClient = createClient({ legacyMode: true })
-redisClient.connect()
+redisClient.connect().catch(console.error)
+
+// redis@v3
+const { createClient } = require("redis")
+let redisClient = createClient()
+
+// ioredis
+const Redis = require("ioredis")
+let redisClient = new Redis()
 
 app.use(
   session({
