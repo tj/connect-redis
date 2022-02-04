@@ -2,8 +2,6 @@
 
 **connect-redis** provides Redis session storage for Express. Requires Redis >= `2.0.0`.
 
-**Migrating to V4?** See [this guide](migration-to-v4.md) on what's changed.
-
 ## Installation
 
 npm:
