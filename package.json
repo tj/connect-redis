@@ -35,5 +35,8 @@
     "lint": "eslint index.js test lib",
     "fmt": "prettier --write .",
     "fmt-check": "prettier --check ."
+  },
+  "dependencies": {
+    "deepmerge": "^4.2.2"
   }
 }
