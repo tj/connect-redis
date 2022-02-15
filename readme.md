@@ -124,7 +124,7 @@ By default, the [`redis`][1] client will [auto-reconnect](https://github.com/mra
 app.use(session(/* setup session here */))
 app.use(function (req, res, next) {
   if (!req.session) {
-    return next(new Error("oh no")) // handle error
+    next(new Error("oh no")) // handle error
   }
   next() // otherwise continue
 })
