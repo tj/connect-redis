@@ -35,5 +35,11 @@
     "lint": "eslint index.js test lib",
     "fmt": "prettier --write .",
     "fmt-check": "prettier --check ."
-  }
+  },
+  "keywords": [
+    "connect",
+    "redis",
+    "session",
+    "express"
+  ],
 }
