@@ -41,5 +41,5 @@
     "redis",
     "session",
     "express"
-  ],
+  ]
 }
