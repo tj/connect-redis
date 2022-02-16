@@ -37,6 +37,7 @@
     "fmt-check": "prettier --check ."
   },
   "dependencies": {
-    "deepmerge": "^4.2.2"
+    "deepmerge": "^4.2.2",
+    "mockdate": "^3.0.5"
   }
 }
