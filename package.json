@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "deepmerge": "^4.2.2"
-  }
+  },
   "keywords": [
     "connect",
     "redis",
