@@ -18,6 +18,7 @@
     "eslint-config-prettier": "^8.3.0",
     "express-session": "^1.17.0",
     "ioredis": "^4.17.1",
+    "mockdate": "^3.0.5",
     "nyc": "^15.0.1",
     "prettier": "^2.0.5",
     "redis-mock": "^0.56.3",
@@ -35,6 +36,9 @@
     "lint": "eslint index.js test lib",
     "fmt": "prettier --write .",
     "fmt-check": "prettier --check ."
+  },
+  "dependencies": {
+    "deepmerge": "^4.2.2"
   },
   "keywords": [
     "connect",
