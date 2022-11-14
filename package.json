@@ -10,7 +10,7 @@
   "main": "./index.js",
   "repository": {
     "type": "git",
-    "url": "git@github.com:visionmedia/connect-redis.git"
+    "url": "git@github.com:tj/connect-redis.git"
   },
   "devDependencies": {
     "blue-tape": "^1.0.0",
@@ -28,7 +28,7 @@
     "node": ">=12"
   },
   "bugs": {
-    "url": "https://github.com/visionmedia/connect-redis/issues"
+    "url": "https://github.com/tj/connect-redis/issues"
   },
   "scripts": {
     "test": "nyc tape \"test/*-test.js\"",
