@@ -3,7 +3,8 @@ const redisSrv = require("../test/redis-server")
 const session = require("express-session")
 const redisV3 = require("redis-v3")
 const redisV4 = require("redis-v4")
-const ioRedis = require("ioredis")
+const ioRedisV4 = require("ioredis-v4")
+const ioRedisV5 = require("ioredis-v5")
 const redisMock = require("redis-mock")
 
 let RedisStore = require("../")(session)
@@ -54,8 +55,15 @@ test("node_redis v4", async (t) => {
   await client.disconnect()
 })
 
-test("ioredis", async (t) => {
-  var client = ioRedis.createClient(redisSrv.port, "localhost")
+test("ioredis 4", async (t) => {
+  var client = ioRedisV4.createClient(redisSrv.port, "localhost")
+  var store = new RedisStore({ client })
+  await lifecycleTest(store, t)
+  client.disconnect()
+})
+
+test("ioredis 5", async (t) => {
+  var client = ioRedisV5.createClient(redisSrv.port, "localhost")
   var store = new RedisStore({ client })
   await lifecycleTest(store, t)
   client.disconnect()
