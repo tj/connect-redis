@@ -31,7 +31,7 @@ redisClient.connect().catch(console.error)
 const { createClient } = require("redis")
 let redisClient = createClient()
 
-// ioredis
+// ioredis@v4 and ioredis@v5
 const Redis = require("ioredis")
 let redisClient = new Redis()
 
