@@ -17,6 +17,8 @@
   },
   "types": "./dist/esm/index.d.ts",
   "scripts": {
+    "prepublishOnly": "rm -rf dist && tsc & tsc --project tsconfig.esm.json && echo '{\"type\":\"module\"}' > dist/esm/package.json",
+    "build": "npm run prepublishOnly",
     "test": "nyc ts-node node_modules/blue-tape/bin/blue-tape \"**/*_test.ts\"",
     "lint": "tsc --noemit && eslint --max-warnings 0 --ext ts src *.ts",
     "fmt": "prettier --write .",
