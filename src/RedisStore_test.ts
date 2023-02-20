@@ -65,11 +65,8 @@ async function lifecycleTest(
   t.ok(ttl <= 60, "check expires ttl")
 
   ttl = 90
-  // Note: cookie.expires will not be updated on redis
-  // see https://github.com/tj/connect-redis/pull/285
   let expires2 = new Date(Date.now() + ttl * 1000).toISOString()
   await P(store.touch)("456", {cookie: {expires: expires2}})
-
   ttl = await client.ttl("sess:456")
   t.ok(ttl > 60, "check expires ttl touch")
 

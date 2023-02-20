@@ -4,7 +4,7 @@ const noop = (_err?: unknown, _data?: any) => {}
 
 interface NormalizedRedisClient {
   get(key: string): Promise<string | null>
-  set(key: string, value: string): Promise<string | null>
+  set(key: string, value: string, ttl?: number): Promise<string | null>
   expire(key: string, ttl: number): Promise<number | boolean>
   scanIterator(match: string, count: number): AsyncIterable<string>
   del(key: string[]): Promise<number>
@@ -38,7 +38,7 @@ class RedisStore extends Store {
   constructor(opts: RedisStoreOptions) {
     super()
     this.prefix = opts.prefix == null ? "sess:" : opts.prefix
-    this.scanCount = Number(opts.scanCount) || 100
+    this.scanCount = opts.scanCount || 100
     this.serializer = opts.serializer || JSON
     this.ttl = opts.ttl || 86400 // One day in seconds.
     this.disableTTL = opts.disableTTL || false
@@ -48,19 +48,24 @@ class RedisStore extends Store {
 
   // Create a redis and ioredis compatible client
   private normalizeClient(client: any): NormalizedRedisClient {
+    let isRedis = "scanIterator" in client
     return {
       get: (key) => client.get(key),
-      set: (key, val) => client.set(key, val),
+      set: (key, val, ttl) => {
+        if (ttl) {
+          return isRedis
+            ? client.set(key, val, {EX: ttl})
+            : client.set(key, val, "EX", ttl)
+        }
+        return client.set(key, val)
+      },
       del: (key) => client.del(key),
       expire: (key, ttl) => client.expire(key, ttl),
-      mget: (keys) =>
-        "mGet" in client ? client.mGet(keys) : client.mget(keys),
+      mget: (keys) => (isRedis ? client.mGet(keys) : client.mget(keys)),
       scanIterator: (match, count) => {
-        if ("scanIterator" in client) {
-          return client.scanIterator({MATCH: match, COUNT: count})
-        }
+        if (isRedis) return client.scanIterator({MATCH: match, COUNT: count})
 
-        // io-redis impl.
+        // ioredis impl.
         return (async function* () {
           let [c, xs] = await client.scan("0", "MATCH", match, "COUNT", count)
           for (let key of xs) yield key
@@ -90,8 +95,8 @@ class RedisStore extends Store {
     try {
       let val = this.serializer.stringify(sess)
       if (ttl > 0) {
-        await this.client.set(key, val)
-        if (!this.disableTTL) await this.client.expire(key, ttl)
+        if (this.disableTTL) await this.client.set(key, val)
+        else await this.client.set(key, val, ttl)
         return cb()
       } else {
         // If the resulting TTL is negative we can delete / destroy the key
