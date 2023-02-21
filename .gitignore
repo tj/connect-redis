@@ -7,3 +7,4 @@ yarn.lock
 .DS_Store
 dump.rdb
 pnpm-lock.yaml
+dist
