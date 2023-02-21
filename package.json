@@ -1,7 +1,7 @@
 {
   "name": "connect-redis",
   "description": "Redis session store for Connect",
-  "version": "7.0.0-rc.1",
+  "version": "7.0.0-rc.2",
   "author": "TJ Holowaychuk <tj@vision-media.ca>",
   "contributors": [
     "Marc Harter <wavded@gmail.com>"
