@@ -1,0 +1,9 @@
+testdata
+coverage
+.nyc_output
+
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+dump.rdb
