@@ -1,4 +1,5 @@
 {
-  "tabWidth": 2,
-  "semi": false
+  "semi": false,
+  "bracketSpacing": false,
+  "plugins": ["prettier-plugin-organize-imports"]
 }

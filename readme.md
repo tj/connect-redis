@@ -1,71 +1,85 @@
 ![Build Status](https://github.com/tj/connect-redis/workflows/build/badge.svg?branch=master) [![npm](https://img.shields.io/npm/v/connect-redis.svg)](https://npmjs.com/package/connect-redis) [![code-style](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://gitter.im/jlongster/prettier) ![Downloads](https://img.shields.io/npm/dm/connect-redis.svg)
 
-**connect-redis** provides Redis session storage for Express. Requires Redis >= `2.0.0`.
+**connect-redis** provides Redis session storage for Express.
 
 ## Installation
 
-npm:
+**connect-redis** requires `express-session` to installed and one of the following compatible Redis clients:
+
+- [`redis`][1]
+- [`ioredis`][2]
+
+Install with `redis`:
 
 ```sh
 npm install redis connect-redis express-session
 ```
 
-Yarn:
+Install with `ioredis`:
 
 ```sh
-yarn add redis connect-redis express-session
+npm install ioredis connect-redis express-session
+```
+
+## Importing
+
+**connect-redis** supports both CommonJS (`require`) and ESM (`import`) modules.
+
+Import using ESM/Typescript:
+
+```js
+import RedisStore from "connect-redis"
+```
+
+Require using CommonJS:
+
+```js
+const RedisStore = require("connect-redis").default
 ```
 
 ## API
 
-```js
-const session = require("express-session")
-let RedisStore = require("connect-redis")(session)
+Full setup using [`redis`][1] package:
 
-// redis@v4
-const { createClient } = require("redis")
-let redisClient = createClient({ legacyMode: true })
+```js
+import RedisStore from "connect-redis"
+import session from "express-session"
+import {createClient} from "redis"
+
+// Initialize client.
+let redisClient = createClient()
 redisClient.connect().catch(console.error)
 
-// redis@v3
-const { createClient } = require("redis")
-let redisClient = createClient()
+// Initialize store.
+let redisStore = new RedisStore({
+  client: redisClient,
+  prefix: "myapp:",
+})
 
-// ioredis@v4 and ioredis@v5
-const Redis = require("ioredis")
-let redisClient = new Redis()
-
+// Initialize sesssion storage.
 app.use(
   session({
-    store: new RedisStore({ client: redisClient }),
-    saveUninitialized: false,
+    store: redisStore,
+    resave: false, // required: force lightweight session keep alive (touch)
+    saveUninitialized: false, // recommended: only save session when data exists
     secret: "keyboard cat",
-    resave: false,
   })
 )
 ```
 
 ### RedisStore(options)
 
-The `RedisStore` requires an existing Redis client. Any clients compatible with the [`redis`][1] API will work. See `client` option for more details.
-
 #### Options
 
 ##### client
 
-An instance of [`redis`][1] or a `redis` compatible client.
-
-Known compatible and tested clients:
-
-- [redis][1] (v3, v4 with `legacyMode: true`)
-- [ioredis](https://github.com/luin/ioredis)
-- [redis-mock](https://github.com/yeahoffline/redis-mock) for testing.
+An instance of [`redis`][1] or [`ioredis`][2].
 
 ##### prefix
 
 Key prefix in Redis (default: `sess:`).
 
-This prefix appends to whatever prefix you may have set on the `client` itself.
+**Note**: This prefix appends to whatever prefix you may have set on the `client` itself.
 
 **Note**: You may need unique prefixes for different applications sharing the same Redis instance. This limits bulk commands exposed in `express-session` (like `length`, `all`, `keys`, and `clear`) to a single application's data.
 
@@ -77,25 +91,27 @@ Otherwise, it will expire the session using the `ttl` option (default: `86400` s
 
 **Note**: The TTL is reset every time a user interacts with the server. You can disable this behavior in _some_ instances by using `disableTouch`.
 
-**Note**: `express-session` does not update `expires` until the end of the request life cycle. Calling `session.save()` manually beforehand will have the previous value.
+**Note**: `express-session` does not update `expires` until the end of the request life cycle. _Calling `session.save()` manually beforehand will have the previous value_.
 
 ##### disableTouch
 
-Disables re-saving and resetting the TTL when using `touch` (default: `false`)
+Disables resetting the TTL when using `touch` (default: `false`)
 
 The `express-session` package uses `touch` to signal to the store that the user has interacted with the session but hasn't changed anything in its data. Typically, this helps keep the users session alive if session changes are infrequent but you may want to disable it to cut down the extra calls or to prevent users from keeping sessions open too long. Also consider enabling if you store a lot of data on the session.
 
-Ref: https://github.com/expressjs/session#storetouchsid-session-callback
+Ref: <https://github.com/expressjs/session#storetouchsid-session-callback>
 
 ##### disableTTL
 
 Disables key expiration completely (default: `false`)
 
-This option disables key expiration requiring the user to manually manage key cleanup outside of `connect-redis`. Only use if you know what you are doing and have an exceptional case where you need to manage your own expiration in Redis. Note this has no effect on `express-session` setting cookie expiration.
+This option disables key expiration requiring the user to manually manage key cleanup outside of `connect-redis`. Only use if you know what you are doing and have an exceptional case where you need to manage your own expiration in Redis.
+
+**Note**: This has no effect on `express-session` setting cookie expiration.
 
 ##### serializer
 
-The encoder/decoder to use when storing and retrieving session data from Redis (default: `JSON`).
+Provide a custom encoder/decoder to use when storing and retrieving session data from Redis (default: `JSON.parse` and `JSON.stringify`).
 
 ```ts
 interface Serializer {
@@ -118,7 +134,7 @@ client.on("error", console.error)
 
 #### How do I handle lost connections to Redis?
 
-By default, the [`redis`][1] client will [auto-reconnect](https://github.com/mranney/node_redis#overloading) on lost connections. But requests may come in during that time. In Express, one way you can handle this scenario is including a "session check":
+By default, the Redis client will [auto-reconnect](https://github.com/mranney/node_redis#overloading) on lost connections. But requests may come in during that time. In Express, one way you can handle this scenario is including a "session check":
 
 ```js
 app.use(session(/* setup session here */))
@@ -133,3 +149,4 @@ app.use(function (req, res, next) {
 If you want to retry, here is [another option](https://github.com/expressjs/session/issues/99#issuecomment-63853989).
 
 [1]: https://github.com/NodeRedis/node-redis
+[2]: https://github.com/luin/ioredis

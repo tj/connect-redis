@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [14.x, 16.x, 18.x]
+        node: [16, 18]
     name: Node v${{ matrix.node }}
     steps:
       - uses: actions/checkout@v3
@@ -17,7 +17,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: sudo apt-get install -y redis-server
-      - run: yarn install
-      - run: yarn fmt-check
-      - run: yarn lint
-      - run: yarn test
+      - run: npm install
+      - run: npm run fmt-check
+      - run: npm run lint
+      - run: npm test

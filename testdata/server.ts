@@ -1,9 +1,10 @@
-const spawn = require("child_process").spawn
-const port = (exports.port = 18543)
-let redisSrv
+import {ChildProcess, spawn} from "node:child_process"
+let redisSrv: ChildProcess
 
-exports.connect = () =>
-  new Promise((resolve, reject) => {
+export const port = "18543"
+
+export function connect() {
+  return new Promise((resolve, reject) => {
     redisSrv = spawn("redis-server", ["--port", port, "--loglevel", "notice"], {
       stdio: "inherit",
     })
@@ -14,8 +15,9 @@ exports.connect = () =>
 
     setTimeout(resolve, 1500)
   })
+}
 
-exports.disconnect = function () {
+export function disconnect() {
   redisSrv.kill("SIGKILL")
   return Promise.resolve()
 }
