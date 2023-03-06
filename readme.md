@@ -124,29 +124,5 @@ interface Serializer {
 
 Value used for _count_ parameter in [Redis `SCAN` command](https://redis.io/commands/scan#the-count-option). Used for `ids()` and `all()` methods (default: `100`).
 
-## FAQ
-
-#### How to log Redis errors?
-
-```js
-client.on("error", console.error)
-```
-
-#### How do I handle lost connections to Redis?
-
-By default, the Redis client will [auto-reconnect](https://github.com/mranney/node_redis#overloading) on lost connections. But requests may come in during that time. In Express, one way you can handle this scenario is including a "session check":
-
-```js
-app.use(session(/* setup session here */))
-app.use(function (req, res, next) {
-  if (!req.session) {
-    return next(new Error("oh no")) // handle error
-  }
-  next() // otherwise continue
-})
-```
-
-If you want to retry, here is [another option](https://github.com/expressjs/session/issues/99#issuecomment-63853989).
-
 [1]: https://github.com/NodeRedis/node-redis
 [2]: https://github.com/luin/ioredis
