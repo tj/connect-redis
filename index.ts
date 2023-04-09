@@ -26,7 +26,7 @@ interface RedisStoreOptions {
   disableTouch?: boolean
 }
 
-class RedisStore extends Store {
+export class RedisStore extends Store {
   client: NormalizedRedisClient
   prefix: string
   scanCount: number

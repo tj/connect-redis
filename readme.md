@@ -29,12 +29,16 @@ Import using ESM/Typescript:
 
 ```js
 import RedisStore from "connect-redis"
+// or
+import { RedisStore } from "connect-redis"
 ```
 
 Require using CommonJS:
 
 ```js
 const RedisStore = require("connect-redis").default
+// or
+const RedisStore = require("connect-redis")
 ```
 
 ## API
