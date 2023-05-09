@@ -113,9 +113,11 @@ This option disables key expiration requiring the user to manually manage key cl
 
 Provide a custom encoder/decoder to use when storing and retrieving session data from Redis (default: `JSON.parse` and `JSON.stringify`).
 
+Optionally `parse` method can be async if need be.
+
 ```ts
 interface Serializer {
-  parse(string): object
+  parse(string): object | Promise<object>
   stringify(object): string
 }
 ```
