@@ -21,7 +21,7 @@ interface RedisStoreOptions {
   prefix?: string
   scanCount?: number
   serializer?: Serializer
-  ttl?: number
+  ttl?: number | {(sess: SessionData): number}
   disableTTL?: boolean
   disableTouch?: boolean
 }
@@ -31,7 +31,7 @@ class RedisStore extends Store {
   prefix: string
   scanCount: number
   serializer: Serializer
-  ttl: number
+  ttl: number | {(sess: SessionData): number}
   disableTTL: boolean
   disableTouch: boolean
 
@@ -181,6 +181,10 @@ class RedisStore extends Store {
   }
 
   private _getTTL(sess: SessionData) {
+    if (typeof this.ttl === "function") {
+      return this.ttl(sess)
+    }
+
     let ttl
     if (sess && sess.cookie && sess.cookie.expires) {
       let ms = Number(new Date(sess.cookie.expires)) - Date.now()
