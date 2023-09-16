@@ -48,7 +48,7 @@ import {createClient} from "redis"
 
 // Initialize client.
 let redisClient = createClient()
-redisClient.connect().catch(console.error)
+redisClient.on('error', console.error);
 
 // Initialize store.
 let redisStore = new RedisStore({
