@@ -153,7 +153,7 @@ class RedisStore extends Store {
       let keys = await this._getAllKeys()
       return cb(
         null,
-        keys.map((k) => k.substring(len))
+        keys.map((k) => k.substring(len)),
       )
     } catch (err) {
       return cb(err)
