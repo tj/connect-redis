@@ -6,7 +6,9 @@ import {createClient} from "redis"
 import RedisStore from "./"
 import * as redisSrv from "./testdata/server"
 
-test("setup", redisSrv.connect)
+test("setup", async () => {
+  await redisSrv.connect()
+})
 
 test("defaults", async (t) => {
   let client = createClient({url: `redis://localhost:${redisSrv.port}`})
@@ -44,7 +46,7 @@ test("teardown", redisSrv.disconnect)
 async function lifecycleTest(
   store: RedisStore,
   client: any,
-  t: test.Test
+  t: test.Test,
 ): Promise<void> {
   const P = (f: any) => promisify(f).bind(store)
   let res = await P(store.clear)()
@@ -85,7 +87,7 @@ async function lifecycleTest(
       {id: "123", foo: "bar"},
       {id: "456", cookie: {expires}},
     ],
-    "stored two keys data"
+    "stored two keys data",
   )
 
   await P(store.destroy)("456")
