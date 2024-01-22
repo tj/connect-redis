@@ -56,7 +56,7 @@ let redisStore = new RedisStore({
   prefix: "myapp:",
 })
 
-// Initialize sesssion storage.
+// Initialize session storage.
 app.use(
   session({
     store: redisStore,
