@@ -29,22 +29,22 @@
     "url": "git@github.com:tj/connect-redis.git"
   },
   "devDependencies": {
-    "@types/blue-tape": "^0.1.33",
-    "@types/express-session": "^1.17.6",
-    "@types/node": "^18.13.0",
-    "@typescript-eslint/eslint-plugin": "^5.52.0",
-    "@typescript-eslint/parser": "^5.52.0",
+    "@types/blue-tape": "^0.1.36",
+    "@types/express-session": "^1.17.10",
+    "@types/node": "^20.11.5",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
     "blue-tape": "^1.0.0",
-    "eslint": "^8.34.0",
-    "eslint-config-prettier": "^8.6.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
     "express-session": "^1.17.3",
-    "ioredis": "^5.3.1",
+    "ioredis": "^5.3.2",
     "nyc": "^15.1.0",
-    "prettier": "^2.8.4",
-    "prettier-plugin-organize-imports": "^3.2.2",
-    "redis": "^4.6.4",
-    "ts-node": "^10.9.1",
-    "typescript": "^4.9.5"
+    "prettier": "^3.2.4",
+    "prettier-plugin-organize-imports": "^3.2.4",
+    "redis": "^4.6.12",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
   },
   "peerDependencies": {
     "express-session": ">=1"
