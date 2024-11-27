@@ -36,6 +36,7 @@
     "@types/node": "^20.17.8",
     "@vitest/coverage-v8": "^2.1.6",
     "eslint": "^9.15.0",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "express-session": "^1.18.1",
     "ioredis": "^5.4.1",
