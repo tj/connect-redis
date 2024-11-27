@@ -28,13 +28,13 @@ npm install ioredis connect-redis express-session
 Import using ESM/Typescript:
 
 ```js
-import RedisStore from "connect-redis"
+import {RedisStore} from "connect-redis"
 ```
 
 Require using CommonJS:
 
 ```js
-const RedisStore = require("connect-redis").default
+const {RedisStore} = require("connect-redis")
 ```
 
 ## API
@@ -42,7 +42,7 @@ const RedisStore = require("connect-redis").default
 Full setup using [`redis`][1] package:
 
 ```js
-import RedisStore from "connect-redis"
+import {RedisStore} from "connect-redis"
 import session from "express-session"
 import {createClient} from "redis"
 
