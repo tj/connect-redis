@@ -1,7 +1,7 @@
 {
   "name": "connect-redis",
   "description": "Redis session store for Connect",
-  "version": "7.1.1",
+  "version": "8.0.0-rc.1",
   "author": "TJ Holowaychuk <tj@vision-media.ca>",
   "contributors": [
     "Marc Harter <wavded@gmail.com>"
@@ -18,7 +18,7 @@
     }
   },
   "scripts": {
-    "prepublishOnly": "rm -rf dist && tsc & tsc --project tsconfig.esm.json && echo '{\"type\":\"module\"}' > dist/esm/package.json",
+    "prepublishOnly": "vite build",
     "build": "vite build",
     "test": "vitest run --silent --coverage",
     "lint": "tsc --noemit && eslint --max-warnings 0 testdata *.ts",
