@@ -20,7 +20,7 @@
   "scripts": {
     "prepublishOnly": "rm -rf dist && tsc & tsc --project tsconfig.esm.json && echo '{\"type\":\"module\"}' > dist/esm/package.json",
     "build": "vite build",
-    "test": "vitest run --silent",
+    "test": "vitest run --silent --coverage",
     "lint": "tsc --noemit && eslint --max-warnings 0 testdata *.ts",
     "fmt": "prettier --write .",
     "fmt-check": "prettier --check ."

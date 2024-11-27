@@ -23,8 +23,7 @@ export default defineConfig({
   test: {
     include: ["**/*_test.[jt]s"],
     coverage: {
-      provider: "v8",
-      reporter: ["text-summary", ["cobertura", {file: "cobertura.xml"}]],
+      reporter: ["text"],
     },
   },
 })
