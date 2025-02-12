@@ -137,3 +137,10 @@ Value used for _count_ parameter in [Redis `SCAN` command](https://redis.io/comm
 
 [1]: https://github.com/NodeRedis/node-redis
 [2]: https://github.com/luin/ioredis
+
+#### useRedisJson
+
+Enable support of JSON for Redis (default: `false`)
+The session data will be stored as JSON objects in DB.
+
+Your Redis server must have the [RedisJSON plugin](https://redis.io/docs/latest/develop/data-types/json/) enabled.
