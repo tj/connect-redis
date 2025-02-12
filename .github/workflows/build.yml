@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         node: [18, 20, 22]
@@ -18,7 +18,13 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
-      - run: sudo apt-get install -y redis-server
+
+      - run: sudo apt-get install lsb-release curl gpg
+      - run: curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+      - run: sudo chmod 644 /usr/share/keyrings/redis-archive-keyring.gpg
+      - run: echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
+      - run: sudo apt-get update
+      - run: sudo apt-get install redis-stack-server
       - run: npm install
       - run: npm run fmt-check
       - run: npm run lint
