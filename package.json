@@ -1,7 +1,7 @@
 {
   "name": "connect-redis",
   "description": "Redis session store for Connect",
-  "version": "8.0.1",
+  "version": "8.0.2",
   "author": "TJ Holowaychuk <tj@vision-media.ca>",
   "contributors": [
     "Marc Harter <wavded@gmail.com>"
@@ -27,6 +27,7 @@
     "prepublishOnly": "vite build",
     "build": "vite build",
     "test": "vitest run --silent --coverage",
+    "test local Redis": "USER_LOCAL_REDIS=1 vitest run --silent --coverage",
     "lint": "tsc --noemit && eslint --max-warnings 0 testdata *.ts",
     "fmt": "prettier --write .",
     "fmt-check": "prettier --check ."
@@ -45,8 +46,8 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "express-session": "^1.18.1",
-    "ioredis": "^5.4.1",
-    "prettier": "^3.4.1",
+    "ioredis": "^5.5.0",
+    "prettier": "^3.5.0",
     "prettier-plugin-organize-imports": "^4.1.0",
     "redis": "^4.7.0",
     "ts-node": "^10.9.2",

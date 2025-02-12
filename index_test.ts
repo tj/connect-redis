@@ -6,12 +6,18 @@ import {expect, test} from "vitest"
 import {RedisStore} from "./"
 import * as redisSrv from "./testdata/server"
 
-test("setup", async () => {
-  await redisSrv.connect()
-})
+let redisPort: string = redisSrv.port
+
+if (!process.env.USER_LOCAL_REDIS) {
+  test("setup", async () => {
+    await redisSrv.connect()
+  })
+} else {
+  redisPort = "6379"
+}
 
 test("defaults", async () => {
-  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  let client = createClient({url: `redis://localhost:${redisPort}`})
   await client.connect()
 
   let store = new RedisStore({client})
@@ -23,11 +29,12 @@ test("defaults", async () => {
   expect(store.serializer).toBe(JSON)
   expect(store.disableTouch).toBe(false)
   expect(store.disableTTL).toBe(false)
+  expect(store.useRedisJson).toBe(false)
   await client.disconnect()
 })
 
 test("redis", async () => {
-  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  let client = createClient({url: `redis://localhost:${redisPort}`})
   await client.connect()
   let store = new RedisStore({client})
   await lifecycleTest(store, client)
@@ -35,13 +42,30 @@ test("redis", async () => {
 })
 
 test("ioredis", async () => {
-  let client = new Redis(`redis://localhost:${redisSrv.port}`)
+  let client = new Redis(`redis://localhost:${redisPort}`)
   let store = new RedisStore({client})
   await lifecycleTest(store, client)
   client.disconnect()
 })
 
-test("teardown", redisSrv.disconnect)
+test("redis with json", async () => {
+  let client = createClient({url: `redis://localhost:${redisPort}`})
+  await client.connect()
+  let store = new RedisStore({client, useRedisJson: true})
+  await lifecycleTest(store, client)
+  await client.disconnect()
+})
+
+test("ioredis with json", async () => {
+  let client = new Redis(`redis://localhost:${redisPort}`)
+  let store = new RedisStore({client, useRedisJson: true})
+  await lifecycleTest(store, client)
+  client.disconnect()
+})
+
+if (!process.env.USER_LOCAL_REDIS) {
+  test("teardown", redisSrv.disconnect)
+}
 
 async function lifecycleTest(store: RedisStore, client: any): Promise<void> {
   const P = (f: any) => promisify(f).bind(store)

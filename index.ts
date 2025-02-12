@@ -4,15 +4,21 @@ const noop = (_err?: unknown, _data?: any) => {}
 
 interface NormalizedRedisClient {
   get(key: string): Promise<string | null>
-  set(key: string, value: string, ttl?: number): Promise<string | null>
+
+  set(key: string, value: any, ttl?: number): Promise<string | null>
+
   expire(key: string, ttl: number): Promise<number | boolean>
+
   scanIterator(match: string, count: number): AsyncIterable<string>
+
   del(key: string[]): Promise<number>
+
   mget(key: string[]): Promise<(string | null)[]>
 }
 
 interface Serializer {
   parse(s: string): SessionData | Promise<SessionData>
+
   stringify(s: SessionData): string
 }
 
@@ -24,6 +30,7 @@ interface RedisStoreOptions {
   ttl?: number | {(sess: SessionData): number}
   disableTTL?: boolean
   disableTouch?: boolean
+  useRedisJson?: boolean
 }
 
 export class RedisStore extends Store {
@@ -34,9 +41,13 @@ export class RedisStore extends Store {
   ttl: number | {(sess: SessionData): number}
   disableTTL: boolean
   disableTouch: boolean
+  useRedisJson: boolean
+  isRedis: boolean
 
   constructor(opts: RedisStoreOptions) {
     super()
+    this.isRedis = "scanIterator" in opts.client
+
     this.prefix = opts.prefix == null ? "sess:" : opts.prefix
     this.scanCount = opts.scanCount || 100
     this.serializer = opts.serializer || JSON
@@ -44,38 +55,7 @@ export class RedisStore extends Store {
     this.disableTTL = opts.disableTTL || false
     this.disableTouch = opts.disableTouch || false
     this.client = this.normalizeClient(opts.client)
-  }
-
-  // Create a redis and ioredis compatible client
-  private normalizeClient(client: any): NormalizedRedisClient {
-    let isRedis = "scanIterator" in client
-    return {
-      get: (key) => client.get(key),
-      set: (key, val, ttl) => {
-        if (ttl) {
-          return isRedis
-            ? client.set(key, val, {EX: ttl})
-            : client.set(key, val, "EX", ttl)
-        }
-        return client.set(key, val)
-      },
-      del: (key) => client.del(key),
-      expire: (key, ttl) => client.expire(key, ttl),
-      mget: (keys) => (isRedis ? client.mGet(keys) : client.mget(keys)),
-      scanIterator: (match, count) => {
-        if (isRedis) return client.scanIterator({MATCH: match, COUNT: count})
-
-        // ioredis impl.
-        return (async function* () {
-          let [c, xs] = await client.scan("0", "MATCH", match, "COUNT", count)
-          for (let key of xs) yield key
-          while (c !== "0") {
-            ;[c, xs] = await client.scan(c, "MATCH", match, "COUNT", count)
-            for (let key of xs) yield key
-          }
-        })()
-      },
-    }
+    this.useRedisJson = opts.useRedisJson ?? false
   }
 
   async get(sid: string, cb = noop) {
@@ -83,7 +63,14 @@ export class RedisStore extends Store {
     try {
       let data = await this.client.get(key)
       if (!data) return cb()
-      return cb(null, await this.serializer.parse(data))
+
+      const parsedData: any = this.useRedisJson
+        ? this.isRedis
+          ? data
+          : ((await this.serializer.parse(data)) as any)?.[0]
+        : await this.serializer.parse(data)
+
+      return cb(null, parsedData)
     } catch (err) {
       return cb(err)
     }
@@ -93,10 +80,9 @@ export class RedisStore extends Store {
     let key = this.prefix + sid
     let ttl = this._getTTL(sess)
     try {
-      let val = this.serializer.stringify(sess)
       if (ttl > 0) {
-        if (this.disableTTL) await this.client.set(key, val)
-        else await this.client.set(key, val, ttl)
+        if (this.disableTTL) await this.client.set(key, sess)
+        else await this.client.set(key, sess, ttl)
         return cb()
       } else {
         return this.destroy(sid, cb)
@@ -169,7 +155,11 @@ export class RedisStore extends Store {
       let data = await this.client.mget(keys)
       let results = data.reduce((acc, raw, idx) => {
         if (!raw) return acc
-        let sess = this.serializer.parse(raw) as any
+        let sess = this.useRedisJson
+          ? this.isRedis
+            ? raw?.[0]
+            : (this.serializer.parse(raw) as any)?.[0]
+          : (this.serializer.parse(raw) as any)
         sess.id = keys[idx].substring(len)
         acc.push(sess)
         return acc
@@ -177,6 +167,75 @@ export class RedisStore extends Store {
       return cb(null, results)
     } catch (err) {
       return cb(err)
+    }
+  }
+
+  // Create a redis and ioredis compatible client
+  private normalizeClient(client: any): NormalizedRedisClient {
+    let isRedis = "scanIterator" in client
+    return {
+      get: (key) =>
+        this.useRedisJson
+          ? isRedis
+            ? client.json.get(key, "$")
+            : client.call("JSON.GET", key, "$")
+          : client.get(key),
+      set: (key, sess, ttl) => {
+        let val =
+          this.useRedisJson && this.isRedis
+            ? sess
+            : this.serializer.stringify(sess)
+
+        if (ttl) {
+          if (isRedis) {
+            if (this.useRedisJson) {
+              const multi = client.multi()
+              multi.json.set(key, "$", val)
+              multi.expire(key, ttl)
+              return multi.exec()
+            }
+            return client.set(key, val, {EX: ttl})
+          } else {
+            if (this.useRedisJson) {
+              const pipeline = client.pipeline()
+              pipeline.call("JSON.SET", key, "$", val)
+              pipeline.expire(key, ttl)
+              return pipeline.exec()
+            }
+            return client.set(key, val, "EX", ttl)
+          }
+        }
+        if (this.useRedisJson) {
+          return isRedis
+            ? client.json.set(key, "$", val)
+            : client.call("JSON.SET", key, "$", val)
+        }
+        return client.set(key, val)
+      },
+      del: (key) => client.del(key),
+      expire: (key, ttl) => client.expire(key, ttl),
+      mget: (keys) => {
+        if (this.useRedisJson) {
+          return isRedis
+            ? client.json.mGet(keys, "$")
+            : client.call("JSON.MGET", ...keys, "$")
+        } else {
+          return isRedis ? client.mGet(keys) : client.mget(keys)
+        }
+      },
+      scanIterator: (match, count) => {
+        if (isRedis) return client.scanIterator({MATCH: match, COUNT: count})
+
+        // ioredis impl.
+        return (async function* () {
+          let [c, xs] = await client.scan("0", "MATCH", match, "COUNT", count)
+          for (let key of xs) yield key
+          while (c !== "0") {
+            ;[c, xs] = await client.scan(c, "MATCH", match, "COUNT", count)
+            for (let key of xs) yield key
+          }
+        })()
+      },
     }
   }
 
