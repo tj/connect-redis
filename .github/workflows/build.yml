@@ -1,9 +1,11 @@
 name: build
-on:
+
+on:  
   push:
     branches:
       - master
   pull_request:
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest
