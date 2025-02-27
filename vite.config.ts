@@ -19,7 +19,6 @@ export default defineConfig({
     target: "node18",
   },
   plugins: [
-    // @ts-expect-error Type mismatch, revisit.
     dts({
       include: ["index.ts"],
       rollupTypes: true,
