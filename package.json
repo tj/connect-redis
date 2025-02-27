@@ -13,8 +13,14 @@
   "types": "./dist/connect-redis.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/connect-redis.js",
-      "require": "./dist/connect-redis.cjs"
+      "import": {
+        "types": "./dist/connect-redis.d.ts",
+        "default": "./dist/connect-redis.js"
+      },
+      "require": {
+        "types": "./dist/connect-redis.d.cts",
+        "default": "./dist/connect-redis.cjs"
+      }
     }
   },
   "scripts": {
@@ -27,7 +33,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:tj/connect-redis.git"
+    "url": "git+ssh://git@github.com/tj/connect-redis.git"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",

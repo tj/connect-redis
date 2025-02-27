@@ -1,3 +1,4 @@
+import {copyFileSync} from "node:fs"
 import dts from "vite-plugin-dts"
 import {defineConfig} from "vitest/config"
 
@@ -18,7 +19,15 @@ export default defineConfig({
     target: "node18",
   },
   plugins: [
-    dts({include: ["index.ts"], rollupTypes: true, insertTypesEntry: true}),
+    // @ts-expect-error Type mismatch, revisit.
+    dts({
+      include: ["index.ts"],
+      rollupTypes: true,
+      insertTypesEntry: true,
+      afterBuild: () => {
+        copyFileSync("dist/connect-redis.d.ts", "dist/connect-redis.d.cts")
+      },
+    }),
   ],
   test: {
     include: ["**/*_test.[jt]s"],
