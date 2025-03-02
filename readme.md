@@ -102,6 +102,17 @@ interface RedisStoreOptions {
 
 **Note**: `express-session` does not update `expires` until the end of the request life cycle. _Calling `session.save()` manually beforehand will have the previous value_.
 
+##### onSet
+
+Optional callback function that is triggered whenever a session is saved to Redis. This allows you to perform additional actions or logging when session data is being stored.
+
+```ts
+interface RedisStoreOptions {
+  ...
+  onSet?: (sess: SessionData) => void
+}
+```
+
 ##### disableTouch
 
 Disables resetting the TTL when using `touch` (default: `false`)
