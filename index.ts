@@ -22,6 +22,7 @@ interface RedisStoreOptions {
   scanCount?: number
   serializer?: Serializer
   ttl?: number | {(sess: SessionData): number}
+  onSet?: (sess: SessionData) => void
   disableTTL?: boolean
   disableTouch?: boolean
 }
@@ -32,6 +33,7 @@ export class RedisStore extends Store {
   scanCount: number
   serializer: Serializer
   ttl: number | {(sess: SessionData): number}
+  onSet: (sess: SessionData) => void
   disableTTL: boolean
   disableTouch: boolean
 
@@ -41,6 +43,7 @@ export class RedisStore extends Store {
     this.scanCount = opts.scanCount || 100
     this.serializer = opts.serializer || JSON
     this.ttl = opts.ttl || 86400 // One day in seconds.
+    this.onSet = opts.onSet || noop
     this.disableTTL = opts.disableTTL || false
     this.disableTouch = opts.disableTouch || false
     this.client = this.normalizeClient(opts.client)
@@ -97,6 +100,7 @@ export class RedisStore extends Store {
       if (ttl > 0) {
         if (this.disableTTL) await this.client.set(key, val)
         else await this.client.set(key, val, ttl)
+        this.onSet(sess)
         return cb()
       } else {
         return this.destroy(sid, cb)
