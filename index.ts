@@ -93,8 +93,8 @@ export class RedisStore extends Store {
     let key = this.prefix + sid
     let ttl = this._getTTL(sess)
     try {
-      let val = this.serializer.stringify(sess)
       if (ttl > 0) {
+        let val = this.serializer.stringify(sess)
         if (this.disableTTL) await this.client.set(key, val)
         else await this.client.set(key, val, ttl)
         return cb()
