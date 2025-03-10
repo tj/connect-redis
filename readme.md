@@ -1,4 +1,4 @@
-![Build Status](https://github.com/tj/connect-redis/workflows/build/badge.svg?branch=master) [![npm](https://img.shields.io/npm/v/connect-redis.svg)](https://npmjs.com/package/connect-redis) [![code-style](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://gitter.im/jlongster/prettier) ![Downloads](https://img.shields.io/npm/dm/connect-redis.svg)
+[![build](https://github.com/tj/connect-redis/actions/workflows/build.yml/badge.svg)](https://github.com/tj/connect-redis/actions/workflows/build.yml) [![npm](https://img.shields.io/npm/v/connect-redis.svg)](https://npmjs.com/package/connect-redis) ![Downloads](https://img.shields.io/npm/dm/connect-redis.svg)
 
 **connect-redis** provides Redis session storage for Express.
 
