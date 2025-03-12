@@ -18,4 +18,4 @@ COPY . .
 EXPOSE 3000
 
 # Start redis-server in daemon mode then run the app
-CMD redis-server --daemonize yes && npm test
+CMD redis-server && npm test
