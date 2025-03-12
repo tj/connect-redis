@@ -8,6 +8,7 @@
       "test-env-docker-stage": "test",
       "build-test-env-docker-stage-script-path": "tool/build-test-env-docker-stage.sh",
       "test-files-folders": [
+        "."
       ],
       "source-test-file-paths": [
         {
@@ -19,5 +20,7 @@
       "coverage-type": "lcov",
       "code-coverage-report-path": "coverage/lcov.info",
       "desired-coverage": 90,
-      "max-iterations": 2    }
+      "max-iterations": 2,
+      "max-number-of-test-cases": 1
+      }
   }
