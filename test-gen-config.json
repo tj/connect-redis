@@ -8,8 +8,8 @@
       "test-env-docker-stage": "test",
       "build-test-env-docker-stage-script-path": "tool/build-test-env-docker-stage.sh",
       "test-files-folders": [
-        "src",
-        "coverage"
+        "coverage",
+        "index_test.ts"
       ],
       "source-test-file-paths": [
         {
