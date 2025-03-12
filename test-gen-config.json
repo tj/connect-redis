@@ -1,0 +1,27 @@
+{
+    "enabled": "true",
+    "increase-coverage": {
+      "project-name": "connect-redis",
+      "target-branches": [
+        "master"
+      ],
+      "test-env-docker-stage": "test",
+      "build-test-env-docker-stage-script-path": "tool/build-test-env-docker-stage.sh",
+      "test-files-folders": [
+        "src",
+        "coverage"
+      ],
+      "source-test-file-paths": [
+        {
+          "source-file-path": "index.ts",
+          "test-file-path": "index_test.ts"
+        }
+      ],
+      "test-command": "npm run test",
+      "coverage-type": "lcov",
+      "code-coverage-report-path": "coverage/lcov.info",
+      "desired-coverage": 90,
+      "max-iterations": 2,
+      "max-number-of-test-cases": 6
+    }
+  }
