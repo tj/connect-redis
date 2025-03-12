@@ -1,5 +1,4 @@
-# Use the official Node.js 10.8.2 image
-FROM node:21
+FROM node:21 AS base
 
 # Update apt repository and install redis-server
 RUN apt-get update && apt-get install -y redis-server
@@ -11,6 +10,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
 
+FROM base AS test
 # Copy the rest of your application code
 COPY . .
 
