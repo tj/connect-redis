@@ -17,5 +17,5 @@ COPY . .
 # Expose the port your app will run on (adjust as needed)
 EXPOSE 3000
 
-# Start redis-server in daemon mode then run the app
+# Start redis-server then run the app
 CMD redis-server && npm test
