@@ -14,9 +14,6 @@ FROM base AS test
 # Copy the rest of your application code
 COPY . .
 
-# Create coverage directory with proper permissions
-RUN mkdir -p /app/coverage && chmod 777 /app/coverage
-
 # Expose the port your app will run on (adjust as needed)
 EXPOSE 3000
 
