@@ -4,7 +4,7 @@ FROM node:21 AS base
 RUN apt-get update && apt-get install -y redis-server
 
 # Set the working directory in the container
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # Copy package files and install dependencies
 COPY package*.json ./
