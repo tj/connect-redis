@@ -1,6 +1,8 @@
 import {SessionData, Store} from "express-session"
 
-const noop = (_err?: unknown, _data?: any) => {}
+export type CallbackType = (err?: unknown, data?: unknown) => unknown
+
+const noop: CallbackType = (_err, _data) => {}
 
 interface NormalizedRedisClient {
   get(key: string): Promise<string | null>
