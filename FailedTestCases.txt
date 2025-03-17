@@ -46,3 +46,57 @@ test("get non-existent session", async () => {
 })
 
 
+
+test("zero TTL session destruction", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  let store = new RedisStore({client})
+
+  const P = (f: any) => promisify(f).bind(store)
+  const sid = "zeroTTL"
+  const sess = {cookie: {expires: new Date(Date.now()).toISOString()}}
+
+  await P(store.set)(sid, sess)
+
+  let res = await P(store.get)(sid)
+  expect(res).toBeNull()
+
+  await client.disconnect()
+})
+
+
+
+test("zero TTL session destruction", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  let store = new RedisStore({client})
+
+  const P = (f: any) => promisify(f).bind(store)
+  const sid = "zeroTTL"
+  const sess = {cookie: {expires: new Date(Date.now()).toISOString()}}
+
+  await P(store.set)(sid, sess)
+
+  let res = await P(store.get)(sid)
+  expect(res).toBeNull()
+
+  await client.disconnect()
+})
+
+
+
+test("get non-existent session", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  let store = new RedisStore({client})
+
+  const P = (f: any) => promisify(f).bind(store)
+  const sid = "nonExistent"
+
+  let res = await P(store.get)(sid)
+  expect(res).toBeNull()
+
+  await client.disconnect()
+})
+
+
