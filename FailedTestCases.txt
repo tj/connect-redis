@@ -443,3 +443,425 @@ test("get session with non-existent session ID", async () => {
 })
 
 
+
+test("custom serializer implementation", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  
+  // Custom serializer that adds a version field
+  const customSerializer = {
+    parse: (s: string) => {
+      const data = JSON.parse(s);
+      delete data.__v;
+      return data;
+    },
+    stringify: (sess: any) => {
+      const data = {...sess, __v: "1.0"};
+      return JSON.stringify(data);
+    }
+  };
+  
+  let store = new RedisStore({
+    client,
+    serializer: customSerializer
+  });
+  
+  const P = (f: any) => promisify(f).bind(store);
+  
+  // Set session with custom serializer
+  const sess = {foo: "bar", user: "test"};
+  await P(store.set)("custom-serializer", sess);
+  
+  // Verify the session was stored with our custom format
+  const rawData = await client.get("sess:custom-serializer");
+  expect(JSON.parse(rawData!)).toHaveProperty("__v", "1.0");
+  
+  // Verify we can get the session back correctly
+  const retrievedSession = await P(store.get)("custom-serializer");
+  expect(retrievedSession).toEqual(sess);
+  expect(retrievedSession).not.toHaveProperty("__v");
+  
+  await client.disconnect();
+})
+
+
+
+test("custom serializer implementation", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  
+  // Custom serializer that adds a version field
+  const customSerializer = {
+    parse: (s: string) => {
+      const data = JSON.parse(s);
+      delete data.__v;
+      return data;
+    },
+    stringify: (sess: any) => {
+      const data = {...sess, __v: "1.0"};
+      return JSON.stringify(data);
+    }
+  };
+  
+  let store = new RedisStore({
+    client,
+    serializer: customSerializer
+  });
+  
+  const P = (f: any) => promisify(f).bind(store);
+  
+  // Set session with custom serializer
+  const sess = {foo: "bar", user: "test"};
+  await P(store.set)("custom-serializer", sess);
+  
+  // Verify the session was stored with our custom format
+  const rawData = await client.get("sess:custom-serializer");
+  expect(JSON.parse(rawData!)).toHaveProperty("__v", "1.0");
+  
+  // Verify we can get the session back correctly
+  const retrievedSession = await P(store.get)("custom-serializer");
+  expect(retrievedSession).toEqual(sess);
+  expect(retrievedSession).not.toHaveProperty("__v");
+  
+  await client.disconnect();
+})
+
+
+
+test("ttl function implementation", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  
+  // TTL function that returns different TTLs based on session data
+  const ttlFunction = (sess: any) => {
+    if (sess.priority === "high") return 120; // 2 minutes
+    if (sess.priority === "low") return 30;   // 30 seconds
+    return 60; // default 1 minute
+  };
+  
+  let store = new RedisStore({
+    client,
+    ttl: ttlFunction
+  });
+  
+  const P = (f: any) => promisify(f).bind(store);
+  
+  // Test high priority session
+  await P(store.set)("high-priority", { priority: "high", data: "important" });
+  let ttl = await client.ttl("sess:high-priority");
+  expect(ttl).toBeGreaterThanOrEqual(115);
+  expect(ttl).toBeLessThanOrEqual(120);
+  
+  // Test low priority session
+  await P(store.set)("low-priority", { priority: "low", data: "less important" });
+  ttl = await client.ttl("sess:low-priority");
+  expect(ttl).toBeGreaterThanOrEqual(25);
+  expect(ttl).toBeLessThanOrEqual(30);
+  
+  // Test default priority
+  await P(store.set)("default-priority", { data: "normal" });
+  ttl = await client.ttl("sess:default-priority");
+  expect(ttl).toBeGreaterThanOrEqual(55);
+  expect(ttl).toBeLessThanOrEqual(60);
+  
+  await client.disconnect();
+})
+
+
+
+test("custom serializer implementation", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  
+  // Custom serializer that adds a version field
+  const customSerializer = {
+    parse: (s: string) => {
+      const data = JSON.parse(s);
+      delete data.__v;
+      return data;
+    },
+    stringify: (sess: any) => {
+      const data = {...sess, __v: "1.0"};
+      return JSON.stringify(data);
+    }
+  };
+  
+  let store = new RedisStore({
+    client,
+    serializer: customSerializer
+  });
+  
+  const P = (f: any) => promisify(f).bind(store);
+  
+  // Set session with custom serializer
+  const sess = {foo: "bar", user: "test"};
+  await P(store.set)("custom-serializer", sess);
+  
+  // Verify the session was stored with our custom format
+  const rawData = await client.get("sess:custom-serializer");
+  expect(JSON.parse(rawData!)).toHaveProperty("__v", "1.0");
+  
+  // Verify we can get the session back correctly
+  const retrievedSession = await P(store.get)("custom-serializer");
+  expect(retrievedSession).toEqual(sess);
+  expect(retrievedSession).not.toHaveProperty("__v");
+  
+  await client.disconnect();
+})
+
+
+
+test("ttl function implementation", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  
+  // TTL function that returns different TTLs based on session data
+  const ttlFunction = (sess: any) => {
+    if (sess.priority === "high") return 120; // 2 minutes
+    if (sess.priority === "low") return 30;   // 30 seconds
+    return 60; // default 1 minute
+  };
+  
+  let store = new RedisStore({
+    client,
+    ttl: ttlFunction
+  });
+  
+  const P = (f: any) => promisify(f).bind(store);
+  
+  // Test high priority session
+  await P(store.set)("high-priority", { priority: "high", data: "important" });
+  let ttl = await client.ttl("sess:high-priority");
+  expect(ttl).toBeGreaterThanOrEqual(115);
+  expect(ttl).toBeLessThanOrEqual(120);
+  
+  // Test low priority session
+  await P(store.set)("low-priority", { priority: "low", data: "less important" });
+  ttl = await client.ttl("sess:low-priority");
+  expect(ttl).toBeGreaterThanOrEqual(25);
+  expect(ttl).toBeLessThanOrEqual(30);
+  
+  // Test default priority
+  await P(store.set)("default-priority", { data: "normal" });
+  ttl = await client.ttl("sess:default-priority");
+  expect(ttl).toBeGreaterThanOrEqual(55);
+  expect(ttl).toBeLessThanOrEqual(60);
+  
+  await client.disconnect();
+})
+
+
+
+test("extremely short ttl values", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  
+  let store = new RedisStore({
+    client,
+    ttl: 1 // 1 second TTL
+  });
+  
+  const P = (f: any) => promisify(f).bind(store);
+  
+  // Set session with 1 second TTL
+  await P(store.set)("short-ttl", { data: "expires quickly" });
+  
+  // Verify TTL is set correctly
+  let ttl = await client.ttl("sess:short-ttl");
+  expect(ttl).toBeLessThanOrEqual(1);
+  
+  // Wait for session to expire
+  await new Promise(resolve => setTimeout(resolve, 1100));
+  
+  // Verify session is gone
+  const result = await P(store.get)("short-ttl");
+  expect(result).toBeUndefined();
+  
+  // Test with cookie expiration of 1 second
+  const expires = new Date(Date.now() + 1000).toISOString();
+  await P(store.set)("cookie-short-ttl", { cookie: { expires } });
+  
+  ttl = await client.ttl("sess:cookie-short-ttl");
+  expect(ttl).toBeLessThanOrEqual(1);
+  
+  // Wait for session to expire
+  await new Promise(resolve => setTimeout(resolve, 1100));
+  
+  // Verify session is gone
+  const cookieResult = await P(store.get)("cookie-short-ttl");
+  expect(cookieResult).toBeUndefined();
+  
+  await client.disconnect();
+})
+
+
+
+test("custom serializer implementation", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  
+  // Custom serializer that adds a version field
+  const customSerializer = {
+    parse: (s: string) => {
+      const data = JSON.parse(s);
+      delete data.__v;
+      return data;
+    },
+    stringify: (sess: any) => {
+      const data = {...sess, __v: "1.0"};
+      return JSON.stringify(data);
+    }
+  };
+  
+  let store = new RedisStore({
+    client,
+    serializer: customSerializer
+  });
+  
+  const P = (f: any) => promisify(f).bind(store);
+  
+  // Set session with custom serializer
+  const sess = {foo: "bar", user: "test"};
+  await P(store.set)("custom-serializer", sess);
+  
+  // Verify the session was stored with our custom format
+  const rawData = await client.get("sess:custom-serializer");
+  expect(JSON.parse(rawData!)).toHaveProperty("__v", "1.0");
+  
+  // Verify we can get the session back correctly
+  const retrievedSession = await P(store.get)("custom-serializer");
+  expect(retrievedSession).toEqual(sess);
+  expect(retrievedSession).not.toHaveProperty("__v");
+  
+  await client.disconnect();
+})
+
+
+
+test("ttl function implementation", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  
+  // TTL function that returns different TTLs based on session data
+  const ttlFunction = (sess: any) => {
+    if (sess.priority === "high") return 120; // 2 minutes
+    if (sess.priority === "low") return 30;   // 30 seconds
+    return 60; // default 1 minute
+  };
+  
+  let store = new RedisStore({
+    client,
+    ttl: ttlFunction
+  });
+  
+  const P = (f: any) => promisify(f).bind(store);
+  
+  // Test high priority session
+  await P(store.set)("high-priority", { priority: "high", data: "important" });
+  let ttl = await client.ttl("sess:high-priority");
+  expect(ttl).toBeGreaterThanOrEqual(115);
+  expect(ttl).toBeLessThanOrEqual(120);
+  
+  // Test low priority session
+  await P(store.set)("low-priority", { priority: "low", data: "less important" });
+  ttl = await client.ttl("sess:low-priority");
+  expect(ttl).toBeGreaterThanOrEqual(25);
+  expect(ttl).toBeLessThanOrEqual(30);
+  
+  // Test default priority
+  await P(store.set)("default-priority", { data: "normal" });
+  ttl = await client.ttl("sess:default-priority");
+  expect(ttl).toBeGreaterThanOrEqual(55);
+  expect(ttl).toBeLessThanOrEqual(60);
+  
+  await client.disconnect();
+})
+
+
+
+test("extremely short ttl values", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  
+  let store = new RedisStore({
+    client,
+    ttl: 1 // 1 second TTL
+  });
+  
+  const P = (f: any) => promisify(f).bind(store);
+  
+  // Set session with 1 second TTL
+  await P(store.set)("short-ttl", { data: "expires quickly" });
+  
+  // Verify TTL is set correctly
+  let ttl = await client.ttl("sess:short-ttl");
+  expect(ttl).toBeLessThanOrEqual(1);
+  
+  // Wait for session to expire
+  await new Promise(resolve => setTimeout(resolve, 1100));
+  
+  // Verify session is gone
+  const result = await P(store.get)("short-ttl");
+  expect(result).toBeUndefined();
+  
+  // Test with cookie expiration of 1 second
+  const expires = new Date(Date.now() + 1000).toISOString();
+  await P(store.set)("cookie-short-ttl", { cookie: { expires } });
+  
+  ttl = await client.ttl("sess:cookie-short-ttl");
+  expect(ttl).toBeLessThanOrEqual(1);
+  
+  // Wait for session to expire
+  await new Promise(resolve => setTimeout(resolve, 1100));
+  
+  // Verify session is gone
+  const cookieResult = await P(store.get)("cookie-short-ttl");
+  expect(cookieResult).toBeUndefined();
+  
+  await client.disconnect();
+})
+
+
+
+test("corrupted data in redis", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  
+  let store = new RedisStore({client});
+  
+  // Manually insert corrupted data
+  await client.set("sess:corrupted", "this is not valid JSON");
+  
+  // Try to get the corrupted session
+  let error: Error | null = null;
+  await new Promise<void>((resolve) => {
+    store.get("corrupted", (err, data) => {
+      error = err as Error;
+      expect(err).toBeInstanceOf(Error);
+      expect(err?.message).toContain("Unexpected token");
+      expect(data).toBeUndefined();
+      resolve();
+    });
+  });
+  
+  expect(error).not.toBeNull();
+  
+  // Test with another type of corrupted data
+  await client.set("sess:corrupted2", "{partial: json,");
+  
+  error = null;
+  await new Promise<void>((resolve) => {
+    store.get("corrupted2", (err, data) => {
+      error = err as Error;
+      expect(err).toBeInstanceOf(Error);
+      expect(data).toBeUndefined();
+      resolve();
+    });
+  });
+  
+  expect(error).not.toBeNull();
+  
+  await client.disconnect();
+})
+
+
