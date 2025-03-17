@@ -865,3 +865,854 @@ test("corrupted data in redis", async () => {
 })
 
 
+
+test("basic session CRUD operations with Redis client", async () => {
+  const client = createClient();
+  await client.connect();
+  
+  const store = new RedisStore({ client });
+  const sid = "test-session-id";
+  const sessionData = {
+    cookie: { maxAge: 2000 },
+    name: "test-session"
+  };
+  
+  // Test set
+  await promisify(store.set.bind(store))(sid, sessionData);
+  
+  // Test get
+  const result = await promisify(store.get.bind(store))(sid);
+  expect(result).toEqual(sessionData);
+  
+  // Test touch
+  await promisify(store.touch.bind(store))(sid, sessionData);
+  
+  // Test destroy
+  await promisify(store.destroy.bind(store))(sid);
+  const destroyed = await promisify(store.get.bind(store))(sid);
+  expect(destroyed).toBeUndefined();
+  
+  await client.disconnect();
+});
+
+
+
+test("basic session CRUD operations with Redis client", async () => {
+  const client = createClient();
+  await client.connect();
+  
+  const store = new RedisStore({ client });
+  const sid = "test-session-id";
+  const sessionData = {
+    cookie: { maxAge: 2000 },
+    name: "test-session"
+  };
+  
+  // Test set
+  await promisify(store.set.bind(store))(sid, sessionData);
+  
+  // Test get
+  const result = await promisify(store.get.bind(store))(sid);
+  expect(result).toEqual(sessionData);
+  
+  // Test touch
+  await promisify(store.touch.bind(store))(sid, sessionData);
+  
+  // Test destroy
+  await promisify(store.destroy.bind(store))(sid);
+  const destroyed = await promisify(store.get.bind(store))(sid);
+  expect(destroyed).toBeUndefined();
+  
+  await client.disconnect();
+});
+
+
+
+test("custom prefix and serializer", async () => {
+  const client = createClient();
+  await client.connect();
+  
+  const customSerializer = {
+    parse: (s) => {
+      const parsed = JSON.parse(s);
+      parsed.customField = "was parsed";
+      return parsed;
+    },
+    stringify: (s) => {
+      const copy = { ...s, customField: "was stringified" };
+      return JSON.stringify(copy);
+    }
+  };
+  
+  const store = new RedisStore({ 
+    client,
+    prefix: "custom-prefix:",
+    serializer: customSerializer
+  });
+  
+  const sid = "test-session-id";
+  const sessionData = {
+    cookie: { maxAge: 2000 },
+    name: "test-session"
+  };
+  
+  // Set session with custom serializer
+  await promisify(store.set.bind(store))(sid, sessionData);
+  
+  // Get raw data from Redis to verify prefix
+  const rawData = await client.get("custom-prefix:test-session-id");
+  expect(rawData).toBeTruthy();
+  expect(JSON.parse(rawData)).toHaveProperty("customField", "was stringified");
+  
+  // Get session with custom serializer
+  const result = await promisify(store.get.bind(store))(sid);
+  expect(result).toHaveProperty("name", "test-session");
+  expect(result).toHaveProperty("customField", "was parsed");
+  
+  await client.disconnect();
+});
+
+
+
+test("basic session CRUD operations with Redis client", async () => {
+  const client = createClient();
+  await client.connect();
+  
+  const store = new RedisStore({ client });
+  const sid = "test-session-id";
+  const sessionData = {
+    cookie: { maxAge: 2000 },
+    name: "test-session"
+  };
+  
+  // Test set
+  await promisify(store.set.bind(store))(sid, sessionData);
+  
+  // Test get
+  const result = await promisify(store.get.bind(store))(sid);
+  expect(result).toEqual(sessionData);
+  
+  // Test touch
+  await promisify(store.touch.bind(store))(sid, sessionData);
+  
+  // Test destroy
+  await promisify(store.destroy.bind(store))(sid);
+  const destroyed = await promisify(store.get.bind(store))(sid);
+  expect(destroyed).toBeUndefined();
+  
+  await client.disconnect();
+});
+
+
+
+test("custom prefix and serializer", async () => {
+  const client = createClient();
+  await client.connect();
+  
+  const customSerializer = {
+    parse: (s) => {
+      const parsed = JSON.parse(s);
+      parsed.customField = "was parsed";
+      return parsed;
+    },
+    stringify: (s) => {
+      const copy = { ...s, customField: "was stringified" };
+      return JSON.stringify(copy);
+    }
+  };
+  
+  const store = new RedisStore({ 
+    client,
+    prefix: "custom-prefix:",
+    serializer: customSerializer
+  });
+  
+  const sid = "test-session-id";
+  const sessionData = {
+    cookie: { maxAge: 2000 },
+    name: "test-session"
+  };
+  
+  // Set session with custom serializer
+  await promisify(store.set.bind(store))(sid, sessionData);
+  
+  // Get raw data from Redis to verify prefix
+  const rawData = await client.get("custom-prefix:test-session-id");
+  expect(rawData).toBeTruthy();
+  expect(JSON.parse(rawData)).toHaveProperty("customField", "was stringified");
+  
+  // Get session with custom serializer
+  const result = await promisify(store.get.bind(store))(sid);
+  expect(result).toHaveProperty("name", "test-session");
+  expect(result).toHaveProperty("customField", "was parsed");
+  
+  await client.disconnect();
+});
+
+
+
+test("TTL function and disableTTL option", async () => {
+  const client = createClient();
+  await client.connect();
+  
+  // Create store with TTL function
+  const ttlFunction = (sess) => {
+    return sess.cookie.maxAge ? Math.floor(sess.cookie.maxAge / 1000) : 60;
+  };
+  
+  const store = new RedisStore({ 
+    client,
+    ttl: ttlFunction
+  });
+  
+  const sid = "ttl-test-session";
+  const sessionData = {
+    cookie: { maxAge: 5000 },
+    name: "ttl-test"
+  };
+  
+  // Set session with TTL function
+  await promisify(store.set.bind(store))(sid, sessionData);
+  
+  // Check TTL was set correctly (should be around 5 seconds)
+  const ttl = await client.ttl(`sess:${sid}`);
+  expect(ttl).toBeGreaterThan(0);
+  expect(ttl).toBeLessThanOrEqual(5);
+  
+  // Test with disableTTL
+  const disableTTLStore = new RedisStore({
+    client,
+    disableTTL: true
+  });
+  
+  const sid2 = "no-ttl-session";
+  await promisify(disableTTLStore.set.bind(disableTTLStore))(sid2, sessionData);
+  
+  // Check that TTL was not set
+  const ttl2 = await client.ttl(`sess:${sid2}`);
+  expect(ttl2).toBe(-1); // -1 means no expiration
+  
+  await client.disconnect();
+});
+
+
+
+test("basic session CRUD operations with Redis client", async () => {
+  const client = createClient();
+  await client.connect();
+  
+  const store = new RedisStore({ client });
+  const sid = "test-session-id";
+  const sessionData = {
+    cookie: { maxAge: 2000 },
+    name: "test-session"
+  };
+  
+  // Test set
+  await promisify(store.set.bind(store))(sid, sessionData);
+  
+  // Test get
+  const result = await promisify(store.get.bind(store))(sid);
+  expect(result).toEqual(sessionData);
+  
+  // Test touch
+  await promisify(store.touch.bind(store))(sid, sessionData);
+  
+  // Test destroy
+  await promisify(store.destroy.bind(store))(sid);
+  const destroyed = await promisify(store.get.bind(store))(sid);
+  expect(destroyed).toBeUndefined();
+  
+  await client.disconnect();
+});
+
+
+
+test("custom prefix and serializer", async () => {
+  const client = createClient();
+  await client.connect();
+  
+  const customSerializer = {
+    parse: (s) => {
+      const parsed = JSON.parse(s);
+      parsed.customField = "was parsed";
+      return parsed;
+    },
+    stringify: (s) => {
+      const copy = { ...s, customField: "was stringified" };
+      return JSON.stringify(copy);
+    }
+  };
+  
+  const store = new RedisStore({ 
+    client,
+    prefix: "custom-prefix:",
+    serializer: customSerializer
+  });
+  
+  const sid = "test-session-id";
+  const sessionData = {
+    cookie: { maxAge: 2000 },
+    name: "test-session"
+  };
+  
+  // Set session with custom serializer
+  await promisify(store.set.bind(store))(sid, sessionData);
+  
+  // Get raw data from Redis to verify prefix
+  const rawData = await client.get("custom-prefix:test-session-id");
+  expect(rawData).toBeTruthy();
+  expect(JSON.parse(rawData)).toHaveProperty("customField", "was stringified");
+  
+  // Get session with custom serializer
+  const result = await promisify(store.get.bind(store))(sid);
+  expect(result).toHaveProperty("name", "test-session");
+  expect(result).toHaveProperty("customField", "was parsed");
+  
+  await client.disconnect();
+});
+
+
+
+test("TTL function and disableTTL option", async () => {
+  const client = createClient();
+  await client.connect();
+  
+  // Create store with TTL function
+  const ttlFunction = (sess) => {
+    return sess.cookie.maxAge ? Math.floor(sess.cookie.maxAge / 1000) : 60;
+  };
+  
+  const store = new RedisStore({ 
+    client,
+    ttl: ttlFunction
+  });
+  
+  const sid = "ttl-test-session";
+  const sessionData = {
+    cookie: { maxAge: 5000 },
+    name: "ttl-test"
+  };
+  
+  // Set session with TTL function
+  await promisify(store.set.bind(store))(sid, sessionData);
+  
+  // Check TTL was set correctly (should be around 5 seconds)
+  const ttl = await client.ttl(`sess:${sid}`);
+  expect(ttl).toBeGreaterThan(0);
+  expect(ttl).toBeLessThanOrEqual(5);
+  
+  // Test with disableTTL
+  const disableTTLStore = new RedisStore({
+    client,
+    disableTTL: true
+  });
+  
+  const sid2 = "no-ttl-session";
+  await promisify(disableTTLStore.set.bind(disableTTLStore))(sid2, sessionData);
+  
+  // Check that TTL was not set
+  const ttl2 = await client.ttl(`sess:${sid2}`);
+  expect(ttl2).toBe(-1); // -1 means no expiration
+  
+  await client.disconnect();
+});
+
+
+
+test("bulk operations clear length ids all", async () => {
+  const client = createClient();
+  await client.connect();
+  
+  const store = new RedisStore({ client });
+  
+  // Clear any existing sessions
+  await promisify(store.clear.bind(store))();
+  
+  // Create multiple sessions
+  const sessions = [
+    { id: "session1", data: { cookie: { maxAge: 2000 }, name: "session1" } },
+    { id: "session2", data: { cookie: { maxAge: 2000 }, name: "session2" } },
+    { id: "session3", data: { cookie: { maxAge: 2000 }, name: "session3" } }
+  ];
+  
+  for (const session of sessions) {
+    await promisify(store.set.bind(store))(session.id, session.data);
+  }
+  
+  // Test length
+  const length = await promisify(store.length.bind(store))();
+  expect(length).toBe(3);
+  
+  // Test ids
+  const ids = await promisify(store.ids.bind(store))();
+  expect(ids).toHaveLength(3);
+  expect(ids.sort()).toEqual(["session1", "session2", "session3"]);
+  
+  // Test all
+  const all = await promisify(store.all.bind(store))();
+  expect(all).toHaveLength(3);
+  expect(all.map(s => s.name).sort()).toEqual(["session1", "session2", "session3"]);
+  
+  // Test clear
+  await promisify(store.clear.bind(store))();
+  const lengthAfterClear = await promisify(store.length.bind(store))();
+  expect(lengthAfterClear).toBe(0);
+  
+  await client.disconnect();
+});
+
+
+
+test("basic session CRUD operations with Redis client", async () => {
+  const client = createClient();
+  await client.connect();
+  
+  const store = new RedisStore({ client });
+  const sid = "test-session-id";
+  const sessionData = {
+    cookie: { maxAge: 2000 },
+    name: "test-session"
+  };
+  
+  // Test set
+  await promisify(store.set.bind(store))(sid, sessionData);
+  
+  // Test get
+  const result = await promisify(store.get.bind(store))(sid);
+  expect(result).toEqual(sessionData);
+  
+  // Test touch
+  await promisify(store.touch.bind(store))(sid, sessionData);
+  
+  // Test destroy
+  await promisify(store.destroy.bind(store))(sid);
+  const destroyed = await promisify(store.get.bind(store))(sid);
+  expect(destroyed).toBeUndefined();
+  
+  await client.disconnect();
+});
+
+
+
+test("custom prefix and serializer", async () => {
+  const client = createClient();
+  await client.connect();
+  
+  const customSerializer = {
+    parse: (s) => {
+      const parsed = JSON.parse(s);
+      parsed.customField = "was parsed";
+      return parsed;
+    },
+    stringify: (s) => {
+      const copy = { ...s, customField: "was stringified" };
+      return JSON.stringify(copy);
+    }
+  };
+  
+  const store = new RedisStore({ 
+    client,
+    prefix: "custom-prefix:",
+    serializer: customSerializer
+  });
+  
+  const sid = "test-session-id";
+  const sessionData = {
+    cookie: { maxAge: 2000 },
+    name: "test-session"
+  };
+  
+  // Set session with custom serializer
+  await promisify(store.set.bind(store))(sid, sessionData);
+  
+  // Get raw data from Redis to verify prefix
+  const rawData = await client.get("custom-prefix:test-session-id");
+  expect(rawData).toBeTruthy();
+  expect(JSON.parse(rawData)).toHaveProperty("customField", "was stringified");
+  
+  // Get session with custom serializer
+  const result = await promisify(store.get.bind(store))(sid);
+  expect(result).toHaveProperty("name", "test-session");
+  expect(result).toHaveProperty("customField", "was parsed");
+  
+  await client.disconnect();
+});
+
+
+
+test("TTL function and disableTTL option", async () => {
+  const client = createClient();
+  await client.connect();
+  
+  // Create store with TTL function
+  const ttlFunction = (sess) => {
+    return sess.cookie.maxAge ? Math.floor(sess.cookie.maxAge / 1000) : 60;
+  };
+  
+  const store = new RedisStore({ 
+    client,
+    ttl: ttlFunction
+  });
+  
+  const sid = "ttl-test-session";
+  const sessionData = {
+    cookie: { maxAge: 5000 },
+    name: "ttl-test"
+  };
+  
+  // Set session with TTL function
+  await promisify(store.set.bind(store))(sid, sessionData);
+  
+  // Check TTL was set correctly (should be around 5 seconds)
+  const ttl = await client.ttl(`sess:${sid}`);
+  expect(ttl).toBeGreaterThan(0);
+  expect(ttl).toBeLessThanOrEqual(5);
+  
+  // Test with disableTTL
+  const disableTTLStore = new RedisStore({
+    client,
+    disableTTL: true
+  });
+  
+  const sid2 = "no-ttl-session";
+  await promisify(disableTTLStore.set.bind(disableTTLStore))(sid2, sessionData);
+  
+  // Check that TTL was not set
+  const ttl2 = await client.ttl(`sess:${sid2}`);
+  expect(ttl2).toBe(-1); // -1 means no expiration
+  
+  await client.disconnect();
+});
+
+
+
+test("bulk operations clear length ids all", async () => {
+  const client = createClient();
+  await client.connect();
+  
+  const store = new RedisStore({ client });
+  
+  // Clear any existing sessions
+  await promisify(store.clear.bind(store))();
+  
+  // Create multiple sessions
+  const sessions = [
+    { id: "session1", data: { cookie: { maxAge: 2000 }, name: "session1" } },
+    { id: "session2", data: { cookie: { maxAge: 2000 }, name: "session2" } },
+    { id: "session3", data: { cookie: { maxAge: 2000 }, name: "session3" } }
+  ];
+  
+  for (const session of sessions) {
+    await promisify(store.set.bind(store))(session.id, session.data);
+  }
+  
+  // Test length
+  const length = await promisify(store.length.bind(store))();
+  expect(length).toBe(3);
+  
+  // Test ids
+  const ids = await promisify(store.ids.bind(store))();
+  expect(ids).toHaveLength(3);
+  expect(ids.sort()).toEqual(["session1", "session2", "session3"]);
+  
+  // Test all
+  const all = await promisify(store.all.bind(store))();
+  expect(all).toHaveLength(3);
+  expect(all.map(s => s.name).sort()).toEqual(["session1", "session2", "session3"]);
+  
+  // Test clear
+  await promisify(store.clear.bind(store))();
+  const lengthAfterClear = await promisify(store.length.bind(store))();
+  expect(lengthAfterClear).toBe(0);
+  
+  await client.disconnect();
+});
+
+
+
+test("Redis and ioredis clients compatibility", async () => {
+  // Test with node-redis client
+  const redisClient = createClient();
+  await redisClient.connect();
+  
+  const redisStore = new RedisStore({ client: redisClient });
+  const sid = "test-redis-client";
+  const sessionData = { cookie: { maxAge: 2000 }, name: "test-redis" };
+  
+  await promisify(redisStore.set.bind(redisStore))(sid, sessionData);
+  const redisResult = await promisify(redisStore.get.bind(redisStore))(sid);
+  expect(redisResult).toEqual(sessionData);
+  
+  await redisClient.disconnect();
+  
+  // Test with ioredis client
+  const ioredisClient = new Redis();
+  
+  const ioredisStore = new RedisStore({ client: ioredisClient });
+  const sid2 = "test-ioredis-client";
+  const sessionData2 = { cookie: { maxAge: 2000 }, name: "test-ioredis" };
+  
+  await promisify(ioredisStore.set.bind(ioredisStore))(sid2, sessionData2);
+  const ioredisResult = await promisify(ioredisStore.get.bind(ioredisStore))(sid2);
+  expect(ioredisResult).toEqual(sessionData2);
+  
+  await ioredisClient.disconnect();
+});
+
+
+
+test("basic session CRUD operations with Redis client", async () => {
+  const client = createClient();
+  await client.connect();
+  
+  const store = new RedisStore({ client });
+  const sid = "test-session-id";
+  const sessionData = {
+    cookie: { maxAge: 2000 },
+    name: "test-session"
+  };
+  
+  // Test set
+  await promisify(store.set.bind(store))(sid, sessionData);
+  
+  // Test get
+  const result = await promisify(store.get.bind(store))(sid);
+  expect(result).toEqual(sessionData);
+  
+  // Test touch
+  await promisify(store.touch.bind(store))(sid, sessionData);
+  
+  // Test destroy
+  await promisify(store.destroy.bind(store))(sid);
+  const destroyed = await promisify(store.get.bind(store))(sid);
+  expect(destroyed).toBeUndefined();
+  
+  await client.disconnect();
+});
+
+
+
+test("custom prefix and serializer", async () => {
+  const client = createClient();
+  await client.connect();
+  
+  const customSerializer = {
+    parse: (s) => {
+      const parsed = JSON.parse(s);
+      parsed.customField = "was parsed";
+      return parsed;
+    },
+    stringify: (s) => {
+      const copy = { ...s, customField: "was stringified" };
+      return JSON.stringify(copy);
+    }
+  };
+  
+  const store = new RedisStore({ 
+    client,
+    prefix: "custom-prefix:",
+    serializer: customSerializer
+  });
+  
+  const sid = "test-session-id";
+  const sessionData = {
+    cookie: { maxAge: 2000 },
+    name: "test-session"
+  };
+  
+  // Set session with custom serializer
+  await promisify(store.set.bind(store))(sid, sessionData);
+  
+  // Get raw data from Redis to verify prefix
+  const rawData = await client.get("custom-prefix:test-session-id");
+  expect(rawData).toBeTruthy();
+  expect(JSON.parse(rawData)).toHaveProperty("customField", "was stringified");
+  
+  // Get session with custom serializer
+  const result = await promisify(store.get.bind(store))(sid);
+  expect(result).toHaveProperty("name", "test-session");
+  expect(result).toHaveProperty("customField", "was parsed");
+  
+  await client.disconnect();
+});
+
+
+
+test("TTL function and disableTTL option", async () => {
+  const client = createClient();
+  await client.connect();
+  
+  // Create store with TTL function
+  const ttlFunction = (sess) => {
+    return sess.cookie.maxAge ? Math.floor(sess.cookie.maxAge / 1000) : 60;
+  };
+  
+  const store = new RedisStore({ 
+    client,
+    ttl: ttlFunction
+  });
+  
+  const sid = "ttl-test-session";
+  const sessionData = {
+    cookie: { maxAge: 5000 },
+    name: "ttl-test"
+  };
+  
+  // Set session with TTL function
+  await promisify(store.set.bind(store))(sid, sessionData);
+  
+  // Check TTL was set correctly (should be around 5 seconds)
+  const ttl = await client.ttl(`sess:${sid}`);
+  expect(ttl).toBeGreaterThan(0);
+  expect(ttl).toBeLessThanOrEqual(5);
+  
+  // Test with disableTTL
+  const disableTTLStore = new RedisStore({
+    client,
+    disableTTL: true
+  });
+  
+  const sid2 = "no-ttl-session";
+  await promisify(disableTTLStore.set.bind(disableTTLStore))(sid2, sessionData);
+  
+  // Check that TTL was not set
+  const ttl2 = await client.ttl(`sess:${sid2}`);
+  expect(ttl2).toBe(-1); // -1 means no expiration
+  
+  await client.disconnect();
+});
+
+
+
+test("bulk operations clear length ids all", async () => {
+  const client = createClient();
+  await client.connect();
+  
+  const store = new RedisStore({ client });
+  
+  // Clear any existing sessions
+  await promisify(store.clear.bind(store))();
+  
+  // Create multiple sessions
+  const sessions = [
+    { id: "session1", data: { cookie: { maxAge: 2000 }, name: "session1" } },
+    { id: "session2", data: { cookie: { maxAge: 2000 }, name: "session2" } },
+    { id: "session3", data: { cookie: { maxAge: 2000 }, name: "session3" } }
+  ];
+  
+  for (const session of sessions) {
+    await promisify(store.set.bind(store))(session.id, session.data);
+  }
+  
+  // Test length
+  const length = await promisify(store.length.bind(store))();
+  expect(length).toBe(3);
+  
+  // Test ids
+  const ids = await promisify(store.ids.bind(store))();
+  expect(ids).toHaveLength(3);
+  expect(ids.sort()).toEqual(["session1", "session2", "session3"]);
+  
+  // Test all
+  const all = await promisify(store.all.bind(store))();
+  expect(all).toHaveLength(3);
+  expect(all.map(s => s.name).sort()).toEqual(["session1", "session2", "session3"]);
+  
+  // Test clear
+  await promisify(store.clear.bind(store))();
+  const lengthAfterClear = await promisify(store.length.bind(store))();
+  expect(lengthAfterClear).toBe(0);
+  
+  await client.disconnect();
+});
+
+
+
+test("Redis and ioredis clients compatibility", async () => {
+  // Test with node-redis client
+  const redisClient = createClient();
+  await redisClient.connect();
+  
+  const redisStore = new RedisStore({ client: redisClient });
+  const sid = "test-redis-client";
+  const sessionData = { cookie: { maxAge: 2000 }, name: "test-redis" };
+  
+  await promisify(redisStore.set.bind(redisStore))(sid, sessionData);
+  const redisResult = await promisify(redisStore.get.bind(redisStore))(sid);
+  expect(redisResult).toEqual(sessionData);
+  
+  await redisClient.disconnect();
+  
+  // Test with ioredis client
+  const ioredisClient = new Redis();
+  
+  const ioredisStore = new RedisStore({ client: ioredisClient });
+  const sid2 = "test-ioredis-client";
+  const sessionData2 = { cookie: { maxAge: 2000 }, name: "test-ioredis" };
+  
+  await promisify(ioredisStore.set.bind(ioredisStore))(sid2, sessionData2);
+  const ioredisResult = await promisify(ioredisStore.get.bind(ioredisStore))(sid2);
+  expect(ioredisResult).toEqual(sessionData2);
+  
+  await ioredisClient.disconnect();
+});
+
+
+
+test("error handling with invalid data and serializer errors", async () => {
+  const client = createClient();
+  await client.connect();
+  
+  // Store invalid data directly in Redis
+  await client.set("sess:invalid-json", "not-valid-json{");
+  
+  // Test with normal store
+  const store = new RedisStore({ client });
+  
+  // Should handle invalid JSON gracefully
+  try {
+    await promisify(store.get.bind(store))("invalid-json");
+    // If we get here, the error was caught and handled properly
+  } catch (err) {
+    // If we get here, the error wasn't handled properly
+    expect.fail("Error should have been caught in the get method");
+  }
+  
+  // Test with throwing serializer
+  const throwingSerializer = {
+    parse: () => {
+      throw new Error("Parse error");
+    },
+    stringify: () => {
+      throw new Error("Stringify error");
+    }
+  };
+  
+  const errorStore = new RedisStore({
+    client,
+    serializer: throwingSerializer
+  });
+  
+  // Test get with throwing serializer
+  let getError = null;
+  try {
+    await promisify(errorStore.get.bind(errorStore))("invalid-json");
+  } catch (err) {
+    getError = err;
+  }
+  expect(getError).toBeTruthy();
+  
+  // Test set with throwing serializer
+  let setError = null;
+  try {
+    await promisify(errorStore.set.bind(errorStore))("error-session", { cookie: {} });
+  } catch (err) {
+    setError = err;
+  }
+  expect(setError).toBeTruthy();
+  
+  await client.disconnect();
+});
+
+
