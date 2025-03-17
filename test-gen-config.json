@@ -22,6 +22,6 @@
       "code-coverage-report-path": "coverage/lcov.info",
       "desired-coverage": 90,
       "max-iterations": 1,
-      "max-number-of-test-cases": 2
+      "max-number-of-test-cases": 4
       }
   }

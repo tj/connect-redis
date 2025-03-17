@@ -1,7 +1,7 @@
 {
   "name": "connect-redis",
   "description": "Redis session store for Connect",
-  "version": "8.0.2",
+  "version": "8.0.1",
   "author": "TJ Holowaychuk <tj@vision-media.ca>",
   "contributors": [
     "Marc Harter <wavded@gmail.com>"
@@ -53,7 +53,7 @@
     "typescript-eslint": "^8.25.0",
     "vite": "^6.2.0",
     "vite-plugin-dts": "^4.5.0",
-    "vitest": "^3.0.8"
+    "vitest": "^3.0.7"
   },
   "peerDependencies": {
     "express-session": ">=1"
