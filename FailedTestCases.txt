@@ -100,3 +100,173 @@ test("get non-existent session", async () => {
 })
 
 
+
+test("set session with zero TTL", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  let store = new RedisStore({client})
+
+  const P = (f: any) => promisify(f).bind(store)
+  let sess = {foo: "bar"}
+  await P(store.set)("zeroTTL", sess)
+
+  let res = await P(store.get)("zeroTTL")
+  expect(res).toBeUndefined()
+
+  await client.disconnect()
+})
+
+
+
+test("set session with zero TTL", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  let store = new RedisStore({client})
+
+  const P = (f: any) => promisify(f).bind(store)
+  let sess = {foo: "bar"}
+  await P(store.set)("zeroTTL", sess)
+
+  let res = await P(store.get)("zeroTTL")
+  expect(res).toBeUndefined()
+
+  await client.disconnect()
+})
+
+
+
+test("get non-existent session", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  let store = new RedisStore({client})
+
+  const P = (f: any) => promisify(f).bind(store)
+  let res = await P(store.get)("nonExistent")
+  expect(res).toBeUndefined()
+
+  await client.disconnect()
+})
+
+
+
+test("set session with zero TTL", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  let store = new RedisStore({client})
+
+  const P = (f: any) => promisify(f).bind(store)
+  let sess = {foo: "bar"}
+  await P(store.set)("zeroTTL", sess)
+
+  let res = await P(store.get)("zeroTTL")
+  expect(res).toBeUndefined()
+
+  await client.disconnect()
+})
+
+
+
+test("get non-existent session", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  let store = new RedisStore({client})
+
+  const P = (f: any) => promisify(f).bind(store)
+  let res = await P(store.get)("nonExistent")
+  expect(res).toBeUndefined()
+
+  await client.disconnect()
+})
+
+
+
+test("set invalid session data", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  let store = new RedisStore({client})
+
+  const P = (f: any) => promisify(f).bind(store)
+  try {
+    await P(store.set)("invalidData", null)
+  } catch (err) {
+    expect(err).toBeDefined()
+  }
+
+  let res = await P(store.get)("invalidData")
+  expect(res).toBeUndefined()
+
+  await client.disconnect()
+})
+
+
+
+test("set session with zero TTL", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  let store = new RedisStore({client})
+
+  const P = (f: any) => promisify(f).bind(store)
+  let sess = {foo: "bar"}
+  await P(store.set)("zeroTTL", sess)
+
+  let res = await P(store.get)("zeroTTL")
+  expect(res).toBeUndefined()
+
+  await client.disconnect()
+})
+
+
+
+test("get non-existent session", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  let store = new RedisStore({client})
+
+  const P = (f: any) => promisify(f).bind(store)
+  let res = await P(store.get)("nonExistent")
+  expect(res).toBeUndefined()
+
+  await client.disconnect()
+})
+
+
+
+test("set invalid session data", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  let store = new RedisStore({client})
+
+  const P = (f: any) => promisify(f).bind(store)
+  try {
+    await P(store.set)("invalidData", null)
+  } catch (err) {
+    expect(err).toBeDefined()
+  }
+
+  let res = await P(store.get)("invalidData")
+  expect(res).toBeUndefined()
+
+  await client.disconnect()
+})
+
+
+
+test("touch with disableTouch set to true", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  let store = new RedisStore({client, disableTouch: true})
+
+  const P = (f: any) => promisify(f).bind(store)
+  let sess = {foo: "bar"}
+  await P(store.set)("touchDisabled", sess)
+
+  let ttlBefore = await client.ttl("sess:touchDisabled")
+  await P(store.touch)("touchDisabled", sess)
+  let ttlAfter = await client.ttl("sess:touchDisabled")
+
+  expect(ttlBefore).toBe(ttlAfter)
+
+  await client.disconnect()
+})
+
+
