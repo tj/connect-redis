@@ -17,7 +17,7 @@
           "test-file-path": "index_test.ts"
         }
       ],
-      "test-command": "npm test",
+      "test-command": "npm run test",
       "coverage-type": "lcov",
       "code-coverage-report-path": "coverage/lcov.info",
       "desired-coverage": 90,
