@@ -1,1 +1,1 @@
-2025-03-17 07:24:27,813 - cover_agent.UnitTestValidator - INFO - Running build/test command to generate coverage report: "npm run test"
+2025-03-17 07:27:19,134 - cover_agent.UnitTestValidator - INFO - Running build/test command to generate coverage report: "npm test"
