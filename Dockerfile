@@ -8,7 +8,7 @@ WORKDIR /app
 
 # Copy package files and install dependencies, then install Vitest as a dev dependency
 COPY package*.json ./
-RUN npm install
+RUN npm install && npm install -D vitest
 
 FROM base AS test
 # Copy the rest of your application code
