@@ -270,3 +270,176 @@ test("touch with disableTouch set to true", async () => {
 })
 
 
+
+test("session expiration with zero TTL", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  let store = new RedisStore({client})
+
+  const P = (f: any) => promisify(f).bind(store)
+  let sess = {cookie: {expires: new Date(Date.now()).toISOString()}}
+  await P(store.set)("zeroTTL", sess)
+
+  let res = await P(store.get)("zeroTTL")
+  expect(res).toBeUndefined()
+
+  await client.disconnect()
+})
+
+
+
+test("session expiration with zero TTL", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  let store = new RedisStore({client})
+
+  const P = (f: any) => promisify(f).bind(store)
+  let sess = {cookie: {expires: new Date(Date.now()).toISOString()}}
+  await P(store.set)("zeroTTL", sess)
+
+  let res = await P(store.get)("zeroTTL")
+  expect(res).toBeUndefined()
+
+  await client.disconnect()
+})
+
+
+
+test("session expiration with negative TTL", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  let store = new RedisStore({client})
+
+  const P = (f: any) => promisify(f).bind(store)
+  let sess = {cookie: {expires: new Date(Date.now() - 1000).toISOString()}}
+  await P(store.set)("negativeTTL", sess)
+
+  let res = await P(store.get)("negativeTTL")
+  expect(res).toBeUndefined()
+
+  await client.disconnect()
+})
+
+
+
+test("session expiration with zero TTL", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  let store = new RedisStore({client})
+
+  const P = (f: any) => promisify(f).bind(store)
+  let sess = {cookie: {expires: new Date(Date.now()).toISOString()}}
+  await P(store.set)("zeroTTL", sess)
+
+  let res = await P(store.get)("zeroTTL")
+  expect(res).toBeUndefined()
+
+  await client.disconnect()
+})
+
+
+
+test("session expiration with negative TTL", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  let store = new RedisStore({client})
+
+  const P = (f: any) => promisify(f).bind(store)
+  let sess = {cookie: {expires: new Date(Date.now() - 1000).toISOString()}}
+  await P(store.set)("negativeTTL", sess)
+
+  let res = await P(store.get)("negativeTTL")
+  expect(res).toBeUndefined()
+
+  await client.disconnect()
+})
+
+
+
+test("set session with invalid session ID", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  let store = new RedisStore({client})
+
+  const P = (f: any) => promisify(f).bind(store)
+  try {
+    await P(store.set)(null, {foo: "bar"})
+  } catch (err) {
+    expect(err).toBeDefined()
+  }
+
+  let res = await P(store.get)(null)
+  expect(res).toBeUndefined()
+
+  await client.disconnect()
+})
+
+
+
+test("session expiration with zero TTL", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  let store = new RedisStore({client})
+
+  const P = (f: any) => promisify(f).bind(store)
+  let sess = {cookie: {expires: new Date(Date.now()).toISOString()}}
+  await P(store.set)("zeroTTL", sess)
+
+  let res = await P(store.get)("zeroTTL")
+  expect(res).toBeUndefined()
+
+  await client.disconnect()
+})
+
+
+
+test("session expiration with negative TTL", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  let store = new RedisStore({client})
+
+  const P = (f: any) => promisify(f).bind(store)
+  let sess = {cookie: {expires: new Date(Date.now() - 1000).toISOString()}}
+  await P(store.set)("negativeTTL", sess)
+
+  let res = await P(store.get)("negativeTTL")
+  expect(res).toBeUndefined()
+
+  await client.disconnect()
+})
+
+
+
+test("set session with invalid session ID", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  let store = new RedisStore({client})
+
+  const P = (f: any) => promisify(f).bind(store)
+  try {
+    await P(store.set)(null, {foo: "bar"})
+  } catch (err) {
+    expect(err).toBeDefined()
+  }
+
+  let res = await P(store.get)(null)
+  expect(res).toBeUndefined()
+
+  await client.disconnect()
+})
+
+
+
+test("get session with non-existent session ID", async () => {
+  let client = createClient({url: `redis://localhost:${redisSrv.port}`})
+  await client.connect()
+  let store = new RedisStore({client})
+
+  const P = (f: any) => promisify(f).bind(store)
+  let res = await P(store.get)("nonExistent")
+  expect(res).toBeUndefined()
+
+  await client.disconnect()
+})
+
+
