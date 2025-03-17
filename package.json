@@ -26,7 +26,7 @@
   "scripts": {
     "prepublishOnly": "vite build",
     "build": "vite build",
-    "test": "vitest run --silent --coverage  --coverage.reporter=lcov",
+    "test": "vitest run --silent --coverage  --coverage.reporter=lcov --coverage.reporter=text",
     "lint": "tsc --noemit && eslint --max-warnings 0 testdata *.ts",
     "fmt": "prettier --write .",
     "fmt-check": "prettier --check ."
