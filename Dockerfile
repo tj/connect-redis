@@ -8,7 +8,7 @@ WORKDIR /app
 
 # Copy package files and install dependencies, then install Vitest as a dev dependency
 COPY package*.json ./
-RUN npm install && npm install -D vitest
+RUN npm install
 
 FROM base AS test
 # Copy the rest of your application code
@@ -18,4 +18,4 @@ COPY . .
 EXPOSE 3000
 
 # Start redis-server then run Vitest tests
-CMD ["sh", "-c", "redis-server --daemonize yes && npx vitest"]
+CMD ["sh", "-c", "redis-server --daemonize yes && npm run"]
