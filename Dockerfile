@@ -6,9 +6,9 @@ RUN apt-get update && apt-get install -y redis-server
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy package files and install dependencies
+# Copy package files and install dependencies, then install Vitest as a dev dependency
 COPY package*.json ./
-RUN npm install
+RUN npm install && npm install -D vitest
 
 FROM base AS test
 # Copy the rest of your application code
@@ -17,5 +17,5 @@ COPY . .
 # Expose the port your app will run on (adjust as needed)
 EXPOSE 3000
 
-# Start redis-server then run the app
-CMD ["sh", "-c", "redis-server --daemonize yes && npm test"]
+# Start redis-server then run Vitest tests
+CMD ["sh", "-c", "redis-server --daemonize yes && npx vitest"]
