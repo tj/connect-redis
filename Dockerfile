@@ -18,4 +18,4 @@ COPY . .
 EXPOSE 3000
 
 # Start redis-server then run Vitest tests
-CMD ["sh", "-c", "redis-server --daemonize yes && npm run"]
+CMD redis-server --daemonize yes && npm test
