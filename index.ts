@@ -48,8 +48,8 @@ export class RedisStore extends Store {
 
   // Create a redis and ioredis compatible client
   private normalizeClient(client: any): NormalizedRedisClient {
-    let isRedis = "scanIterator" in client || "masters" in client;
-    let isRedisCluster = "masters" in client;
+    let isRedis = "scanIterator" in client || "masters" in client
+    let isRedisCluster = "masters" in client
 
     return {
       get: (key) => client.get(key),
@@ -67,15 +67,18 @@ export class RedisStore extends Store {
       scanIterator: (match, count) => {
         // node-redis createCluster impl.
         if (isRedisCluster) {
-          return (async function *() {
+          return (async function* () {
             for (const master of client.masters) {
-              const nodeClient = await client.nodeClient(master);
+              const nodeClient = await client.nodeClient(master)
 
-              for await (const key of nodeClient.scanIterator({ COUNT: count, MATCH: match })) {
-                yield key;
+              for await (const key of nodeClient.scanIterator({
+                COUNT: count,
+                MATCH: match,
+              })) {
+                yield key
               }
             }
-          })();
+          })()
         }
 
         if (isRedis) return client.scanIterator({MATCH: match, COUNT: count})
