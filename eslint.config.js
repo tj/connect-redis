@@ -6,6 +6,7 @@ export default ts.config({
   extends: [js.configs.recommended, ...ts.configs.recommended, prettier],
   rules: {
     "prefer-const": 0,
+    eqeqeq: [2, "smart"],
     "@typescript-eslint/no-explicit-any": 0,
     "@typescript-eslint/no-unused-vars": [
       "error",
