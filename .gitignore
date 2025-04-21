@@ -8,3 +8,4 @@ yarn.lock
 dump.rdb
 pnpm-lock.yaml
 dist
+pnpm-workspace.yaml
