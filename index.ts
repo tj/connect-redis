@@ -1,6 +1,10 @@
 import {SessionData, Store} from "express-session"
 
-const noop = (_err?: unknown, _data?: any) => {}
+function optionalCb(err: unknown, data: unknown, cb: Function) {
+  if (cb) return cb(err, data)
+  if (err) throw err
+  return data
+}
 
 interface NormalizedRedisClient {
   get(key: string): Promise<string | null>
@@ -96,18 +100,18 @@ export class RedisStore extends Store {
     }
   }
 
-  async get(sid: string, cb = noop) {
+  async get(sid: string, cb?: Function) {
     let key = this.prefix + sid
     try {
       let data = await this.client.get(key)
-      if (!data) return cb()
-      return cb(null, await this.serializer.parse(data))
+      if (!data) return optionalCb(null, null, cb)
+      return optionalCb(null, await this.serializer.parse(data), cb)
     } catch (err) {
-      return cb(err)
+      return cb(err, null, cb)
     }
   }
 
-  async set(sid: string, sess: SessionData, cb = noop) {
+  async set(sid: string, sess: SessionData, cb?: Function) {
     let key = this.prefix + sid
     let ttl = this._getTTL(sess)
     try {
@@ -115,74 +119,75 @@ export class RedisStore extends Store {
         let val = this.serializer.stringify(sess)
         if (this.disableTTL) await this.client.set(key, val)
         else await this.client.set(key, val, ttl)
-        return cb()
+        return optionalCb(null, null, cb)
       } else {
         return this.destroy(sid, cb)
       }
     } catch (err) {
-      return cb(err)
+      return optionalCb(err, null, cb)
     }
   }
 
-  async touch(sid: string, sess: SessionData, cb = noop) {
+  async touch(sid: string, sess: SessionData, cb?: Function) {
     let key = this.prefix + sid
-    if (this.disableTouch || this.disableTTL) return cb()
+    if (this.disableTouch || this.disableTTL) return optionalCb(null, null, cb)
     try {
       await this.client.expire(key, this._getTTL(sess))
-      return cb()
+      return optionalCb(null, null, cb)
     } catch (err) {
-      return cb(err)
+      return optionalCb(err, null, cb)
     }
   }
 
-  async destroy(sid: string, cb = noop) {
+  async destroy(sid: string, cb?: Function) {
     let key = this.prefix + sid
     try {
       await this.client.del([key])
-      return cb()
+      return optionalCb(null, null, cb)
     } catch (err) {
-      return cb(err)
+      return optionalCb(err, null, cb)
     }
   }
 
-  async clear(cb = noop) {
+  async clear(cb?: Function) {
     try {
       let keys = await this._getAllKeys()
-      if (!keys.length) return cb()
+      if (!keys.length) return optionalCb(null, null, cb)
       await this.client.del(keys)
-      return cb()
+      return optionalCb(null, null, cb)
     } catch (err) {
-      return cb(err)
+      return optionalCb(err, null, cb)
     }
   }
 
-  async length(cb = noop) {
+  async length(cb?: Function) {
     try {
       let keys = await this._getAllKeys()
-      return cb(null, keys.length)
+      return optionalCb(null, keys.length, cb)
     } catch (err) {
-      return cb(err)
+      return optionalCb(err, null, cb)
     }
   }
 
-  async ids(cb = noop) {
+  async ids(cb?: Function) {
     let len = this.prefix.length
     try {
       let keys = await this._getAllKeys()
-      return cb(
+      return optionalCb(
         null,
         keys.map((k) => k.substring(len)),
+        cb,
       )
     } catch (err) {
-      return cb(err)
+      return optionalCb(err, null, cb)
     }
   }
 
-  async all(cb = noop) {
+  async all(cb?: Function) {
     let len = this.prefix.length
     try {
       let keys = await this._getAllKeys()
-      if (keys.length === 0) return cb(null, [])
+      if (keys.length === 0) return optionalCb(null, [], cb)
 
       let data = await this.client.mget(keys)
       let results = data.reduce((acc, raw, idx) => {
@@ -192,9 +197,9 @@ export class RedisStore extends Store {
         acc.push(sess)
         return acc
       }, [] as SessionData[])
-      return cb(null, results)
+      return optionalCb(null, results, cb)
     } catch (err) {
-      return cb(err)
+      return optionalCb(err, null, cb)
     }
   }
 
