@@ -1,6 +1,8 @@
 import {SessionData, Store} from "express-session"
 
-function optionalCb(err: unknown, data: unknown, cb: Function) {
+type Callback = (_err?: unknown, _data?: any) => any
+
+function optionalCb(err: unknown, data: unknown, cb?: Callback) {
   if (cb) return cb(err, data)
   if (err) throw err
   return data
@@ -100,18 +102,18 @@ export class RedisStore extends Store {
     }
   }
 
-  async get(sid: string, cb?: Function) {
+  async get(sid: string, cb?: Callback) {
     let key = this.prefix + sid
     try {
       let data = await this.client.get(key)
       if (!data) return optionalCb(null, null, cb)
       return optionalCb(null, await this.serializer.parse(data), cb)
     } catch (err) {
-      return cb(err, null, cb)
+      return optionalCb(err, null, cb)
     }
   }
 
-  async set(sid: string, sess: SessionData, cb?: Function) {
+  async set(sid: string, sess: SessionData, cb?: Callback) {
     let key = this.prefix + sid
     let ttl = this._getTTL(sess)
     try {
@@ -128,7 +130,7 @@ export class RedisStore extends Store {
     }
   }
 
-  async touch(sid: string, sess: SessionData, cb?: Function) {
+  async touch(sid: string, sess: SessionData, cb?: Callback) {
     let key = this.prefix + sid
     if (this.disableTouch || this.disableTTL) return optionalCb(null, null, cb)
     try {
@@ -139,7 +141,7 @@ export class RedisStore extends Store {
     }
   }
 
-  async destroy(sid: string, cb?: Function) {
+  async destroy(sid: string, cb?: Callback) {
     let key = this.prefix + sid
     try {
       await this.client.del([key])
@@ -149,7 +151,7 @@ export class RedisStore extends Store {
     }
   }
 
-  async clear(cb?: Function) {
+  async clear(cb?: Callback) {
     try {
       let keys = await this._getAllKeys()
       if (!keys.length) return optionalCb(null, null, cb)
@@ -160,7 +162,7 @@ export class RedisStore extends Store {
     }
   }
 
-  async length(cb?: Function) {
+  async length(cb?: Callback) {
     try {
       let keys = await this._getAllKeys()
       return optionalCb(null, keys.length, cb)
@@ -169,7 +171,7 @@ export class RedisStore extends Store {
     }
   }
 
-  async ids(cb?: Function) {
+  async ids(cb?: Callback) {
     let len = this.prefix.length
     try {
       let keys = await this._getAllKeys()
@@ -183,7 +185,7 @@ export class RedisStore extends Store {
     }
   }
 
-  async all(cb?: Function) {
+  async all(cb?: Callback) {
     let len = this.prefix.length
     try {
       let keys = await this._getAllKeys()
