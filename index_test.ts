@@ -1,6 +1,5 @@
 import {Cookie} from "express-session"
 import {Redis} from "ioredis"
-import {promisify} from "node:util"
 import {createClient} from "redis"
 import {expect, test} from "vitest"
 import {RedisStore} from "./"
