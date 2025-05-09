@@ -1,6 +1,5 @@
 import {Cookie} from "express-session"
 import {Redis} from "ioredis"
-import {promisify} from "node:util"
 import {createClient} from "redis"
 import {expect, test} from "vitest"
 import {RedisStore} from "./"
@@ -44,73 +43,72 @@ test("ioredis", async () => {
 test("teardown", redisSrv.disconnect)
 
 async function lifecycleTest(store: RedisStore, client: any): Promise<void> {
-  const P = (f: any) => promisify(f).bind(store)
-  let res = await P(store.clear)()
+  let res = await store.clear()
 
-  let sess = {foo: "bar"}
-  await P(store.set)("123", sess)
+  let sess = {foo: "bar", cookie: {originalMaxAge: null}}
+  await store.set("123", sess)
 
-  res = await P(store.get)("123")
+  res = await store.get("123")
   expect(res).toEqual(sess)
 
   let ttl = await client.ttl("sess:123")
   expect(ttl).toBeGreaterThanOrEqual(86399)
 
   ttl = 60
-  let expires = new Date(Date.now() + ttl * 1000).toISOString()
-  await P(store.set)("456", {cookie: {expires}})
+  let expires = new Date(Date.now() + ttl * 1000)
+  await store.set("456", {cookie: {originalMaxAge: null, expires}})
   ttl = await client.ttl("sess:456")
   expect(ttl).toBeLessThanOrEqual(60)
 
   ttl = 90
-  let expires2 = new Date(Date.now() + ttl * 1000).toISOString()
-  await P(store.touch)("456", {cookie: {expires: expires2}})
+  let expires2 = new Date(Date.now() + ttl * 1000)
+  await store.touch("456", {cookie: {originalMaxAge: null, expires: expires2}})
   ttl = await client.ttl("sess:456")
   expect(ttl).toBeGreaterThan(60)
 
-  res = await P(store.length)()
+  res = await store.length()
   expect(res).toBe(2) // stored two keys length
 
-  res = await P(store.ids)()
+  res = await store.ids()
   res.sort()
   expect(res).toEqual(["123", "456"])
 
-  res = await P(store.all)()
+  res = await store.all()
   res.sort((a: any, b: any) => (a.id > b.id ? 1 : -1))
   expect(res).toEqual([
-    {id: "123", foo: "bar"},
-    {id: "456", cookie: {expires}},
+    {id: "123", foo: "bar", cookie: {originalMaxAge: null}},
+    {id: "456", cookie: {originalMaxAge: null, expires: expires.toISOString()}},
   ])
 
-  await P(store.destroy)("456")
-  res = await P(store.length)()
+  await store.destroy("456")
+  res = await store.length()
   expect(res).toBe(1) // one key remains
 
-  res = await P(store.clear)()
+  res = await store.clear()
 
-  res = await P(store.length)()
+  res = await store.length()
   expect(res).toBe(0) // no keys remain
 
   let count = 1000
   await load(store, count)
 
-  res = await P(store.length)()
+  res = await store.length()
   expect(res).toBe(count)
 
-  await P(store.clear)()
-  res = await P(store.length)()
+  await store.clear()
+  res = await store.length()
   expect(res).toBe(0)
 
-  expires = new Date(Date.now() + ttl * 1000).toISOString() // expires in the future
-  res = await P(store.set)("789", {cookie: {expires}})
+  expires = new Date(Date.now() + ttl * 1000) // expires in the future
+  res = await store.set("789", {cookie: {originalMaxAge: null, expires}})
 
-  res = await P(store.length)()
+  res = await store.length()
   expect(res).toBe(1)
 
-  expires = new Date(Date.now() - ttl * 1000).toISOString() // expires in the past
-  await P(store.set)("789", {cookie: {expires}})
+  expires = new Date(Date.now() - ttl * 1000) // expires in the past
+  await store.set("789", {cookie: {originalMaxAge: null, expires}})
 
-  res = await P(store.length)()
+  res = await store.length()
   expect(res).toBe(0) // no key remains and that includes session 789
 }
 
