@@ -57,7 +57,7 @@
     "express-session": ">=1"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "bugs": {
     "url": "https://github.com/tj/connect-redis/issues"
