@@ -25,9 +25,8 @@
     "prepublishOnly": "vite build",
     "build": "vite build",
     "test": "vitest run --silent --coverage",
-    "lint": "tsc --noemit && eslint --max-warnings 0 testdata *.ts",
-    "fmt": "prettier --write .",
-    "fmt-check": "prettier --check ."
+    "lint": "tsc --noemit && biome check .",
+    "fix": "biome check --write ."
   },
   "repository": {
     "type": "git",
