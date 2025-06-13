@@ -1,4 +1,4 @@
-import {SessionData, Store} from "express-session"
+import {type SessionData, Store} from "express-session"
 
 type Callback = (_err?: unknown, _data?: any) => any
 
@@ -27,7 +27,7 @@ interface RedisStoreOptions {
   prefix?: string
   scanCount?: number
   serializer?: Serializer
-  ttl?: number | {(sess: SessionData): number}
+  ttl?: number | ((sess: SessionData) => number)
   disableTTL?: boolean
   disableTouch?: boolean
 }
@@ -37,7 +37,7 @@ export class RedisStore extends Store {
   prefix: string
   scanCount: number
   serializer: Serializer
-  ttl: number | {(sess: SessionData): number}
+  ttl: number | ((sess: SessionData) => number)
   disableTTL: boolean
   disableTouch: boolean
 
@@ -122,9 +122,8 @@ export class RedisStore extends Store {
         if (this.disableTTL) await this.client.set(key, val)
         else await this.client.set(key, val, ttl)
         return optionalCb(null, null, cb)
-      } else {
-        return this.destroy(sid, cb)
       }
+      return this.destroy(sid, cb)
     } catch (err) {
       return optionalCb(err, null, cb)
     }
@@ -211,7 +210,7 @@ export class RedisStore extends Store {
     }
 
     let ttl
-    if (sess && sess.cookie && sess.cookie.expires) {
+    if (sess?.cookie?.expires) {
       let ms = Number(new Date(sess.cookie.expires)) - Date.now()
       ttl = Math.ceil(ms / 1000)
     } else {

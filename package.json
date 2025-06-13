@@ -3,9 +3,7 @@
   "description": "Redis session store for Connect",
   "version": "8.1.0",
   "author": "TJ Holowaychuk <tj@vision-media.ca>",
-  "contributors": [
-    "Marc Harter <wavded@gmail.com>"
-  ],
+  "contributors": ["Marc Harter <wavded@gmail.com>"],
   "license": "MIT",
   "type": "module",
   "main": "./dist/connect-redis.cjs",
@@ -36,6 +34,7 @@
     "url": "git+ssh://git@github.com/tj/connect-redis.git"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@eslint/js": "^9.24.0",
     "@types/express-session": "^1.18.1",
     "@types/node": "^22.14.1",
@@ -64,10 +63,5 @@
   "bugs": {
     "url": "https://github.com/tj/connect-redis/issues"
   },
-  "keywords": [
-    "connect",
-    "redis",
-    "session",
-    "express"
-  ]
+  "keywords": ["connect", "redis", "session", "express"]
 }

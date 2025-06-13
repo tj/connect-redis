@@ -4,7 +4,7 @@
 
 ## Installation
 
-**connect-redis** requires `express-session` to be installed and one of the following compatible Redis clients:
+**connect-redis** requires `express-session` and one of the following compatible Redis clients:
 
 - [`redis`][1]
 - [`ioredis`][2]
