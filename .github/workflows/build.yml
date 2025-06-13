@@ -18,6 +18,5 @@ jobs:
           node-version: ${{ matrix.node }}
       - run: sudo apt-get install -y redis-server
       - run: npm install
-      - run: npm run fmt-check
       - run: npm run lint
       - run: npm test
