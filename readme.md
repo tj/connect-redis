@@ -4,42 +4,15 @@
 
 ## Installation
 
-**connect-redis** requires `express-session` and one of the following compatible Redis clients:
-
-- [`redis`][1]
-- [`ioredis`][2]
-
-Install with `redis`:
+**connect-redis** requires `express-session` and [`redis`][1]:
 
 ```sh
 npm install redis connect-redis express-session
 ```
 
-Install with `ioredis`:
-
-```sh
-npm install ioredis connect-redis express-session
-```
-
-## Importing
-
-**connect-redis** supports both CommonJS (`require`) and ESM (`import`) modules.
-
-Import using ESM/Typescript:
-
-```js
-import {RedisStore} from "connect-redis"
-```
-
-Require using CommonJS:
-
-```js
-const {RedisStore} = require("connect-redis")
-```
-
 ## API
 
-Full setup using [`redis`][1] package:
+Full setup:
 
 ```js
 import {RedisStore} from "connect-redis"
@@ -73,7 +46,7 @@ app.use(
 
 ##### client
 
-An instance of [`redis`][1] or [`ioredis`][2].
+An instance of [`redis`][1]
 
 ##### prefix
 
@@ -136,4 +109,3 @@ interface Serializer {
 Value used for _count_ parameter in [Redis `SCAN` command](https://redis.io/commands/scan#the-count-option). Used for `ids()` and `all()` methods (default: `100`).
 
 [1]: https://github.com/NodeRedis/node-redis
-[2]: https://github.com/luin/ioredis
