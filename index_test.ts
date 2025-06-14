@@ -1,5 +1,4 @@
 import {Cookie} from "express-session"
-import {Redis} from "ioredis"
 import {createClient} from "redis"
 import {expect, test} from "vitest"
 import {RedisStore} from "./"
@@ -22,7 +21,7 @@ test("defaults", async () => {
   expect(store.serializer).toBe(JSON)
   expect(store.disableTouch).toBe(false)
   expect(store.disableTTL).toBe(false)
-  await client.disconnect()
+  client.destroy()
 })
 
 test("redis", async () => {
@@ -30,14 +29,7 @@ test("redis", async () => {
   await client.connect()
   let store = new RedisStore({client})
   await lifecycleTest(store, client)
-  await client.disconnect()
-})
-
-test("ioredis", async () => {
-  let client = new Redis(`redis://localhost:${redisSrv.port}`)
-  let store = new RedisStore({client})
-  await lifecycleTest(store, client)
-  client.disconnect()
+  client.destroy()
 })
 
 test("teardown", redisSrv.disconnect)

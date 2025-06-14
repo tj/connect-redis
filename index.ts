@@ -1,4 +1,5 @@
-import {SessionData, Store} from "express-session"
+import {type SessionData, Store} from "express-session"
+import type {RedisClientType, RedisClusterType} from "redis"
 
 type Callback = (_err?: unknown, _data?: any) => any
 
@@ -6,15 +7,6 @@ function optionalCb(err: unknown, data: unknown, cb?: Callback) {
   if (cb) return cb(err, data)
   if (err) throw err
   return data
-}
-
-interface NormalizedRedisClient {
-  get(key: string): Promise<string | null>
-  set(key: string, value: string, ttl?: number): Promise<string | null>
-  expire(key: string, ttl: number): Promise<number | boolean>
-  scanIterator(match: string, count: number): AsyncIterable<string>
-  del(key: string[]): Promise<number>
-  mget(key: string[]): Promise<(string | null)[]>
 }
 
 interface Serializer {
@@ -27,17 +19,17 @@ interface RedisStoreOptions {
   prefix?: string
   scanCount?: number
   serializer?: Serializer
-  ttl?: number | {(sess: SessionData): number}
+  ttl?: number | ((sess: SessionData) => number)
   disableTTL?: boolean
   disableTouch?: boolean
 }
 
 export class RedisStore extends Store {
-  client: NormalizedRedisClient
+  client: RedisClientType | RedisClusterType
   prefix: string
   scanCount: number
   serializer: Serializer
-  ttl: number | {(sess: SessionData): number}
+  ttl: number | ((sess: SessionData) => number)
   disableTTL: boolean
   disableTouch: boolean
 
@@ -49,57 +41,7 @@ export class RedisStore extends Store {
     this.ttl = opts.ttl || 86400 // One day in seconds.
     this.disableTTL = opts.disableTTL || false
     this.disableTouch = opts.disableTouch || false
-    this.client = this.normalizeClient(opts.client)
-  }
-
-  // Create a redis and ioredis compatible client
-  private normalizeClient(client: any): NormalizedRedisClient {
-    let isRedis = "scanIterator" in client || "masters" in client
-    let isRedisCluster = "masters" in client
-
-    return {
-      get: (key) => client.get(key),
-      set: (key, val, ttl) => {
-        if (ttl) {
-          return isRedis
-            ? client.set(key, val, {EX: ttl})
-            : client.set(key, val, "EX", ttl)
-        }
-        return client.set(key, val)
-      },
-      del: (key) => client.del(key),
-      expire: (key, ttl) => client.expire(key, ttl),
-      mget: (keys) => (isRedis ? client.mGet(keys) : client.mget(keys)),
-      scanIterator: (match, count) => {
-        // node-redis createCluster impl.
-        if (isRedisCluster) {
-          return (async function* () {
-            for (const master of client.masters) {
-              const nodeClient = await client.nodeClient(master)
-
-              for await (const key of nodeClient.scanIterator({
-                COUNT: count,
-                MATCH: match,
-              })) {
-                yield key
-              }
-            }
-          })()
-        }
-
-        if (isRedis) return client.scanIterator({MATCH: match, COUNT: count})
-
-        // ioredis impl.
-        return (async function* () {
-          let [c, xs] = await client.scan("0", "MATCH", match, "COUNT", count)
-          for (let key of xs) yield key
-          while (c !== "0") {
-            ;[c, xs] = await client.scan(c, "MATCH", match, "COUNT", count)
-            for (let key of xs) yield key
-          }
-        })()
-      },
-    }
+    this.client = opts.client
   }
 
   async get(sid: string, cb?: Callback) {
@@ -115,16 +57,18 @@ export class RedisStore extends Store {
 
   async set(sid: string, sess: SessionData, cb?: Callback) {
     let key = this.prefix + sid
-    let ttl = this._getTTL(sess)
+    let ttl = this.getTTL(sess)
     try {
       if (ttl > 0) {
         let val = this.serializer.stringify(sess)
         if (this.disableTTL) await this.client.set(key, val)
-        else await this.client.set(key, val, ttl)
+        else
+          await this.client.set(key, val, {
+            expiration: {type: "EX", value: ttl},
+          })
         return optionalCb(null, null, cb)
-      } else {
-        return this.destroy(sid, cb)
       }
+      return this.destroy(sid, cb)
     } catch (err) {
       return optionalCb(err, null, cb)
     }
@@ -134,7 +78,7 @@ export class RedisStore extends Store {
     let key = this.prefix + sid
     if (this.disableTouch || this.disableTTL) return optionalCb(null, null, cb)
     try {
-      await this.client.expire(key, this._getTTL(sess))
+      await this.client.expire(key, this.getTTL(sess))
       return optionalCb(null, null, cb)
     } catch (err) {
       return optionalCb(err, null, cb)
@@ -153,7 +97,7 @@ export class RedisStore extends Store {
 
   async clear(cb?: Callback) {
     try {
-      let keys = await this._getAllKeys()
+      let keys = await this.getAllKeys()
       if (!keys.length) return optionalCb(null, null, cb)
       await this.client.del(keys)
       return optionalCb(null, null, cb)
@@ -164,7 +108,7 @@ export class RedisStore extends Store {
 
   async length(cb?: Callback) {
     try {
-      let keys = await this._getAllKeys()
+      let keys = await this.getAllKeys()
       return optionalCb(null, keys.length, cb)
     } catch (err) {
       return optionalCb(err, null, cb)
@@ -174,7 +118,7 @@ export class RedisStore extends Store {
   async ids(cb?: Callback) {
     let len = this.prefix.length
     try {
-      let keys = await this._getAllKeys()
+      let keys = await this.getAllKeys()
       return optionalCb(
         null,
         keys.map((k) => k.substring(len)),
@@ -188,10 +132,10 @@ export class RedisStore extends Store {
   async all(cb?: Callback) {
     let len = this.prefix.length
     try {
-      let keys = await this._getAllKeys()
+      let keys = await this.getAllKeys()
       if (keys.length === 0) return optionalCb(null, [], cb)
 
-      let data = await this.client.mget(keys)
+      let data = await this.client.mGet(keys)
       let results = data.reduce((acc, raw, idx) => {
         if (!raw) return acc
         let sess = this.serializer.parse(raw) as any
@@ -205,13 +149,13 @@ export class RedisStore extends Store {
     }
   }
 
-  private _getTTL(sess: SessionData) {
+  private getTTL(sess: SessionData) {
     if (typeof this.ttl === "function") {
       return this.ttl(sess)
     }
 
     let ttl
-    if (sess && sess.cookie && sess.cookie.expires) {
+    if (sess?.cookie?.expires) {
       let ms = Number(new Date(sess.cookie.expires)) - Date.now()
       ttl = Math.ceil(ms / 1000)
     } else {
@@ -220,12 +164,34 @@ export class RedisStore extends Store {
     return ttl
   }
 
-  private async _getAllKeys() {
+  private async getAllKeys() {
     let pattern = this.prefix + "*"
-    let keys = []
-    for await (let key of this.client.scanIterator(pattern, this.scanCount)) {
-      keys.push(key)
+    let set = new Set<string>()
+    for await (let keys of this.scanIterator(pattern, this.scanCount)) {
+      for (let key of keys) {
+        set.add(key)
+      }
     }
-    return keys
+    return set.size > 0 ? Array.from(set) : []
+  }
+
+  private scanIterator(match: string, count: number) {
+    let client = this.client
+
+    if (!("masters" in client)) {
+      return client.scanIterator({MATCH: match, COUNT: count})
+    }
+
+    return (async function* () {
+      for (let master of client.masters) {
+        let c = await client.nodeClient(master)
+        for await (let keys of c.scanIterator({
+          COUNT: count,
+          MATCH: match,
+        })) {
+          yield keys
+        }
+      }
+    })()
   }
 }

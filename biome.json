@@ -1,0 +1,40 @@
+{
+  "files": {
+    "ignore": ["dist", "pnpm-*.yaml", "coverage"]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "bracketSpacing": false
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "a11y": {
+        "all": false
+      },
+      "style": {
+        "useConst": "off",
+        "useTemplate": "off",
+        "noParameterAssign": "off",
+        "useSingleVarDeclarator": "off"
+      },
+      "correctness": {
+        "noUnusedImports": "error"
+      },
+      "suspicious": {
+        "noExplicitAny": "off",
+        "noArrayIndexKey": "off",
+        "noImplicitAnyLet": "off"
+      }
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "semicolons": "asNeeded"
+    }
+  },
+  "organizeImports": {
+    "enabled": true
+  }
+}
