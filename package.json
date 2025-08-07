@@ -3,7 +3,9 @@
   "description": "Redis session store for Connect",
   "version": "9.0.0",
   "author": "TJ Holowaychuk <tj@vision-media.ca>",
-  "contributors": ["Marc Harter <wavded@gmail.com>"],
+  "contributors": [
+    "Marc Harter <wavded@gmail.com>"
+  ],
   "license": "MIT",
   "type": "module",
   "main": "./dist/connect-redis.cjs",
@@ -33,20 +35,20 @@
     "url": "git+ssh://git@github.com/tj/connect-redis.git"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
+    "@biomejs/biome": "^2.1.4",
     "@types/express-session": "^1.18.2",
-    "@types/node": "^22.15.31",
-    "@vitest/coverage-v8": "^3.2.3",
-    "express-session": "^1.18.1",
+    "@types/node": "^24.2.0",
+    "@vitest/coverage-v8": "^3.2.4",
+    "express-session": "^1.18.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3",
-    "vite": "^6.3.5",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.0",
     "vite-plugin-dts": "^4.5.4",
-    "vitest": "^3.2.3"
+    "vitest": "^3.2.4"
   },
   "peerDependencies": {
-    "redis": ">=5",
-    "express-session": ">=1"
+    "express-session": ">=1",
+    "redis": ">=5"
   },
   "engines": {
     "node": ">=18"
@@ -54,5 +56,10 @@
   "bugs": {
     "url": "https://github.com/tj/connect-redis/issues"
   },
-  "keywords": ["connect", "redis", "session", "express"]
+  "keywords": [
+    "connect",
+    "redis",
+    "session",
+    "express"
+  ]
 }

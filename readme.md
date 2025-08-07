@@ -10,6 +10,8 @@
 npm install redis connect-redis express-session
 ```
 
+**TypeScript note**: types included in the package, don't install `@types/connect-redis`.
+
 ## API
 
 Full setup:
