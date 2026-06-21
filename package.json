@@ -32,7 +32,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/tj/connect-redis.git"
+    "url": "git+https://github.com/tj/connect-redis.git"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.1.4",
