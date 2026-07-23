@@ -9,3 +9,4 @@ dump.rdb
 pnpm-lock.yaml
 dist
 pnpm-workspace.yaml
+.pnpm-store/
