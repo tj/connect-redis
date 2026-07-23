@@ -16,15 +16,14 @@ export default defineConfig({
       external: ["express-session"],
       treeshake: false,
     },
-    target: "node18",
+    target: "node22",
   },
   plugins: [
     dts({
       include: ["index.ts"],
-      rollupTypes: true,
-      insertTypesEntry: true,
       afterBuild: () => {
-        copyFileSync("dist/connect-redis.d.ts", "dist/connect-redis.d.cts")
+        copyFileSync("dist/index.d.ts", "dist/connect-redis.d.ts")
+        copyFileSync("dist/index.d.ts", "dist/connect-redis.d.cts")
       },
     }),
   ],

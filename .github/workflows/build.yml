@@ -9,14 +9,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [18, 20, 22, 24]
+        node: [22, 24, 26]
     name: Node v${{ matrix.node }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node }}
       - run: sudo apt-get install -y redis-server
       - run: npm install
       - run: npm run lint
+      - run: npm run build
       - run: npm test
