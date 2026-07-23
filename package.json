@@ -1,12 +1,25 @@
 {
   "name": "connect-redis",
-  "description": "Redis session store for Connect",
   "version": "9.0.0",
+  "description": "Redis session store for Connect",
+  "keywords": [
+    "connect",
+    "express",
+    "redis",
+    "session"
+  ],
+  "bugs": {
+    "url": "https://github.com/tj/connect-redis/issues"
+  },
+  "license": "MIT",
   "author": "TJ Holowaychuk <tj@vision-media.ca>",
   "contributors": [
     "Marc Harter <wavded@gmail.com>"
   ],
-  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/tj/connect-redis.git"
+  },
   "type": "module",
   "main": "./dist/connect-redis.cjs",
   "module": "./dist/connect-redis.js",
@@ -27,20 +40,17 @@
     "prepublishOnly": "vite build",
     "build": "vite build",
     "test": "vitest run --coverage",
-    "lint": "tsc --noemit && biome check .",
-    "fix": "biome check --write ."
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/tj/connect-redis.git"
+    "lint": "tsc --noemit && oxlint . && oxfmt --check .",
+    "fix": "oxlint --fix . && oxfmt ."
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.5.5",
     "@types/express-session": "^1.19.0",
     "@types/node": "^26.1.1",
     "@typescript/typescript6": "^6.0.2",
     "@vitest/coverage-v8": "^4.1.10",
     "express-session": "^1.19.0",
+    "oxfmt": "^0.60.0",
+    "oxlint": "^1.75.0",
     "redis": "^6.1.0",
     "ts-node": "^10.9.2",
     "typescript": "^7.0.2",
@@ -57,14 +67,5 @@
   },
   "engines": {
     "node": ">=22"
-  },
-  "bugs": {
-    "url": "https://github.com/tj/connect-redis/issues"
-  },
-  "keywords": [
-    "connect",
-    "redis",
-    "session",
-    "express"
-  ]
+  }
 }
