@@ -52,10 +52,8 @@
     "express-session": ">=1",
     "redis": ">=5"
   },
-  "pnpm": {
-    "overrides": {
-      "rollup": "^4.59.0"
-    }
+  "overrides": {
+    "rollup": "^4.59.0"
   },
   "engines": {
     "node": ">=22"
