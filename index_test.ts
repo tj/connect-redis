@@ -1,6 +1,7 @@
 import {Cookie} from "express-session"
 import {createClient} from "redis"
 import {expect, test} from "vitest"
+
 import {RedisStore} from "./"
 import * as redisSrv from "./testdata/server"
 
@@ -107,7 +108,7 @@ async function lifecycleTest(store: RedisStore, client: any): Promise<void> {
 async function load(store: RedisStore, count: number) {
   let cookie = new Cookie()
   for (let sid = 0; sid < count; sid++) {
-    cookie.expires = new Date(Date.now() + 1000)
+    cookie.expires = new Date(Date.now() + 60_000)
     await store.set("s" + sid, {cookie})
   }
 }
