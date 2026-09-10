@@ -45,18 +45,18 @@
   },
   "devDependencies": {
     "@types/express-session": "^1.19.0",
-    "@types/node": "^26.1.1",
+    "@types/node": "^26.5.0",
     "@typescript/typescript6": "^6.0.2",
-    "@vitest/coverage-v8": "^4.1.10",
+    "@vitest/coverage-v8": "^5.0.0",
     "express-session": "^1.19.0",
-    "oxfmt": "^0.60.0",
-    "oxlint": "^1.75.0",
-    "redis": "^6.1.0",
+    "oxfmt": "^0.67.0",
+    "oxlint": "^1.82.0",
+    "redis": "^6.2.1",
     "ts-node": "^10.9.2",
     "typescript": "^7.0.2",
-    "vite": "^8.1.5",
-    "vite-plugin-dts": "^5.0.3",
-    "vitest": "^4.1.10"
+    "vite": "^8.2.2",
+    "vite-plugin-dts": "^5.1.0",
+    "vitest": "^5.0.0"
   },
   "peerDependencies": {
     "express-session": ">=1",
