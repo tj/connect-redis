@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2022",
+    "types": ["bun", "node"],
     "module": "esnext",
     "strict": true,
     "isolatedModules": true,

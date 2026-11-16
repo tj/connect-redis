@@ -110,4 +110,19 @@ interface Serializer {
 
 Value used for _count_ parameter in [Redis `SCAN` command](https://redis.io/commands/scan#the-count-option). Used for `ids()` and `all()` methods (default: `100`).
 
+## Development
+
+Install Bun 1.4.4 or later and `redis-server`, then run:
+
+```sh
+bun install
+bun run lint
+bun test
+bun run build
+```
+
+Use `bun fmt` to format files and `bun run test` to include coverage. Tests start their own Redis server.
+
+The build uses Bun for the ESM bundle and TypeScript for declarations. Published packages require ESM imports and Node.js 22 or later.
+
 [1]: https://github.com/NodeRedis/node-redis

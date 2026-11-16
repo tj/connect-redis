@@ -21,50 +21,34 @@
     "url": "git+ssh://git@github.com/tj/connect-redis.git"
   },
   "type": "module",
-  "main": "./dist/connect-redis.cjs",
-  "module": "./dist/connect-redis.js",
+  "main": "./dist/connect-redis.js",
   "types": "./dist/connect-redis.d.ts",
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/connect-redis.d.ts",
-        "default": "./dist/connect-redis.js"
-      },
-      "require": {
-        "types": "./dist/connect-redis.d.cts",
-        "default": "./dist/connect-redis.cjs"
-      }
+      "types": "./dist/connect-redis.d.ts",
+      "import": "./dist/connect-redis.js"
     }
   },
   "scripts": {
-    "prepublishOnly": "vite build",
-    "build": "vite build",
-    "test": "vitest run --coverage",
-    "lint": "tsc --noemit && oxlint . && oxfmt --check .",
-    "fix": "oxlint --fix . && oxfmt ."
+    "prepublishOnly": "bun run build",
+    "build": "rm -rf dist && bun build index.ts --target node --packages external --outfile dist/connect-redis.js && tsc index.ts --ignoreConfig --declaration --emitDeclarationOnly --outDir dist && mv dist/index.d.ts dist/connect-redis.d.ts",
+    "test": "bun test --coverage",
+    "lint": "bun check && bun fmt --check",
+    "fix": "bun fmt"
   },
   "devDependencies": {
+    "@types/bun": "^1.4.4",
     "@types/express-session": "^1.19.0",
-    "@types/node": "^26.5.0",
-    "@typescript/typescript6": "^6.0.2",
-    "@vitest/coverage-v8": "^5.0.0",
+    "@types/node": "^26.6.6",
     "express-session": "^1.19.0",
-    "oxfmt": "^0.67.0",
-    "oxlint": "^1.82.0",
-    "redis": "^6.2.1",
-    "ts-node": "^10.9.2",
-    "typescript": "^7.0.2",
-    "vite": "^8.2.2",
-    "vite-plugin-dts": "^5.1.0",
-    "vitest": "^5.0.0"
+    "redis": "^6.3.1",
+    "typescript": "^7.0.2"
   },
   "peerDependencies": {
     "express-session": ">=1",
     "redis": ">=5"
   },
-  "overrides": {
-    "rollup": "^4.59.0"
-  },
+  "packageManager": "bun@1.4.4",
   "engines": {
     "node": ">=22"
   }

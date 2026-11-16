@@ -1,0 +1,4 @@
+[fmt]
+semi = false
+bracketSpacing = false
+sortImports = { newlinesBetween = true }
