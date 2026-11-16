@@ -21,8 +21,7 @@ jobs:
           bun-version: latest
       - run: sudo apt-get install -y redis-server
       - run: bun install --frozen-lockfile
-      - run: bun check
-      - run: bun fmt --check
+      - run: bun run lint
       - run: bun run build
       - run: bunx --no-install tsc dist/connect-redis.d.ts --ignoreConfig --noEmit --module nodenext
       - run: bun run test

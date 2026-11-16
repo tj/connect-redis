@@ -116,8 +116,7 @@ Install Bun 1.4.4 or later and `redis-server`, then run:
 
 ```sh
 bun install
-bun check
-bun fmt --check
+bun run lint
 bun test
 bun run build
 ```

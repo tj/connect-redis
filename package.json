@@ -22,7 +22,6 @@
   },
   "type": "module",
   "main": "./dist/connect-redis.js",
-  "module": "./dist/connect-redis.js",
   "types": "./dist/connect-redis.d.ts",
   "exports": {
     ".": {
