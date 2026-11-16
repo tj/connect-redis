@@ -1,13 +1,13 @@
+import {afterAll, beforeAll, expect, test} from "bun:test"
+
 import {Cookie} from "express-session"
 import {createClient} from "redis"
-import {expect, test} from "vitest"
 
-import {RedisStore} from "./"
+import {RedisStore} from "./index"
 import * as redisSrv from "./testdata/server"
 
-test("setup", async () => {
-  await redisSrv.connect()
-})
+beforeAll(redisSrv.connect)
+afterAll(redisSrv.disconnect)
 
 test("defaults", async () => {
   let client = createClient({url: `redis://localhost:${redisSrv.port}`})
@@ -32,8 +32,6 @@ test("redis", async () => {
   await lifecycleTest(store, client)
   client.destroy()
 })
-
-test("teardown", redisSrv.disconnect)
 
 async function lifecycleTest(store: RedisStore, client: any): Promise<void> {
   let res = await store.clear()
